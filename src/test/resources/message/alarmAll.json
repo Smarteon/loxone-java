@@ -1,0 +1,17 @@
+{
+  "LL": {
+    "control": "dev/sps/ios/04f5b16e67a5f9f349ad71f5ffb729cc4beb4c15/0f86a2fe-0378-3e15-ffff373f9870b52a/all",
+    "value": "0.000",
+    "Code": "200",
+    "output0": {
+      "name": "AQ",
+      "nr": 1,
+      "value": 0.000
+    },
+    "output1": {
+      "name": "Q1",
+      "nr": 2,
+      "value": 0
+    }
+  }
+}

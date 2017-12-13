@@ -1,13 +1,18 @@
 package cz.smarteon.loxone;
 
+import cz.smarteon.loxone.message.LoxoneEvent;
 import cz.smarteon.loxone.message.LoxoneMessage;
+import cz.smarteon.loxone.message.MessageHeader;
+import cz.smarteon.loxone.message.TextEvent;
+import cz.smarteon.loxone.message.ValueEvent;
 import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.URI;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +29,6 @@ import static cz.smarteon.loxone.Protocol.isCommandGetToken;
 import static cz.smarteon.loxone.Protocol.isCommandGetVisuSalt;
 import static cz.smarteon.loxone.Protocol.jsonGetKey;
 import static cz.smarteon.loxone.Protocol.jsonGetVisuSalt;
-import static cz.smarteon.loxone.Protocol.jsonKeyExchange;
 import static cz.smarteon.loxone.Protocol.jsonSecured;
 import static java.lang.String.format;
 
@@ -35,9 +39,10 @@ public class LoxoneWebSocket {
     private static final String URI_TEMPLATE = "ws://%s/ws/rfc6455";
 
     private final WebSocketClient webSocketClient;
-    private final LoxoneAuth loxoneAuth;
+    final LoxoneAuth loxoneAuth;
 
     private final List<CommandListener> commandListeners;
+    private final List<LoxoneEventListener> eventListeners;
 
     private ReentrantReadWriteLock connectRwLock = new ReentrantReadWriteLock();
     private CountDownLatch authSeqLatch;
@@ -45,16 +50,21 @@ public class LoxoneWebSocket {
 
 
     public LoxoneWebSocket(String loxoneAddress, LoxoneAuth loxoneAuth) {
-        webSocketClient = new LoxoneWebsocketClient(URI.create(format(URI_TEMPLATE, loxoneAddress)));
+        webSocketClient = new LoxoneWebsocketClient(this, URI.create(format(URI_TEMPLATE, loxoneAddress)));
         this.loxoneAuth = loxoneAuth;
 
         this.commandListeners = new LinkedList<>();
+        this.eventListeners = new LinkedList<>();
 
         registerListener(loxoneAuth);
     }
 
     public void registerListener(CommandListener listener) {
         commandListeners.add(listener);
+    }
+
+    public void registerListener(final LoxoneEventListener listener) {
+        eventListeners.add(listener);
     }
 
     public void sendCommand(String command) {
@@ -121,11 +131,36 @@ public class LoxoneWebSocket {
         webSocketClient.send(command);
     }
 
-    private void parseAndProcessResponse(LoxoneMessage response) {
+    void processMessage(LoxoneMessage response) {
         if (processHttpResponseCode(response.getCode())) {
             processCommand(response.getControl(), response.getValue());
         } else {
             log.debug(response.toString());
+        }
+    }
+
+    void processEvents(final MessageHeader msgHeader, final ByteBuffer bytes) {
+        switch (msgHeader.getKind()) {
+            case EVENT_VALUE:
+                final Collection<ValueEvent> valueEvents = Codec.readValueEvents(bytes);
+                log.trace("Incoming " + valueEvents);
+                for (ValueEvent event : valueEvents) {
+                    for (LoxoneEventListener eventListener : eventListeners) {
+                        eventListener.onEvent(event);
+                    }
+                }
+                break;
+            case EVENT_TEXT:
+                final Collection<TextEvent> textEvents = Codec.readTextEvents(bytes);
+                log.trace(("Incoming " + textEvents));
+                for (TextEvent event : textEvents) {
+                    for (LoxoneEventListener eventListener : eventListeners) {
+                        eventListener.onEvent(event);
+                    }
+                }
+                break;
+            default:
+                log.trace("Incoming binary message " + Codec.bytesToHex(bytes.order(ByteOrder.LITTLE_ENDIAN).array()));
         }
     }
 
@@ -180,6 +215,7 @@ public class LoxoneWebSocket {
         if (isCommandGetToken(command, loxoneAuth.getUser())) {
             // TODO do not always get new token
             if (authSeqLatch != null) {
+                sendInternal(Protocol.C_JSON_INIT_STATUS);
                 authSeqLatch.countDown();
             } else {
                 throw new IllegalStateException("Authentication not guarded");
@@ -195,39 +231,5 @@ public class LoxoneWebSocket {
         }
 
 
-    }
-
-    private class LoxoneWebsocketClient extends WebSocketClient {
-
-        LoxoneWebsocketClient(URI uri) {
-            super(uri);
-        }
-
-        @Override
-        public void onOpen(ServerHandshake handshakedata) {
-            log.info("Opened");
-            sendInternal(jsonKeyExchange(loxoneAuth.getSessionKey()));
-            sendInternal(jsonGetKey(loxoneAuth.getUser()));
-        }
-
-        @Override
-        public void onMessage(String message) {
-            log.trace("Incoming message " + message);
-            try {
-                parseAndProcessResponse(Codec.readMessage(message));
-            } catch (IOException e) {
-                log.error("Can't parse response: " + e.getMessage());
-            }
-        }
-
-        @Override
-        public void onClose(int code, String reason, boolean remote) {
-            log.info("Closed " + reason);
-        }
-
-        @Override
-        public void onError(Exception ex) {
-            log.info("Error " + ex.getMessage() + ex.getClass());
-        }
     }
 }

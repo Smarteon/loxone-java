@@ -36,6 +36,9 @@ public class Protocol {
     public static final String C_JSON_GET_VISU_SALT = "jdev/sys/getvisusalt";
     public static final String C_GET_VISU_SALT = "dev/sys/getvisusalt";
     public static final String C_JSON_ENC = "jdev/sys/enc/";
+    public static final String C_APP = "data/LoxAPP3.json";
+    public static final String C_JSON_APP_VERSION = "jdev/sps/LoxAPPversion3";
+    public static final String C_APP_VERSION = "dev/sps/LoxAPPversion3";
 
     private static final String JSON_ALL_URI_TEMPLATE = C_JSON + "/%s/all";
     private static final String TEMPLATE_DEVICE_OFF = "/%s/off";

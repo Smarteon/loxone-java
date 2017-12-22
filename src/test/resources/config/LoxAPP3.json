@@ -1,0 +1,705 @@
+{
+  "lastModified": "2017-11-22 18:41:01",
+  "msInfo": {
+    "serialNr": "504F9410B84A",
+    "msName": "ShowRoom",
+    "projectName": "ShowRoom",
+    "localUrl": "192.168.88.246",
+    "remoteUrl": "dns.loxonecloud.com/504F9410B84A",
+    "tempUnit": 0,
+    "currency": "€",
+    "squareMeasure": "m²",
+    "location": "Brno",
+    "languageCode": "CSY",
+    "heatPeriodStart": "10-01",
+    "heatPeriodEnd": "04-30",
+    "coolPeriodStart": "05-01",
+    "coolPeriodEnd": "09-30",
+    "catTitle": "Kategorie",
+    "roomTitle": "Místnost",
+    "miniserverType": 1,
+    "deviceMonitor": "0f869a64-0200-0aec-ffffd4c75dbaf53c",
+    "sortByRating": false,
+    "currentUser": {
+      "name": "showroom",
+      "uuid": "0f86a25d-026f-1c1e-ffffd4c75dbaf53c",
+      "isAdmin": true,
+      "changePassword": true,
+      "userRights": 2047
+    }
+  },
+  "globalStates": {
+    "operatingMode": "0f869a64-0200-0a9b-ffffd4c75dbaf53c",
+    "sunrise": "0f869a64-0200-0aad-ffffd4c75dbaf53c",
+    "sunset": "0f869a64-0200-0ab0-ffffd4c75dbaf53c",
+    "pastTasks": "0f869ad6-01d2-0cd6-ffff373f9870b52a",
+    "plannedTasks": "0f869ad6-01d2-0cd5-ffff373f9870b52a",
+    "notifications": "0f869a64-01f6-0a6c-ffffd4c75dbaf53c",
+    "modifications": "0f869a82-027c-0ccd-ffff373f9870b52a",
+    "favColorSequences": "0f869c1b-0379-0706-ffff91085de3ab76",
+    "favColors": "0f869c1b-0379-0707-ffff91085de3ab76",
+    "miniserverTime": "10a73e3b-017a-1682-ffffacb819d4bca9"
+  },
+  "operatingModes": {
+    "0": "Svátek",
+    "1": "Dovolená",
+    "2": "Volný den/školní prázdniny",
+    "3": "Pondělí",
+    "4": "Úterý",
+    "5": "Středa",
+    "6": "Čtvrtek",
+    "7": "Pátek",
+    "8": "Sobota",
+    "9": "Neděle",
+    "-1": "Alarm",
+    "-2": "Simulace přítomnosti",
+    "-3": "Zámraza",
+    "-4": "Zvýšená spotřeba tepla",
+    "-5": "Oslava",
+    "-6": "Nikdo není přítomen"
+  },
+  "rooms": {
+    "0f869a64-028d-0cc2-ffffd4c75dbaf53c": {
+      "uuid": "0f869a64-028d-0cc2-ffffd4c75dbaf53c",
+      "name": "Centrál",
+      "image": "00000000-0000-0031-2100000000000000.svg",
+      "defaultRating": 0,
+      "isFavorite": false,
+      "type": 4
+    },
+    "0f869a64-026e-0c3c-ffffd4c75dbaf53c": {
+      "uuid": "0f869a64-026e-0c3c-ffffd4c75dbaf53c",
+      "name": "Ložnice",
+      "image": "00000000-0000-0008-2100000000000000.svg",
+      "defaultRating": 0,
+      "isFavorite": false,
+      "type": 1
+    },
+    "0f869a64-025f-0c2c-ffffd4c75dbaf53c": {
+      "uuid": "0f869a64-025f-0c2c-ffffd4c75dbaf53c",
+      "name": "Obývací pokoj",
+      "image": "00000000-0000-0004-2100000000000000.svg",
+      "defaultRating": 10,
+      "isFavorite": false,
+      "type": 2
+    }
+  },
+  "cats": {
+    "0f869a64-0221-0b28-ffffd4c75dbaf53c": {
+      "uuid": "0f869a64-0221-0b28-ffffd4c75dbaf53c",
+      "name": "Alarm",
+      "image": "00000000-0000-000f-2000000000000000.svg",
+      "defaultRating": 1,
+      "isFavorite": true,
+      "type": "undefined",
+      "color": "#83B817"
+    },
+    "0f869a64-0200-0af4-ffffd4c75dbaf53c": {
+      "uuid": "0f869a64-0200-0af4-ffffd4c75dbaf53c",
+      "name": "Osvětlení",
+      "image": "00000000-0000-0002-2000000000000000.svg",
+      "defaultRating": 10,
+      "isFavorite": false,
+      "type": "lights",
+      "color": "#83B817"
+    },
+    "0f869a64-0210-0b10-ffffd4c75dbaf53c": {
+      "uuid": "0f869a64-0210-0b10-ffffd4c75dbaf53c",
+      "name": "Teplota",
+      "image": "00000000-0000-0009-2000000000000000.svg",
+      "defaultRating": 0,
+      "isFavorite": false,
+      "type": "indoortemperature",
+      "color": "#83B817"
+    }
+  },
+  "controls": {
+    "0f86a2fe-0378-3e15-ffff373f9870b52a": {
+      "name": "Alarm",
+      "type": "Alarm",
+      "uuidAction": "0f86a2fe-0378-3e15-ffff373f9870b52a",
+      "room": "0f869a64-028d-0cc2-ffffd4c75dbaf53c",
+      "cat": "0f869a64-0221-0b28-ffffd4c75dbaf53c",
+      "defaultRating": 1,
+      "isFavorite": false,
+      "isSecured": true,
+      "details": {
+        "alert": true,
+        "presenceConnected": true
+      },
+      "states": {
+        "armed": "0f86a2fe-0378-3e08-ffffb2d4efc8b5b6",
+        "nextLevel": "10a73e3b-01c5-18ff-ffff373f9870b52a",
+        "nextLevelDelay": "10a73e3b-01c5-1900-ffff373f9870b52a",
+        "nextLevelDelayTotal": "10a73e3b-01c5-1901-ffff373f9870b52a",
+        "level": "10a73e3b-01c5-1902-ffff373f9870b52a",
+        "startTime": "10a73e3b-01c5-1903-ffff373f9870b52a",
+        "armedDelay": "0f86a2fe-0378-3e11-ffffb2d4efc8b5b6",
+        "armedDelayTotal": "0f86a2fe-0378-3dfb-ffffb2d4efc8b5b6",
+        "sensors": "0f86a2fe-0378-3e15-ffff373f9870b52a",
+        "disabledMove": "10a73e3b-01c5-1904-ffff373f9870b52a"
+      },
+      "subControls": {
+        "0f86a2fe-0378-3e15-ffff373f9870b52a/sensors": {
+          "name": "sensors",
+          "type": "Tracker",
+          "uuidAction": "0f86a2fe-0378-3e15-ffff373f9870b52a/sensors",
+          "defaultRating": 0,
+          "isFavorite": false,
+          "isSecured": false,
+          "details": {
+            "maxEntries": 40
+          },
+          "states": {
+            "entries": "0f86a2fe-0378-3e15-ffff373f9870b52a"
+          }
+        }
+      }
+    },
+    "0f86a20d-0301-1814-ffff373f9870b52a": {
+      "name": "Centrála požáru a úniku vody",
+      "type": "SmokeAlarm",
+      "uuidAction": "0f86a20d-0301-1814-ffff373f9870b52a",
+      "room": "0f869a64-028d-0cc2-ffffd4c75dbaf53c",
+      "cat": "0f869a64-0221-0b28-ffffd4c75dbaf53c",
+      "defaultRating": 0,
+      "isFavorite": false,
+      "isSecured": false,
+      "details": {
+        "hasAcousticAlarm": false,
+        "availableAlarms": 4
+      },
+      "states": {
+        "sensors": "0f86a20d-0301-1814-ffff373f9870b52a",
+        "testAlarm": "0f86a20d-0301-1812-ffff6ad2ef881eaf",
+        "acousticAlarm": "0f86a20d-0301-1810-ffff6ad2ef881eaf",
+        "level": "0f86a20d-0301-17f8-ffff6ad2ef881eaf",
+        "nextLevel": "0f86a20d-0301-17f9-ffff6ad2ef881eaf",
+        "nextLevelDelay": "0f86a20d-0301-17fa-ffff6ad2ef881eaf",
+        "nextLevelDelayTotal": "0f86a20d-0301-17fb-ffff6ad2ef881eaf",
+        "timeServiceMode": "0f86a20d-0301-17fc-ffff6ad2ef881eaf",
+        "alarmCause": "0f86a20d-0301-17fd-ffff6ad2ef881eaf",
+        "startTime": "0f86a20d-0301-17fe-ffff6ad2ef881eaf"
+      },
+      "subControls": {
+        "0f86a20d-0301-1814-ffff373f9870b52a/sensors": {
+          "name": "sensors",
+          "type": "Tracker",
+          "uuidAction": "0f86a20d-0301-1814-ffff373f9870b52a/sensors",
+          "defaultRating": 0,
+          "isFavorite": false,
+          "isSecured": false,
+          "details": {
+            "maxEntries": 40
+          },
+          "states": {
+            "entries": "0f86a20d-0301-1814-ffff373f9870b52a"
+          }
+        }
+      }
+    },
+    "10a73e3b-01d5-1a35-ffff373f9870b52a": {
+      "name": "Centrál osvětlení",
+      "type": "CentralLightController",
+      "uuidAction": "10a73e3b-01d5-1a35-ffff373f9870b52a",
+      "room": "0f869a64-028d-0cc2-ffffd4c75dbaf53c",
+      "cat": "0f869a64-0200-0af4-ffffd4c75dbaf53c",
+      "defaultRating": 1,
+      "isFavorite": false,
+      "isSecured": false,
+      "details": {
+        "controls": [
+          {
+            "id": 0,
+            "uuid": "0f86a20d-009d-178c-ffff373f9870b52a"
+          }
+        ]
+      }
+    },
+    "0f86a20d-02ad-17f0-ffff373f9870b52a": {
+      "name": "Vše vyp.",
+      "type": "Pushbutton",
+      "uuidAction": "0f86a20d-02ad-17f0-ffff373f9870b52a",
+      "room": "0f869a64-028d-0cc2-ffffd4c75dbaf53c",
+      "cat": "0f869a64-0200-0af4-ffffd4c75dbaf53c",
+      "defaultRating": 0,
+      "isFavorite": false,
+      "isSecured": false,
+      "defaultIcon": null,
+      "states": {
+        "active": "0f86a20d-02ad-17f0-ffff373f9870b52a"
+      }
+    },
+    "0f86a20d-009d-178c-ffff373f9870b52a": {
+      "name": "Ovládání osvětlení",
+      "type": "LightController",
+      "uuidAction": "0f86a20d-009d-178c-ffff373f9870b52a",
+      "room": "0f869a64-025f-0c2c-ffffd4c75dbaf53c",
+      "cat": "0f869a64-0200-0af4-ffffd4c75dbaf53c",
+      "defaultRating": 1,
+      "isFavorite": false,
+      "isSecured": false,
+      "details": {
+        "movementScene": 1
+      },
+      "states": {
+        "activeScene": "0f86a20d-009d-1789-ffff0beffc15bedd",
+        "sceneList": "0f86a20d-009d-174a-ffff0beffc15bedd"
+      },
+      "subControls": {
+        "0f86a20d-009d-178c-ffff373f9870b52a/AI1": {
+          "name": "RGB",
+          "type": "Colorpicker",
+          "uuidAction": "0f86a20d-009d-178c-ffff373f9870b52a/AI1",
+          "defaultRating": 0,
+          "isFavorite": false,
+          "isSecured": false,
+          "details": {
+            "pickerType": "Rgb"
+          },
+          "states": {
+            "color": "0f86a20d-009d-177d-ffff0beffc15bedd",
+            "favorites": "0f86a20d-009d-1749-ffff0beffc15bedd"
+          }
+        },
+        "0f86a20d-009d-178c-ffff373f9870b52a/AI2": {
+          "name": "Dimmer",
+          "type": "Dimmer",
+          "uuidAction": "0f86a20d-009d-178c-ffff373f9870b52a/AI2",
+          "defaultRating": 0,
+          "isFavorite": false,
+          "isSecured": false,
+          "states": {
+            "position": "0f86a20d-009d-177e-ffff0beffc15bedd",
+            "min": "0f86a20d-009d-1771-ffff0beffc15bedd",
+            "max": "0f86a20d-009d-1772-ffff0beffc15bedd",
+            "step": "0f86a20d-009d-176f-ffff0beffc15bedd"
+          }
+        }
+      }
+    },
+    "0f8b7707-00dc-1049-ffff373f9870b52a": {
+      "name": "Inteligentní regulace pokojové teploty",
+      "type": "IRoomController",
+      "uuidAction": "0f8b7707-00dc-1049-ffff373f9870b52a",
+      "room": "0f869a64-025f-0c2c-ffffd4c75dbaf53c",
+      "cat": "0f869a64-0210-0b10-ffffd4c75dbaf53c",
+      "defaultRating": 1,
+      "isFavorite": false,
+      "isSecured": false,
+      "details": {
+        "restrictedToMode": 0,
+        "temperatures": {
+          "0": {
+            "isAbsolute": false
+          },
+          "1": {
+            "isAbsolute": true
+          },
+          "2": {
+            "isAbsolute": true
+          },
+          "3": {
+            "isAbsolute": true
+          },
+          "4": {
+            "isAbsolute": true
+          },
+          "5": {
+            "isAbsolute": false
+          },
+          "6": {
+            "isAbsolute": false
+          }
+        },
+        "format": "%.1f°"
+      },
+      "states": {
+        "tempTarget": "0f8b7707-00dc-1043-ffff747a5b105600",
+        "tempActual": "0f8b7707-00dc-1020-ffff747a5b105600",
+        "error": "0f8b7707-00dc-1041-ffff747a5b105600",
+        "mode": "0f8b7707-00dc-103f-ffff747a5b105600",
+        "serviceMode": "0f8b7707-00dc-1040-ffff747a5b105600",
+        "currHeatTempIx": "0f8b7707-00dc-1015-ffff747a5b105600",
+        "currCoolTempIx": "0f8b7707-00dc-1016-ffff747a5b105600",
+        "override": "0f8b7707-00dc-1046-ffff747a5b105600",
+        "isPreparing": "0f8b7707-00dc-1047-ffff747a5b105600",
+        "valveHeat": "0f8b7707-00dc-1036-ffff747a5b105600",
+        "valveCool": "0f8b7707-00dc-103a-ffff747a5b105600",
+        "openWindow": "0f8b7707-00dc-1021-ffff747a5b105600",
+        "stop": "10a73e3b-01c5-19e2-ffffacb819d4bca9",
+        "overrideTotal": "0f8b7707-00dc-101a-ffff747a5b105600",
+        "movement": "0f8b7707-00dc-1019-ffff747a5b105600",
+        "manualMode": "0f8b7707-00dc-101b-ffff747a5b105600",
+        "temperatures": [
+          "0f8b7707-00dc-1028-ffff747a5b105600",
+          "0f8b7707-00dc-1029-ffff747a5b105600",
+          "0f8b7707-00dc-102a-ffff747a5b105600",
+          "0f8b7707-00dc-102d-ffff747a5b105600",
+          "0f8b7707-00dc-102e-ffff747a5b105600",
+          "0f8b7707-00dc-102c-ffff747a5b105600",
+          "0f8b7707-00dc-102b-ffff747a5b105600"
+        ]
+      },
+      "subControls": {
+        "0f8b7707-00dc-1013-ffff747a5b105600": {
+          "name": "Heating",
+          "type": "IRCDaytimer",
+          "uuidAction": "0f8b7707-00dc-1013-ffff747a5b105600",
+          "defaultRating": 0,
+          "isFavorite": false,
+          "isSecured": false,
+          "details": {
+            "analog": true,
+            "format": "%.1f°"
+          },
+          "states": {
+            "entriesAndDefaultValue": "0f8b7707-00dc-1013-ffff747a5b105600",
+            "mode": "0f8b7707-00dc-1044-ffff747a5b105600",
+            "modeList": "0f8b7707-00dc-1017-ffff747a5b105600",
+            "value": "0f8b7707-00dc-1015-ffff747a5b105600"
+          }
+        },
+        "0f8b7707-00dc-1014-ffff747a5b105600": {
+          "name": "Cooling",
+          "type": "IRCDaytimer",
+          "uuidAction": "0f8b7707-00dc-1014-ffff747a5b105600",
+          "defaultRating": 0,
+          "isFavorite": false,
+          "isSecured": false,
+          "details": {
+            "analog": true,
+            "format": "%.1f°"
+          },
+          "states": {
+            "entriesAndDefaultValue": "0f8b7707-00dc-1014-ffff747a5b105600",
+            "mode": "0f8b7707-00dc-1045-ffff747a5b105600",
+            "modeList": "0f8b7707-00dc-1018-ffff747a5b105600",
+            "value": "0f8b7707-00dc-1016-ffff747a5b105600"
+          }
+        }
+      }
+    }
+  },
+  "weatherServer": {
+    "states": {
+      "actual": "0f869ad6-01d2-0cea-ffff373f9870b52a",
+      "forecast": "0f869ad6-01d2-0ce9-ffff373f9870b52a"
+    },
+    "format": {
+      "relativeHumidity": "%.0f%%",
+      "temperature": "%.1f°",
+      "windSpeed": "%.0fkm/h",
+      "precipitation": "%.1fl/m²/h",
+      "barometricPressure": "%.0fhPa"
+    },
+    "weatherTypeTexts": {
+      "1": "Jasno",
+      "2": "Skoro jasno",
+      "3": "Polojasno",
+      "4": "Skoro zataženo",
+      "5": "Zataženo",
+      "6": "Mlha",
+      "7": "Oblačno",
+      "8": "nepoužito",
+      "9": "nepoužito",
+      "10": "Dešťové přeháňky",
+      "11": "Déšť",
+      "12": "Silný déšť",
+      "13": "mrholení",
+      "14": "Mírný mrznoucí déšť",
+      "15": "Silný mrznoucí déšť",
+      "16": "Déšť",
+      "17": "Liják",
+      "18": "bouřka",
+      "19": "silná bouře",
+      "20": "mírné sněžení",
+      "21": "sněžení",
+      "22": "silné snežení",
+      "23": "lehké sněžení",
+      "24": "silné sněžení",
+      "25": "Mírný déšť se sněhem",
+      "26": "plískanice",
+      "27": "Vidatný déšť se sněhem",
+      "28": "mírné sněžení",
+      "29": "silné sněžení"
+    },
+    "weatherFieldTypes": {
+      "1": {
+        "id": 1,
+        "name": "Teplota",
+        "analog": true,
+        "unit": "°C",
+        "format": "%.1f"
+      },
+      "2": {
+        "id": 2,
+        "name": "Rosný bod",
+        "analog": true,
+        "unit": "°C",
+        "format": "%.1f"
+      },
+      "3": {
+        "id": 3,
+        "name": "Rel. vlhkost vzduchu",
+        "analog": true,
+        "format": "%.0f%%"
+      },
+      "4": {
+        "id": 4,
+        "name": "Rychlost větru",
+        "analog": true,
+        "unit": "km/h",
+        "format": "%.0f"
+      },
+      "5": {
+        "id": 5,
+        "name": "Směr větru",
+        "analog": true
+      },
+      "6": {
+        "id": 6,
+        "name": "Nárazy větru",
+        "analog": true
+      },
+      "7": {
+        "id": 7,
+        "name": "Absolutní záření",
+        "analog": true
+      },
+      "8": {
+        "id": 8,
+        "name": "Relativní záření",
+        "analog": true
+      },
+      "9": {
+        "id": 9,
+        "name": "Srážky",
+        "analog": true,
+        "unit": "l/m²/h",
+        "format": "%.1f"
+      },
+      "10": {
+        "id": 10,
+        "name": "Typ počasí",
+        "analog": true
+      },
+      "11": {
+        "id": 11,
+        "name": "Atmosferický tlak",
+        "analog": true,
+        "unit": "hPa",
+        "format": "%.0f"
+      },
+      "26": {
+        "id": 26,
+        "name": "Vnímaná teplota",
+        "analog": true,
+        "unit": "°C",
+        "format": "%.1f"
+      },
+      "27": {
+        "id": 27,
+        "name": "Záření",
+        "analog": true
+      },
+      "28": {
+        "id": 28,
+        "name": "Pravděpodobnost srážek",
+        "analog": true
+      },
+      "29": {
+        "id": 29,
+        "name": "Podíl sněhu",
+        "analog": true
+      },
+      "30": {
+        "id": 30,
+        "name": "CAPE",
+        "analog": true
+      },
+      "31": {
+        "id": 31,
+        "name": "Nízká oblačnost",
+        "analog": true
+      },
+      "32": {
+        "id": 32,
+        "name": "Střední oblačnost",
+        "analog": true
+      },
+      "33": {
+        "id": 33,
+        "name": "Vysoká oblačnost",
+        "analog": true
+      },
+      "34": {
+        "id": 34,
+        "name": "Sluneční svit",
+        "analog": false
+      }
+    }
+  },
+  "times": {
+    "266": {
+      "id": 266,
+      "name": "Dny od roku 2009",
+      "analog": true
+    },
+    "267": {
+      "id": 267,
+      "name": "Rok",
+      "analog": true
+    },
+    "268": {
+      "id": 268,
+      "name": "Měsíc",
+      "analog": true
+    },
+    "269": {
+      "id": 269,
+      "name": "Den",
+      "analog": true
+    },
+    "270": {
+      "id": 270,
+      "name": "Den v týdnu",
+      "analog": true
+    },
+    "271": {
+      "id": 271,
+      "name": "Aktivní kalendář",
+      "analog": true
+    },
+    "272": {
+      "id": 272,
+      "name": "Minuty od půlnoci",
+      "analog": true
+    },
+    "273": {
+      "id": 273,
+      "name": "Hodina",
+      "analog": true
+    },
+    "274": {
+      "id": 274,
+      "name": "Minuty",
+      "analog": true
+    },
+    "275": {
+      "id": 275,
+      "name": "Sekundy",
+      "analog": true
+    },
+    "276": {
+      "id": 276,
+      "name": "Sekundy od startu",
+      "analog": true
+    },
+    "277": {
+      "id": 277,
+      "name": "Minuty do východu slunce",
+      "analog": true
+    },
+    "278": {
+      "id": 278,
+      "name": "Minuty do západu slunce",
+      "analog": true
+    },
+    "281": {
+      "id": 281,
+      "name": "Denní světlo",
+      "analog": false
+    },
+    "282": {
+      "id": 282,
+      "name": "Denní světlo 30 minut",
+      "analog": false
+    },
+    "283": {
+      "id": 283,
+      "name": "Minuty do úsvitu",
+      "analog": true
+    },
+    "284": {
+      "id": 284,
+      "name": "Minuty do setmění",
+      "analog": true
+    },
+    "285": {
+      "id": 285,
+      "name": "Výška slunce",
+      "analog": true
+    },
+    "286": {
+      "id": 286,
+      "name": "Směr slunce",
+      "analog": true
+    },
+    "287": {
+      "id": 287,
+      "name": "Počáteční impulz",
+      "analog": false
+    },
+    "288": {
+      "id": 288,
+      "name": "Roční impulz",
+      "analog": false
+    },
+    "289": {
+      "id": 289,
+      "name": "Měsíční impulz",
+      "analog": false
+    },
+    "290": {
+      "id": 290,
+      "name": "Denní impulz",
+      "analog": false
+    },
+    "291": {
+      "id": 291,
+      "name": "Hodinový impulz",
+      "analog": false
+    },
+    "292": {
+      "id": 292,
+      "name": "Minutový impulz",
+      "analog": false
+    },
+    "293": {
+      "id": 293,
+      "name": "Sekundový impulz",
+      "analog": false
+    },
+    "294": {
+      "id": 294,
+      "name": "Impulz východu slunce",
+      "analog": false
+    },
+    "295": {
+      "id": 295,
+      "name": "Impulz západu slunce",
+      "analog": false
+    },
+    "298": {
+      "id": 298,
+      "name": "Impulz rozednění",
+      "analog": false
+    },
+    "299": {
+      "id": 299,
+      "name": "Impulz setmění",
+      "analog": false
+    }
+  },
+  "autopilot": {
+    "0f869a64-0200-0ae9-ffffd4c75dbaf53c": {
+      "name": "Pravidla automatizace",
+      "uuidAction": "0f869a64-0200-0ae9-ffffd4c75dbaf53c",
+      "states": {
+        "changed": "0f869a64-0200-0ae5-ffffd4c75dbaf53c",
+        "history": "0f869a64-0200-0ae6-ffffd4c75dbaf53c"
+      }
+    }
+  }
+}

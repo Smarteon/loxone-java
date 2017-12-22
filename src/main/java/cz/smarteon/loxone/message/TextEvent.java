@@ -1,5 +1,7 @@
 package cz.smarteon.loxone.message;
 
+import cz.smarteon.loxone.LoxoneUuid;
+
 public class TextEvent extends LoxoneEvent {
     private final LoxoneUuid iconUuid;
     private final String text;

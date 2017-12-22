@@ -2,10 +2,7 @@ package cz.smarteon.loxone.message
 
 import spock.lang.Specification
 
-import static cz.smarteon.loxone.message.TestHelper.MAPPER
-
-
-class JsonValueTest extends Specification {
+class JsonValueTest extends Specification implements SerializationSupport {
 
     def "should deserialize"() {
         expect:

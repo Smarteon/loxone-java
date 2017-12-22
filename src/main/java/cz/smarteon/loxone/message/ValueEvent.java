@@ -1,5 +1,7 @@
 package cz.smarteon.loxone.message;
 
+import cz.smarteon.loxone.LoxoneUuid;
+
 public class ValueEvent extends LoxoneEvent {
 
     public static final int PAYLOAD_LENGTH = 24;

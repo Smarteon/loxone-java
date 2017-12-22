@@ -3,10 +3,7 @@ package cz.smarteon.loxone.message
 import cz.smarteon.loxone.Codec
 import spock.lang.Specification
 
-import static cz.smarteon.loxone.message.TestHelper.readResource
-
-
-class LoxoneMessageTest extends Specification {
+class LoxoneMessageTest extends Specification implements SerializationSupport {
 
     def "should deserialize get key"() {
         when:

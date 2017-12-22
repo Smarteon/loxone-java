@@ -1,9 +1,7 @@
 package cz.smarteon.loxone;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.smarteon.loxone.message.LoxoneEvent;
 import cz.smarteon.loxone.message.LoxoneMessage;
-import cz.smarteon.loxone.message.LoxoneUuid;
 import cz.smarteon.loxone.message.MessageHeader;
 import cz.smarteon.loxone.message.MessageKind;
 import cz.smarteon.loxone.message.TextEvent;
@@ -147,7 +145,7 @@ public abstract class Codec {
 
     }
 
-    private static byte[] readBytes(final ByteBuffer buffer) {
+    static byte[] readBytes(final ByteBuffer buffer) {
         return readBytes(buffer, buffer.remaining());
     }
 
@@ -159,11 +157,11 @@ public abstract class Codec {
         return bytes;
     }
 
-    private static int readUnsignedShort(final ByteBuffer buffer) {
+    static int readUnsignedShort(final ByteBuffer buffer) {
         return buffer.getShort() & 0xffff;
     }
 
-    private static long readUnsingedInt(final ByteBuffer buffer) {
+    static long readUnsingedInt(final ByteBuffer buffer) {
         return readUnsingedInt(buffer, -1);
     }
 

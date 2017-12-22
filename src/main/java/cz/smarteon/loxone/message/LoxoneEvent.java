@@ -1,5 +1,7 @@
 package cz.smarteon.loxone.message;
 
+import cz.smarteon.loxone.LoxoneUuid;
+
 public abstract class LoxoneEvent {
 
     protected final LoxoneUuid uuid;

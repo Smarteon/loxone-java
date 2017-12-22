@@ -3,9 +3,7 @@ package cz.smarteon.loxone.message
 import nl.jqno.equalsverifier.EqualsVerifier
 import spock.lang.Specification
 
-import static cz.smarteon.loxone.message.TestHelper.readResource
-
-class HashingTest extends Specification {
+class HashingTest extends Specification implements SerializationSupport {
 
     def "should deserialize"() {
         when:

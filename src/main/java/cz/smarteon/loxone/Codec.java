@@ -74,11 +74,19 @@ public abstract class Codec {
     }
 
     public static LoxoneMessage readMessage(final String message) throws IOException {
-        return MAPPER.readValue(message, LoxoneMessage.class);
+        return readMessage(message, LoxoneMessage.class);
     }
 
     public static LoxoneMessage readMessage(final InputStream message) throws IOException {
-        return MAPPER.readValue(message, LoxoneMessage.class);
+        return readMessage(message, LoxoneMessage.class);
+    }
+
+    public static <T> T readMessage(final String message, final Class<T> clazz) throws IOException {
+        return MAPPER.readValue(message, clazz);
+    }
+
+    public static <T> T readMessage(final InputStream message, final Class<T> clazz) throws IOException {
+        return MAPPER.readValue(message, clazz);
     }
 
     public static MessageHeader readHeader(final ByteBuffer bytes) {

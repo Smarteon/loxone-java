@@ -24,17 +24,29 @@ public class LoxoneHttp {
     }
 
     public LoxoneMessage get(String command) {
+        return get(command, LoxoneMessage.class);
+    }
+
+    public <T> T get(String command, Class<T> clazz) {
         final String sanitizedUri = command.startsWith("/") ? command : "/" + command;
         log.debug("Get for JSON uri=" + sanitizedUri);
 
-        return get(protocol.urlFromCommand(command), loxoneAuth.authHeaders());
+        return get(protocol.urlFromCommand(command), loxoneAuth.authHeaders(), clazz);
     }
 
     static LoxoneMessage get(URL url) {
-        return get(url, Collections.<String, String>emptyMap());
+        return get(url, Collections.<String, String>emptyMap(), LoxoneMessage.class);
+    }
+
+    static <T> T get(URL url, Class<T> clazz) {
+        return get(url, Collections.<String, String>emptyMap(), clazz);
     }
 
     static LoxoneMessage get(URL url, Map<String, String> properties) {
+        return get(url, properties, LoxoneMessage.class);
+    }
+
+    static <T> T get(URL url, Map<String, String> properties, Class<T> clazz) {
         log.debug("Get for JSON url=" + url);
         HttpURLConnection connection = null;
         try {
@@ -45,7 +57,7 @@ public class LoxoneHttp {
             final int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 try (InputStream is = connection.getInputStream()) {
-                    return Codec.readMessage(is);
+                    return Codec.readMessage(is, clazz);
                 }
             } else {
                 throw new LoxoneException("Get for loxone json responded by status " + responseCode);
@@ -59,4 +71,6 @@ public class LoxoneHttp {
             }
         }
     }
+
+
 }

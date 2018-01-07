@@ -17,7 +17,7 @@ class LoxoneValueTypeResolver implements TypeIdResolver {
     }
 
     @Override
-    public JavaType typeFromId(DatabindContext context, String id) throws IOException {
+    public JavaType typeFromId(DatabindContext context, String id) {
         if (id.contains("dev/sys/getkey")
                 || id.contains("dev/sys/getvisusalt")) {
             return context.constructSpecializedType(baseType, Hashing.class);
@@ -25,6 +25,8 @@ class LoxoneValueTypeResolver implements TypeIdResolver {
             return context.constructSpecializedType(baseType, ApiInfo.class);
         } else if (id.contains("dev/sys/getPublicKey")) {
             return context.constructSpecializedType(baseType, PubKeyInfo.class);
+        } else if (id.contains("dev/sps/LoxAPPversion3")) {
+            return context.constructSpecializedType(baseType, DateValue.class);
         } else {
             return context.constructSpecializedType(baseType, JsonValue.class);
         }

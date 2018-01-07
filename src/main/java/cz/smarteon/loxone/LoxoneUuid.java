@@ -2,7 +2,6 @@ package cz.smarteon.loxone;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import cz.smarteon.loxone.config.ControlState;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;

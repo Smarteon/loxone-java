@@ -2,6 +2,7 @@ package cz.smarteon.loxone.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.smarteon.loxone.LoxoneUuid;
@@ -31,5 +32,15 @@ public class LoxoneConfig implements Serializable {
 
     public Map<LoxoneUuid, Control> getControls() {
         return controls;
+    }
+
+    @JsonIgnore
+    public <T extends Control> T getControlOfType(Class<T> type) {
+        for (Control c : controls.values()) {
+            if (c.getClass().isAssignableFrom(type)) {
+                return (T) c;
+            }
+        }
+        return null;
     }
 }

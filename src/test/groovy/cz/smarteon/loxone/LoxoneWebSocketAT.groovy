@@ -19,8 +19,7 @@ class LoxoneWebSocketAT extends Specification {
     @Shared CommandMemory commands
 
     void setupSpec() {
-        final Protocol protocol = new Protocol(ADDRESS)
-        final LoxoneAuth loxoneAuth = new LoxoneAuth(protocol, USER, PASS, VIS_PASS)
+        final LoxoneAuth loxoneAuth = new LoxoneAuth(new LoxoneHttp(ADDRESS), USER, PASS, VIS_PASS)
         loxoneWebSocket = new LoxoneWebSocket(ADDRESS, loxoneAuth)
 
         commands = new CommandMemory()

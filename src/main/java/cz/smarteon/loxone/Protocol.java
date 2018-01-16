@@ -1,13 +1,11 @@
 package cz.smarteon.loxone;
 
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLEncoder;
 
 import static java.lang.String.format;
 
-public class Protocol {
+public abstract class Protocol {
 
     public static final int HTTP_OK = 200;
     public static final int HTTP_AUTH_FAIL = 401;
@@ -45,35 +43,6 @@ public class Protocol {
     private static final String TEMPLATE_DEVICE_ON = "/%s/on";
     private static final String TEMPLATE_XML = C_XML + "/%s";
     private static final String TEMPLATE_AUTHENTICATE = C_AUTHENTICATE + "/%s";
-
-    private final String loxoneAddress;
-    private final int port;
-
-    public Protocol(String loxoneAddress, int port) {
-        this.loxoneAddress = loxoneAddress;
-        this.port = port;
-    }
-
-    public Protocol(String loxoneAddress) {
-        this(loxoneAddress, 80);
-    }
-
-    public URL urlFromCommand(String command) {
-        try {
-            return new URL("http", loxoneAddress, port, command.startsWith("/") ? command : "/" + command);
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("Command " + command + " produces malformed URL");
-        }
-    }
-
-    public URL api() {
-        return urlFromCommand(C_JSON_API);
-    }
-
-
-    public URL publicKey() {
-        return urlFromCommand(C_JSON_PUBLIC_KEY);
-    }
 
     public static String jsonAlarmAll(String alarmDeviceId) {
         return alarmDeviceId + "/all";

@@ -38,12 +38,10 @@ import static java.util.Collections.singletonMap;
  */
 public class LoxoneAuth implements CommandListener {
 
-
-
     private static final int MAX_SALT_USAGE = 20;
     private static final String CLIENT_UUID = "5231fc55-a384-41b4-b0ae10b7f774add1";
 
-    private final Protocol protocol;
+    private final LoxoneHttp loxoneHttp;
     private final String loxoneUser;
     private final String loxonePass;
     private final String loxoneVisPass;
@@ -59,8 +57,8 @@ public class LoxoneAuth implements CommandListener {
     private int saltUsageCount = 0;
     private SecureRandom sha1PRNG;
 
-    public LoxoneAuth(Protocol protocol, String loxoneUser, String loxonePass, String loxoneVisPass) {
-        this.protocol = protocol;
+    public LoxoneAuth(LoxoneHttp loxoneHttp, String loxoneUser, String loxonePass, String loxoneVisPass) {
+        this.loxoneHttp = loxoneHttp;
         this.loxoneUser = loxoneUser;
         this.loxonePass = loxonePass;
         this.loxoneVisPass = loxoneVisPass;
@@ -204,7 +202,7 @@ public class LoxoneAuth implements CommandListener {
     }
 
     private void fetchApiInfo() {
-        final LoxoneMessage msg = LoxoneHttp.get(protocol.api());
+        final LoxoneMessage msg = loxoneHttp.get(Protocol.C_JSON_API);
         if (msg.getValue() != null) {
             if (msg.getValue() instanceof ApiInfo) {
                 apiInfo = (ApiInfo) msg.getValue();
@@ -217,7 +215,7 @@ public class LoxoneAuth implements CommandListener {
     }
 
     private void fetchPublicKey() {
-        final LoxoneMessage msg = LoxoneHttp.get(protocol.publicKey());
+        final LoxoneMessage msg = loxoneHttp.get(Protocol.C_JSON_PUBLIC_KEY);
         if (msg.getValue() != null) {
             if (msg.getValue() instanceof PubKeyInfo) {
                 publicKey = ((PubKeyInfo) msg.getValue()).asPublicKey();

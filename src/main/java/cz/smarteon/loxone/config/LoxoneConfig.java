@@ -35,9 +35,10 @@ public class LoxoneConfig implements Serializable {
     }
 
     @JsonIgnore
+    @SuppressWarnings("unchecked")
     public <T extends Control> T getControlOfType(Class<T> type) {
         for (Control c : controls.values()) {
-            if (c.getClass().isAssignableFrom(type)) {
+            if (type != null && type.isAssignableFrom(c.getClass())) {
                 return (T) c;
             }
         }

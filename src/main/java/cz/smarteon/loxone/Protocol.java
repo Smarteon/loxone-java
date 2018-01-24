@@ -39,29 +39,29 @@ public abstract class Protocol {
     private static final String TEMPLATE_XML = C_XML + "/%s";
     private static final String TEMPLATE_AUTHENTICATE = C_AUTHENTICATE + "/%s";
 
-    public static String jsonAlarmAll(String alarmDeviceId) {
-        return alarmDeviceId + "/all";
+    public static String jsonControlAll(String controlId) {
+        return controlId + "/all";
     }
 
-    public static String jsonAlarmOff(String alarmDeviceId) {
-        return alarmDeviceId + "/off";
+    public static String jsonControlOff(String controlId) {
+        return controlId + "/off";
     }
 
-    public static String jsonAlarmOn(String alarmDeviceId) {
-        return alarmDeviceId + "/on";
+    public static String jsonControlOn(String controlId) {
+        return controlId + "/on";
     }
 
-    public static boolean isCommandAlarmOn(String alarmDeviceId, String command) {
-        return command.matches(".*" + C_XML + ".*/" + alarmDeviceId + "/on");
+    public static boolean isCommandControlOn(String controlId, String command) {
+        return command.matches(".*" + C_XML + ".*/" + controlId + "/on");
     }
 
-    public static boolean isCommandAlarmOff(String alarmDeviceId, String command) {
-        return command.matches(".*" + C_XML + ".*/" + alarmDeviceId + "/off");
+    public static boolean isCommandControlOff(String controlId, String command) {
+        return command.matches(".*" + C_XML + ".*/" + controlId + "/off");
     }
 
 
-    public static boolean isCommandAlarmAll(String alarmDeviceId, String command) {
-        return command.matches(".*" + C_XML + ".*/" + alarmDeviceId + "/all");
+    public static boolean isCommandControlAll(String controlId, String command) {
+        return command.matches(".*" + C_XML + ".*/" + controlId + "/all");
     }
 
     public static String xmlDevice(String deviceId) {

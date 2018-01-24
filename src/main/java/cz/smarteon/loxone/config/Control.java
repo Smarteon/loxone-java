@@ -14,7 +14,8 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(defaultImpl = UnknownControl.class, use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(name = AlarmControl.NAME, value = AlarmControl.class)
+        @JsonSubTypes.Type(name = AlarmControl.NAME, value = AlarmControl.class),
+        @JsonSubTypes.Type(name = SwitchControl.NAME, value = SwitchControl.class)
 })
 public abstract class Control {
 

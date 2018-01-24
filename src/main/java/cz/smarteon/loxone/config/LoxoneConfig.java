@@ -75,4 +75,28 @@ public class LoxoneConfig implements Serializable {
         }
         return found;
     }
+
+    /**
+     * Get single (if any) control of given type and name
+     * @param name control name
+     * @param type control type
+     * @param <T> class of control type
+     * @return the only control of given name and type, or null if no such control exists     *
+     * @throws cz.smarteon.loxone.LoxoneException if more than one control of given name and type exists
+     */
+    @JsonIgnore
+    public <T extends Control> T getControl(String name, Class<T> type) {
+        Objects.requireNonNull(name, "control name can't be null");
+        T found = null;
+        for (T control : getControls(type)) {
+            if (name.equals(control.getName())) {
+                if (found != null) {
+                    throw new LoxoneException("More than one control of name " + name + " and type " + type.getSimpleName() + " found!");
+                } else {
+                    found = control;
+                }
+            }
+        }
+        return null;
+    }
 }

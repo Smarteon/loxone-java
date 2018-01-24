@@ -24,7 +24,7 @@ class LoxoneConfigTest extends Specification implements SerializationSupport {
         LoxoneConfig config = new LoxoneConfig(LAST_MODIFIED, [(UUID) : alarmControl])
 
         expect:
-        config.getControlOfType(AlarmControl) == alarmControl
+        config.getControl(AlarmControl) == alarmControl
 
         where:
         alarmControl << [new AlarmControl(), Stub(AlarmControl)]

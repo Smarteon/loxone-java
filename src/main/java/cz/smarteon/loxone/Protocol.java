@@ -39,16 +39,28 @@ public abstract class Protocol {
     private static final String TEMPLATE_XML = C_XML + "/%s";
     private static final String TEMPLATE_AUTHENTICATE = C_AUTHENTICATE + "/%s";
 
-    public static String jsonControlAll(String controlId) {
+    public static String controlAll(String controlId) {
         return controlId + "/all";
     }
 
-    public static String jsonControlOff(String controlId) {
+    public static String jsonControlAll(String controlId) {
+        return C_JSON + "/" + controlAll(controlId);
+    }
+
+    public static String controlOff(String controlId) {
         return controlId + "/off";
     }
 
-    public static String jsonControlOn(String controlId) {
+    public static String jsonControlOff(String controlId) {
+        return C_JSON + "/" + controlOff(controlId);
+    }
+
+    public static String controlOn(String controlId) {
         return controlId + "/on";
+    }
+
+    public static String jsonControlOn(String controlId) {
+        return C_JSON + "/" + controlOn(controlId);
     }
 
     public static boolean isCommandControlOn(String controlId, String command) {

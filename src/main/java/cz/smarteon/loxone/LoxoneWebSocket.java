@@ -110,6 +110,10 @@ public class LoxoneWebSocket {
         }
     }
 
+    public LoxoneAuth getLoxoneAuth() {
+        return loxoneAuth;
+    }
+
     void ensureConnection() {
         if (!loxoneAuth.isInitialized()) {
             loxoneAuth.init();

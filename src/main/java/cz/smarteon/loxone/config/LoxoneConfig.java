@@ -97,6 +97,6 @@ public class LoxoneConfig implements Serializable {
                 }
             }
         }
-        return null;
+        return found;
     }
 }

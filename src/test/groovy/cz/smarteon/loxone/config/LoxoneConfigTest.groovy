@@ -19,7 +19,7 @@ class LoxoneConfigTest extends Specification implements SerializationSupport {
         config.controls.values().first() instanceof AlarmControl
     }
 
-    def "should getControlOfType"() {
+    def "should getControl by type"() {
         given:
         LoxoneConfig config = new LoxoneConfig(LAST_MODIFIED, [(UUID) : alarmControl])
 
@@ -28,5 +28,15 @@ class LoxoneConfigTest extends Specification implements SerializationSupport {
 
         where:
         alarmControl << [new AlarmControl(), Stub(AlarmControl)]
+    }
+
+    def "should getControl by name and type"() {
+        given:
+        def control = new SwitchControl()
+        control.name = 'SomeControl'
+        LoxoneConfig config = new LoxoneConfig(LAST_MODIFIED, [(UUID) : control])
+
+        expect:
+        config.getControl('SomeControl', SwitchControl) == control
     }
 }

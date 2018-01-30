@@ -1,6 +1,5 @@
 package cz.smarteon.loxone;
 
-import cz.smarteon.loxone.message.LoxoneEvent;
 import cz.smarteon.loxone.message.LoxoneMessage;
 import cz.smarteon.loxone.message.MessageHeader;
 import cz.smarteon.loxone.message.TextEvent;
@@ -31,6 +30,7 @@ import static cz.smarteon.loxone.Protocol.jsonGetKey;
 import static cz.smarteon.loxone.Protocol.jsonGetVisuSalt;
 import static cz.smarteon.loxone.Protocol.jsonSecured;
 import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
 
 public class LoxoneWebSocket {
 
@@ -38,7 +38,8 @@ public class LoxoneWebSocket {
 
     private static final String URI_TEMPLATE = "ws://%s/ws/rfc6455";
 
-    private final WebSocketClient webSocketClient;
+    private WebSocketClient webSocketClient;
+    private final String loxoneAddress;
     final LoxoneAuth loxoneAuth;
 
     private final List<CommandListener> commandListeners;
@@ -50,8 +51,8 @@ public class LoxoneWebSocket {
 
 
     public LoxoneWebSocket(String loxoneAddress, LoxoneAuth loxoneAuth) {
-        webSocketClient = new LoxoneWebsocketClient(this, URI.create(format(URI_TEMPLATE, loxoneAddress)));
-        this.loxoneAuth = loxoneAuth;
+        this.loxoneAddress = requireNonNull(loxoneAddress, "loxoneAddress shouldn't be null");
+        this.loxoneAuth = requireNonNull(loxoneAuth, "loxoneAuth shouldn't be null");
 
         this.commandListeners = new LinkedList<>();
         this.eventListeners = new LinkedList<>();
@@ -104,7 +105,9 @@ public class LoxoneWebSocket {
 
     public void close() {
         try {
-            webSocketClient.closeBlocking();
+            if (webSocketClient != null) {
+                webSocketClient.closeBlocking();
+            }
         } catch (InterruptedException e) {
             throw new LoxoneException("Interrupted while closing websocket", e);
         }
@@ -114,14 +117,15 @@ public class LoxoneWebSocket {
         return loxoneAuth;
     }
 
-    void ensureConnection() {
+    private void ensureConnection() {
         if (!loxoneAuth.isInitialized()) {
             loxoneAuth.init();
         }
-        if (!webSocketClient.isOpen()) {
+        if (webSocketClient == null || !webSocketClient.isOpen()) {
             if (connectRwLock.writeLock().tryLock()) {
                 try {
                     authSeqLatch = new CountDownLatch(1);
+                    webSocketClient = new LoxoneWebsocketClient(this, URI.create(format(URI_TEMPLATE, loxoneAddress)));
                     webSocketClient.connect();
                 } finally {
                     connectRwLock.writeLock().unlock();

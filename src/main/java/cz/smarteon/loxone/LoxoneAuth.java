@@ -44,10 +44,19 @@ import static java.util.Objects.requireNonNull;
  */
 public class LoxoneAuth implements CommandListener {
 
+    /**
+     * UUID of this client sent as part of token request
+     */
+    public static final String CLIENT_UUID = "5231fc55-a384-41b4-b0ae10b7f774add1";
+
+    /**
+     * Default value of client info sent as part of token request
+     */
+    public static final String DEFAULT_CLIENT_INFO = "loxoneJava";
+
     private static final Logger log = LoggerFactory.getLogger(LoxoneAuth.class);
 
     private static final int MAX_SALT_USAGE = 20;
-    private static final String CLIENT_UUID = "5231fc55-a384-41b4-b0ae10b7f774add1";
 
     private final LoxoneHttp loxoneHttp;
     private final String loxoneUser;
@@ -64,6 +73,8 @@ public class LoxoneAuth implements CommandListener {
     private String sharedSalt;
     private int saltUsageCount = 0;
     private SecureRandom sha1PRNG;
+
+    private String clientInfo = DEFAULT_CLIENT_INFO;
 
     /**
      * Creates new instance
@@ -94,10 +105,25 @@ public class LoxoneAuth implements CommandListener {
     }
 
     /**
-     * @return UUID of loxone-java client (currently hardcoded)
+     * @return UUID of loxone-java client (currently hardcoded to {@link #CLIENT_UUID})
      */
     public String getUuid() {
         return CLIENT_UUID;
+    }
+
+    /**
+     * @return clientInfo sent as part of token request
+     */
+    public String getClientInfo() {
+        return clientInfo;
+    }
+
+    /**
+     * Sets the client info sent as part of token request, defaults to {@link #DEFAULT_CLIENT_INFO}
+     * @param clientInfo client info
+     */
+    public void setClientInfo(String clientInfo) {
+        this.clientInfo = clientInfo;
     }
 
     /**
@@ -171,7 +197,7 @@ public class LoxoneAuth implements CommandListener {
             final String finalHash = bytesToHex(hash);
             log.trace("getToken final hash: {}", finalHash);
 
-            return jsonGetToken(finalHash, loxoneUser, CLIENT_UUID, "smarteonAndroid");
+            return jsonGetToken(finalHash, loxoneUser, CLIENT_UUID, clientInfo);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             throw new LoxoneException("Can't perform hashing to prepare gettoken command", e);
         }

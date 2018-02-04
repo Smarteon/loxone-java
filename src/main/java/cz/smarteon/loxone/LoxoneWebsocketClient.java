@@ -12,6 +12,7 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static cz.smarteon.loxone.Codec.bytesToHex;
 import static cz.smarteon.loxone.Protocol.jsonGetKey;
 import static cz.smarteon.loxone.Protocol.jsonKeyExchange;
 
@@ -58,7 +59,8 @@ class LoxoneWebsocketClient extends WebSocketClient {
                 ws.processEvents(msgHeaderRef.getAndSet(null), bytes);
             }
         } catch (Throwable t) {
-            log.error("Can't read binary message", t);
+            bytes.rewind();
+            log.error("Can't read binary message " + bytesToHex(bytes.array()), t);
         }
     }
 

@@ -27,6 +27,7 @@ dependencies {
     testImplementation group: 'org.spockframework', name: 'spock-core', version: '1.1-groovy-2.4'
     testImplementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.10'
     testRuntimeOnly group: 'cglib', name: 'cglib-nodep', version: '3.2.5'
+    testRuntimeOnly group: 'org.objenesis', name: 'objenesis', version: '2.5.1'
     testImplementation group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '2.4'
     testRuntimeOnly group: 'org.slf4j', name: 'slf4j-simple', version: slf4jVersion
 }

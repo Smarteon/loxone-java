@@ -123,7 +123,7 @@ public abstract class Codec {
                     readUuid(buffer),
                     readUuid(buffer),
                     new String(readBytes(buffer, Long.valueOf(readUnsingedInt(buffer)).intValue()))));
-            buffer.position(Math.min(buffer.limit(), buffer.position() + (buffer.position() % 4))); // text events padded to multiple of 4
+            buffer.position(Math.min(buffer.limit(), buffer.position() + 4 - (buffer.position() % 4))); // text events padded to multiple of 4
         }
         return events;
     }

@@ -40,7 +40,7 @@ public abstract class Protocol {
     private static final String TEMPLATE_AUTHENTICATE = C_AUTHENTICATE + "/%s";
 
     public static String controlAll(String controlId) {
-        return controlId + "/all";
+        return controlCmd(controlId, "all");
     }
 
     public static String jsonControlAll(String controlId) {
@@ -48,7 +48,7 @@ public abstract class Protocol {
     }
 
     public static String controlOff(String controlId) {
-        return controlId + "/off";
+        return controlCmd(controlId, "off");
     }
 
     public static String jsonControlOff(String controlId) {
@@ -56,11 +56,23 @@ public abstract class Protocol {
     }
 
     public static String controlOn(String controlId) {
-        return controlId + "/on";
+        return controlCmd(controlId, "on");
     }
 
     public static String jsonControlOn(String controlId) {
         return C_JSON + "/" + controlOn(controlId);
+    }
+
+    public static String controlCmd(final String controlId, final String cmd) {
+        return controlId + "/" + cmd;
+    }
+
+    public static String jsonControlCmd(final String controlId, final String cmd) {
+        return C_JSON + "/" + controlCmd(controlId, cmd);
+    }
+
+    public static String jsonControl(final String controlId) {
+        return C_JSON + "/" + controlId;
     }
 
     public static boolean isCommandControlOn(String controlId, String command) {

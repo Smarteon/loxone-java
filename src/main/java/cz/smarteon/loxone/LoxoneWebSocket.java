@@ -60,7 +60,7 @@ public class LoxoneWebSocket {
         registerListener(loxoneAuth);
     }
 
-    public void registerListener(CommandListener listener) {
+    public void registerListener(final CommandListener listener) {
         commandListeners.add(listener);
     }
 
@@ -68,7 +68,7 @@ public class LoxoneWebSocket {
         eventListeners.add(listener);
     }
 
-    public void sendCommand(String command) {
+    public void sendCommand(final String command) {
         ensureConnection();
 
         connectRwLock.readLock().lock();
@@ -82,7 +82,7 @@ public class LoxoneWebSocket {
         }
     }
 
-    public void sendSecureCommand(String command) {
+    public void sendSecureCommand(final String command) {
         ensureConnection();
 
         connectRwLock.readLock().lock();
@@ -134,12 +134,12 @@ public class LoxoneWebSocket {
         }
     }
 
-    void sendInternal(String command) {
+    void sendInternal(final String command) {
         log.debug("Sending websocket message: " + command);
         webSocketClient.send(command);
     }
 
-    void processMessage(LoxoneMessage response) {
+    void processMessage(final LoxoneMessage response) {
         if (processHttpResponseCode(response.getCode())) {
             processCommand(response.getControl(), response.getValue());
         } else {
@@ -172,7 +172,7 @@ public class LoxoneWebSocket {
         }
     }
 
-    private boolean processHttpResponseCode(int code) {
+    private boolean processHttpResponseCode(final int code) {
         switch (code) {
             case HTTP_OK:
                 log.debug("Message successfully processed.");
@@ -198,7 +198,7 @@ public class LoxoneWebSocket {
         }
     }
 
-    private void processCommand(String command, Object value) {
+    private void processCommand(final String command, final Object value) {
 
         CommandListener.State commandState = CommandListener.State.IGNORED;
         final Iterator<CommandListener> listeners = commandListeners.iterator();

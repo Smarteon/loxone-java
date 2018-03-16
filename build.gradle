@@ -29,6 +29,8 @@ dependencies {
     testRuntimeOnly group: 'cglib', name: 'cglib-nodep', version: '3.2.5'
     testRuntimeOnly group: 'org.objenesis', name: 'objenesis', version: '2.5.1'
     testImplementation group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '2.4'
+    testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit', version: '1.23.0'
+    testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-core', version: '1.23.0'
     testRuntimeOnly group: 'org.slf4j', name: 'slf4j-simple', version: slf4jVersion
 }
 

@@ -1,5 +1,6 @@
 package cz.smarteon.loxone.message;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -17,7 +18,7 @@ public class ApiInfo implements LoxoneValue {
     private final String mac;
     private final String version;
 
-    ApiInfo(final String mac, final String version) {
+    public ApiInfo(final String mac, final String version) {
         this.mac = mac;
         this.version = version;
     }
@@ -28,6 +29,11 @@ public class ApiInfo implements LoxoneValue {
 
     public String getVersion() {
         return version;
+    }
+
+    @JsonValue
+    private String jsonValue() {
+        return "{'snr':'" + mac + "', 'version':'" + version + "'}";
     }
 
     public static class Deserializer extends JsonDeserializer<ApiInfo> {

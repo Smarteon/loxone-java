@@ -1,10 +1,15 @@
 package cz.smarteon.loxone.message;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cz.smarteon.loxone.LoxoneException;
 import org.java_websocket.util.Base64;
 
@@ -20,7 +25,7 @@ public class PubKeyInfo implements LoxoneValue {
 
     private final byte[] pubKey;
 
-    PubKeyInfo(byte[] pubKey) {
+    public PubKeyInfo(byte[] pubKey) {
         this.pubKey = pubKey;
     }
 
@@ -36,6 +41,11 @@ public class PubKeyInfo implements LoxoneValue {
         } catch (NoSuchAlgorithmException e) {
             throw new LoxoneException("No RSA provider present", e);
         }
+    }
+
+    @JsonValue
+    private String jsonValue() {
+        return "-----BEGIN CERTIFICATE-----" + Base64.encodeBytes(pubKey)+ "-----END CERTIFICATE-----";
     }
 
     public static class Deserializer extends JsonDeserializer<PubKeyInfo> {

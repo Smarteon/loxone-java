@@ -3,6 +3,7 @@ package cz.smarteon.loxone.message;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.util.Arrays;
 
@@ -11,12 +12,13 @@ public class Hashing implements LoxoneValue {
     private final String salt;
 
     @JsonCreator
-    Hashing(@JsonProperty("key") @JsonDeserialize(using = HexDeserializer.class) final byte[] key,
+    public Hashing(@JsonProperty("key") @JsonDeserialize(using = HexDeserializer.class) final byte[] key,
             @JsonProperty("salt") final String salt) {
         this.key = key;
         this.salt = salt;
     }
 
+    @JsonSerialize(using = HexSerializer.class)
     public byte[] getKey() {
         return key;
     }

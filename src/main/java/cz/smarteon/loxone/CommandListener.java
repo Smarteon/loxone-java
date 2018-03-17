@@ -1,5 +1,7 @@
 package cz.smarteon.loxone;
 
+import cz.smarteon.loxone.message.LoxoneValue;
+
 public interface CommandListener {
     enum State {
         READ {
@@ -24,5 +26,5 @@ public interface CommandListener {
         abstract State fold(State next);
     }
 
-    State onCommand(String command, Object value);
+    State onCommand(String command, LoxoneValue value);
 }

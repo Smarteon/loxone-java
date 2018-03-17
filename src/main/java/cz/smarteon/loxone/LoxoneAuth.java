@@ -3,6 +3,7 @@ package cz.smarteon.loxone;
 import cz.smarteon.loxone.message.ApiInfo;
 import cz.smarteon.loxone.message.Hashing;
 import cz.smarteon.loxone.message.LoxoneMessage;
+import cz.smarteon.loxone.message.LoxoneValue;
 import cz.smarteon.loxone.message.PubKeyInfo;
 import org.java_websocket.util.Base64;
 import org.slf4j.Logger;
@@ -250,7 +251,7 @@ public class LoxoneAuth implements CommandListener {
     }
 
     @Override
-    public State onCommand(String command, Object value) {
+    public State onCommand(String command, LoxoneValue value) {
         if (jsonGetKey(loxoneUser).equals(command)) {
             hashing = parseHashing(value);
             return hashing != null ? State.CONSUMED : State.IGNORED;

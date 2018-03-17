@@ -1,5 +1,6 @@
 package cz.smarteon.loxone
 
+import cz.smarteon.loxone.message.LoxoneValue
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -49,7 +50,7 @@ class LoxoneWebSocketAT extends Specification {
         CountDownLatch latch
 
         @Override
-        CommandListener.State onCommand(String command, Object value) {
+        CommandListener.State onCommand(String command, LoxoneValue value) {
             if (latch != null && pattern != null)  {
                 if (command ==~ pattern) {
                     latch.countDown()

@@ -1,6 +1,7 @@
 package cz.smarteon.loxone;
 
 import cz.smarteon.loxone.message.LoxoneMessage;
+import cz.smarteon.loxone.message.LoxoneValue;
 import cz.smarteon.loxone.message.MessageHeader;
 import cz.smarteon.loxone.message.TextEvent;
 import cz.smarteon.loxone.message.ValueEvent;
@@ -198,7 +199,7 @@ public class LoxoneWebSocket {
         }
     }
 
-    private void processCommand(final String command, final Object value) {
+    private void processCommand(final String command, final LoxoneValue value) {
 
         CommandListener.State commandState = CommandListener.State.IGNORED;
         final Iterator<CommandListener> listeners = commandListeners.iterator();

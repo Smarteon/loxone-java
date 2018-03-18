@@ -49,7 +49,10 @@ class LoxoneWebSocketTest extends Specification {
         given:
         server.badCredentials = true
 
-        expect:
+        when:
         lws.sendCommand('baf')
+
+        then:
+        thrown(LoxoneException)
     }
 }

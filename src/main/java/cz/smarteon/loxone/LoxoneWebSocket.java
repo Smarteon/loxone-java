@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static cz.smarteon.loxone.Protocol.HTTP_AUTH_FAIL;
@@ -74,10 +75,8 @@ public class LoxoneWebSocket {
 
         connectRwLock.readLock().lock();
         try {
-            authSeqLatch.await();
+            waitForAuth(authSeqLatch);
             sendInternal(command);
-        } catch (InterruptedException e) {
-            log.error("Interrupted while waiting for authentication sequence completion", e);
         } finally {
             connectRwLock.readLock().unlock();
         }
@@ -88,17 +87,15 @@ public class LoxoneWebSocket {
 
         connectRwLock.readLock().lock();
         try {
-            authSeqLatch.await();
-
+            waitForAuth(authSeqLatch);
             if (visuLatch == null || visuLatch.getCount() == 0) {
                 visuLatch = new CountDownLatch(1);
                 sendInternal(jsonGetVisuSalt(loxoneAuth.getUser()));
             }
-            visuLatch.await();
+            waitForAuth(visuLatch);
 
             sendInternal(jsonSecured(command, loxoneAuth.getVisuHash()));
-        } catch (InterruptedException e) {
-            log.error("Interrupted while waiting for authentication sequence completion", e);
+
         } finally {
             connectRwLock.readLock().unlock();
         }
@@ -135,6 +132,18 @@ public class LoxoneWebSocket {
         }
     }
 
+    private void waitForAuth(final CountDownLatch latch) {
+        try {
+            if (latch.await(1, TimeUnit.SECONDS)) {
+                log.trace("Wait for authentication successful");
+            } else {
+                throw new LoxoneException("Unable to authenticate within timeout");
+            }
+        } catch (InterruptedException e) {
+            log.error("Interrupted while waiting for authentication sequence completion", e);
+        }
+
+    }
     void sendInternal(final String command) {
         log.debug("Sending websocket message: " + command);
         webSocketClient.send(command);

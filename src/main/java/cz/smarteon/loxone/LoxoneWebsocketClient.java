@@ -40,8 +40,8 @@ class LoxoneWebsocketClient extends WebSocketClient {
     public void onMessage(String message) {
         log.trace("Incoming message " + message);
         final MessageHeader msgHeader = msgHeaderRef.getAndSet(null);
-        if (msgHeader.getKind() != MessageKind.TEXT) {
-            log.warn("Got text message but " + msgHeaderRef.get().getKind() + " has been expected");
+        if (msgHeader != null && msgHeader.getKind() != MessageKind.TEXT) {
+            log.warn("Got text message but " + msgHeader.getKind() + " has been expected");
         }
         try {
             ws.processMessage(Codec.readMessage(message));
@@ -71,6 +71,6 @@ class LoxoneWebsocketClient extends WebSocketClient {
 
     @Override
     public void onError(Exception ex) {
-        log.info("Error " + ex.getMessage() + ex.getClass());
+        log.info("Error of loxone connection", ex);
     }
 }

@@ -51,6 +51,8 @@ public class LoxoneWebSocket {
     private CountDownLatch authSeqLatch;
     private CountDownLatch visuLatch;
 
+    private int authTimeoutSeconds = 1;
+    private int retries = 3;
 
     public LoxoneWebSocket(String loxoneAddress, LoxoneAuth loxoneAuth) {
         this.loxoneAddress = requireNonNull(loxoneAddress, "loxoneAddress shouldn't be null");
@@ -71,34 +73,11 @@ public class LoxoneWebSocket {
     }
 
     public void sendCommand(final String command) {
-        ensureConnection();
-
-        connectRwLock.readLock().lock();
-        try {
-            waitForAuth(authSeqLatch);
-            sendInternal(command);
-        } finally {
-            connectRwLock.readLock().unlock();
-        }
+        sendWithRetry(command, retries);
     }
 
     public void sendSecureCommand(final String command) {
-        ensureConnection();
-
-        connectRwLock.readLock().lock();
-        try {
-            waitForAuth(authSeqLatch);
-            if (visuLatch == null || visuLatch.getCount() == 0) {
-                visuLatch = new CountDownLatch(1);
-                sendInternal(jsonGetVisuSalt(loxoneAuth.getUser()));
-            }
-            waitForAuth(visuLatch);
-
-            sendInternal(jsonSecured(command, loxoneAuth.getVisuHash()));
-
-        } finally {
-            connectRwLock.readLock().unlock();
-        }
+        sendSecureWithRetry(command, retries);
     }
 
     public void close() {
@@ -115,11 +94,28 @@ public class LoxoneWebSocket {
         return loxoneAuth;
     }
 
+    /**
+     * Set the seconds, it waits for successful authentication, until give up.
+     * @param authTimeoutSeconds authentication timeout in seconds
+     */
+    public void setAuthTimeoutSeconds(final int authTimeoutSeconds) {
+        this.authTimeoutSeconds = authTimeoutSeconds;
+    }
+
+    /**
+     * Set the number of retries for successful authentication, until give up.
+     * @param retries number of retries
+     */
+    public void setRetries(final int retries) {
+        this.retries = retries;
+    }
+
     private void ensureConnection() {
         if (!loxoneAuth.isInitialized()) {
             loxoneAuth.init();
         }
         if (webSocketClient == null || !webSocketClient.isOpen()) {
+            log.trace("(Re)opening websocket connection");
             if (connectRwLock.writeLock().tryLock()) {
                 try {
                     authSeqLatch = new CountDownLatch(1);
@@ -134,16 +130,68 @@ public class LoxoneWebSocket {
 
     private void waitForAuth(final CountDownLatch latch) {
         try {
-            if (latch.await(1, TimeUnit.SECONDS)) {
-                log.trace("Wait for authentication successful");
+            if (latch.await(authTimeoutSeconds, TimeUnit.SECONDS)) {
+                log.trace("Waiting for authentication has been successful");
             } else {
-                throw new LoxoneException("Unable to authenticate within timeout");
+                close();
+                throw new LoxoneConnectionException("Unable to authenticate within timeout");
             }
         } catch (InterruptedException e) {
             log.error("Interrupted while waiting for authentication sequence completion", e);
         }
-
     }
+
+    private void sendWithRetry(final String command, final int retries) {
+        ensureConnection();
+
+        try {
+            connectRwLock.readLock().lock();
+            try {
+                waitForAuth(authSeqLatch);
+                sendInternal(command);
+            } finally {
+                connectRwLock.readLock().unlock();
+            }
+        } catch (LoxoneConnectionException e) {
+            if (retries > 0) {
+                log.info("Connection or authentication failed, retrying...");
+                sendWithRetry(command, retries - 1);
+            } else {
+                log.info("Connection or authentication failed too many times, give up");
+                throw new LoxoneException("Unable to authenticate within timeout with retry", e);
+            }
+        }
+    }
+
+    private void sendSecureWithRetry(final String command, final int retries) {
+        ensureConnection();
+
+        try {
+            connectRwLock.readLock().lock();
+            try {
+                waitForAuth(authSeqLatch);
+                if (visuLatch == null || visuLatch.getCount() == 0) {
+                    visuLatch = new CountDownLatch(1);
+                    sendInternal(jsonGetVisuSalt(loxoneAuth.getUser()));
+                }
+                waitForAuth(visuLatch);
+
+                sendInternal(jsonSecured(command, loxoneAuth.getVisuHash()));
+            } finally {
+                connectRwLock.readLock().unlock();
+            }
+        } catch (LoxoneConnectionException e) {
+            if (retries > 0) {
+                log.info("Connection or authentication failed, retrying...");
+                sendSecureWithRetry(command, retries - 1);
+            } else {
+                log.info("Connection or authentication failed too many times, give up");
+                throw new LoxoneException("Unable to authenticate within timeout with retry", e);
+            }
+        }
+    }
+
+
     void sendInternal(final String command) {
         log.debug("Sending websocket message: " + command);
         webSocketClient.send(command);
@@ -247,7 +295,5 @@ public class LoxoneWebSocket {
                 throw new IllegalStateException("Authentication not guarded");
             }
         }
-
-
     }
 }

@@ -37,31 +37,43 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
 
     static String USER = 'mocker'
     static String PASS = 'pass'
+    static String VISU_PASS = 'visupass'
 
     private static final Hashing HASHING = new Hashing(
             '41434633443134324337383441373035453333424344364133373431333430413642333442334244'.decodeHex(),
             '31306137336533622D303163352D313732662D66666666616362383139643462636139')
     private static final LoxoneMessage USER_KEY = new LoxoneMessage("jdev/sys/getkey2/$USER", 200, HASHING)
+    private static final LoxoneMessage USER_VISUSALT = new LoxoneMessage("dev/sys/getvisusalt/$USER", 200, HASHING)
 
-    private static final String USER_HASH = computeUserHash()
+    private static final String USER_HASH = computeUserHash(PASS, USER)
+    private static final String VISU_HASH = computeUserHash(VISU_PASS)
 
-    private static String computeUserHash() {
+    private static String computeUserHash(String pass, String user = null) {
         def pwHash = MessageDigest.getInstance("SHA-1")
-                .digest("$PASS:$HASHING.salt".bytes).encodeHex().toString().toUpperCase()
+                .digest("$pass:$HASHING.salt".bytes).encodeHex().toString().toUpperCase()
         def mac = Mac.getInstance("HmacSHA1")
         mac.init(new SecretKeySpec(HASHING.key, "HmacSHA1"))
-        mac.doFinal("$USER:$pwHash".bytes).encodeHex().toString()
+        def toHash = user != null ? "$USER:$pwHash" : pwHash
+        mac.doFinal(toHash.bytes).encodeHex().toString()
     }
 
     private SecretKey sharedKey
     private byte[] sharedKeyIv
 
-    private Stubbing stubbing
+    private final MockWebSocketServerListener listener
+    private final Stubbing stubbing
 
 
-    MockWebSocketServer() {
+    MockWebSocketServer(MockWebSocketServerListener listener) {
         super(new InetSocketAddress(0))
+        this.listener = listener
         stubbing = new Stubbing()
+    }
+
+    MockWebSocketServer(MockWebSocketServer toCopy) {
+        super(new InetSocketAddress(toCopy.port))
+        stubbing = toCopy.stubbing
+        listener = toCopy.listener
     }
 
     @Override
@@ -71,7 +83,7 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
 
     @Override
     void onClose(final WebSocket conn, final int code, final String reason, final boolean remote) {
-
+        listener.stopped()
     }
 
     @Override
@@ -104,14 +116,15 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
                 if (decrypted.find()) {
                     onMessage(conn, decrypted.group(2))
                 }
-                return
             }
+            return
         }
 
         def gettoken = message =~ /gettoken\/(?<auth>[^\/]+)\/(?<user>[^\/]+)\/[24]\/.*/
         if (gettoken.find()) {
             def control = "jdev/sys/gettoken/${gettoken.group('user')}/"
-            if (badCredentials) {
+            if (0 < badCredentials) {
+                badCredentials--
                 broadcast(control, 401)
             } else {
                 if (gettoken.group('auth') == USER_HASH) {
@@ -119,6 +132,21 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
                 } else {
                     // TODO send failure
                 }
+            }
+            return
+        }
+
+        if (message == "jdev/sys/getvisusalt/$USER") {
+            broadcast(MAPPER.writeValueAsString(USER_VISUSALT))
+            return
+        }
+
+        def securedMsg = message =~ /jdev\/sps\/ios\/(?<visuhash>[^\/]+)\/(?<cmd>.*)/
+        if (securedMsg.find()) {
+            if (securedMsg.group('visuhash') == VISU_HASH) {
+                onMessage(conn, securedMsg.group('cmd'))
+            } else {
+                // TODO send failure
             }
             return
         }
@@ -142,7 +170,12 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
 
     @Override
     void onStart() {
+        listener.started()
+    }
 
+    interface MockWebSocketServerListener {
+        void started()
+        void stopped()
     }
 
     private void broadcast(String control, int code) {
@@ -154,7 +187,7 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
     }
 
     // stubbing methods an stuff vvvvvvvvvvvv
-    boolean badCredentials = false
+    int badCredentials = 0
 
 
     ResponseStubbing expect(Matcher<String> req) {

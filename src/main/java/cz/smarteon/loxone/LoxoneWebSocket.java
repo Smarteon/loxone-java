@@ -52,7 +52,7 @@ public class LoxoneWebSocket {
     private CountDownLatch visuLatch;
 
     private int authTimeoutSeconds = 1;
-    private int retries = 3;
+    private int retries = 5;
 
     public LoxoneWebSocket(String loxoneAddress, LoxoneAuth loxoneAuth) {
         this.loxoneAddress = requireNonNull(loxoneAddress, "loxoneAddress shouldn't be null");
@@ -155,6 +155,7 @@ public class LoxoneWebSocket {
         } catch (LoxoneConnectionException e) {
             if (retries > 0) {
                 log.info("Connection or authentication failed, retrying...");
+                waitForRetry();
                 sendWithRetry(command, retries - 1);
             } else {
                 log.info("Connection or authentication failed too many times, give up");
@@ -183,11 +184,19 @@ public class LoxoneWebSocket {
         } catch (LoxoneConnectionException e) {
             if (retries > 0) {
                 log.info("Connection or authentication failed, retrying...");
+                waitForRetry();
                 sendSecureWithRetry(command, retries - 1);
             } else {
                 log.info("Connection or authentication failed too many times, give up");
                 throw new LoxoneException("Unable to authenticate within timeout with retry", e);
             }
+        }
+    }
+
+    private void waitForRetry() {
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException ignored) {
         }
     }
 

@@ -52,6 +52,7 @@ public class LoxoneWebSocket {
     private CountDownLatch visuLatch;
 
     private int authTimeoutSeconds = 1;
+    private int visuTimeoutSeconds = 3;
     private int retries = 5;
 
     public LoxoneWebSocket(String loxoneAddress, LoxoneAuth loxoneAuth) {
@@ -103,6 +104,14 @@ public class LoxoneWebSocket {
     }
 
     /**
+     * Set the seconds, it waits for successful visual authentication, until give up.
+     * @param visuTimeoutSeconds visual authentication timeout in seconds
+     */
+    public void setVisuTimeoutSeconds(final int visuTimeoutSeconds) {
+        this.visuTimeoutSeconds = visuTimeoutSeconds;
+    }
+
+    /**
      * Set the number of retries for successful authentication, until give up.
      * @param retries number of retries
      */
@@ -128,12 +137,14 @@ public class LoxoneWebSocket {
         }
     }
 
-    private void waitForAuth(final CountDownLatch latch) {
+    private void waitForAuth(final CountDownLatch latch, final int timeout, final boolean close) {
         try {
-            if (latch.await(authTimeoutSeconds, TimeUnit.SECONDS)) {
+            if (latch.await(timeout, TimeUnit.SECONDS)) {
                 log.trace("Waiting for authentication has been successful");
             } else {
-                close();
+                if (close) {
+                    close();
+                }
                 throw new LoxoneConnectionException("Unable to authenticate within timeout");
             }
         } catch (InterruptedException e) {
@@ -147,7 +158,7 @@ public class LoxoneWebSocket {
         try {
             connectRwLock.readLock().lock();
             try {
-                waitForAuth(authSeqLatch);
+                waitForAuth(authSeqLatch, authTimeoutSeconds, true);
                 sendInternal(command);
             } finally {
                 connectRwLock.readLock().unlock();
@@ -170,12 +181,12 @@ public class LoxoneWebSocket {
         try {
             connectRwLock.readLock().lock();
             try {
-                waitForAuth(authSeqLatch);
+                waitForAuth(authSeqLatch, authTimeoutSeconds, true);
                 if (visuLatch == null || visuLatch.getCount() == 0) {
                     visuLatch = new CountDownLatch(1);
                     sendInternal(jsonGetVisuSalt(loxoneAuth.getUser()));
                 }
-                waitForAuth(visuLatch);
+                waitForAuth(visuLatch, visuTimeoutSeconds, false);
 
                 sendInternal(jsonSecured(command, loxoneAuth.getVisuHash()));
             } finally {

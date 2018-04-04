@@ -20,7 +20,7 @@ public class LoxoneHttp {
 
     private final String loxoneAddress;
     private final int port;
-    private int connectionTimeout = 1000;
+    private int connectionTimeout = 5000;
 
     public LoxoneHttp(String loxoneAddress) {
         this(loxoneAddress, 80);

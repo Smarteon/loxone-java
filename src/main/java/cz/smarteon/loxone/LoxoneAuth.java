@@ -335,7 +335,7 @@ public class LoxoneAuth implements CommandListener {
     private String encryptWithSharedKey(String data) {
         checkInitialized();
         try {
-            final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            final Cipher cipher = Cipher.getInstance("AES/CBC/ZeroBytePadding");
             final IvParameterSpec ivspec = new IvParameterSpec(sharedKeyIv);
             cipher.init(Cipher.ENCRYPT_MODE, sharedKey, ivspec);
             return Base64.encodeBytes(cipher.doFinal(data.getBytes()));

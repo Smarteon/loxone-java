@@ -1,9 +1,11 @@
 package cz.smarteon.loxone
 
 import cz.smarteon.loxone.message.LoxoneValue
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import spock.lang.Shared
 import spock.lang.Specification
 
+import java.security.Security
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -20,6 +22,7 @@ class LoxoneWebSocketAT extends Specification {
     @Shared CommandMemory commands
 
     void setupSpec() {
+        Security.addProvider(new BouncyCastleProvider())
         final LoxoneAuth loxoneAuth = new LoxoneAuth(new LoxoneHttp(ADDRESS), USER, PASS, VIS_PASS)
         loxoneWebSocket = new LoxoneWebSocket(ADDRESS, loxoneAuth)
 

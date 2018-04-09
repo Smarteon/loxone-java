@@ -32,6 +32,8 @@ dependencies {
     testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit', version: '1.23.0'
     testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-core', version: '1.23.0'
     testRuntimeOnly group: 'org.slf4j', name: 'slf4j-simple', version: slf4jVersion
+    testRuntimeOnly group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.59'
+
 }
 
 publishing {

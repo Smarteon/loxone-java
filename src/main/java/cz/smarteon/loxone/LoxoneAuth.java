@@ -172,7 +172,7 @@ public class LoxoneAuth implements CommandListener {
         try {
             final Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            byte[] encryptedbytes = cipher.doFinal(concat(sharedKey.getEncoded(), sharedKeyIv));
+            byte[] encryptedbytes = cipher.doFinal(concatToBytes(bytesToHex(sharedKey.getEncoded()), bytesToHex(sharedKeyIv)));
             log.trace("Created session key (in hex): {}", bytesToHex(encryptedbytes));
             return Base64.encodeBytes(encryptedbytes);
         } catch (NoSuchAlgorithmException | BadPaddingException | NoSuchPaddingException | IllegalBlockSizeException | InvalidKeyException e) {

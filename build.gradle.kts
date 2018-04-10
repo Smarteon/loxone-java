@@ -32,7 +32,7 @@ dependencies {
     testImplementation("net.javacrumbs.json-unit:json-unit:1.23.0")
     testImplementation("net.javacrumbs.json-unit:json-unit-core:1.23.0")
     testRuntimeOnly("org.slf4j:slf4j-simple:1.7.25")
-    testRuntimeOnly("org.bouncycastle:bcprov-jdk15on:1.59")
+    testImplementation("org.bouncycastle:bcprov-jdk15on:1.59")
 }
 
 publishing {

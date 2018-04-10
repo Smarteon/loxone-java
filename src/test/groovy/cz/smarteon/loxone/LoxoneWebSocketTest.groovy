@@ -4,11 +4,13 @@ import cz.smarteon.loxone.MockWebSocketServer.MockWebSocketServerListener
 import cz.smarteon.loxone.message.ApiInfo
 import cz.smarteon.loxone.message.LoxoneMessage
 import cz.smarteon.loxone.message.PubKeyInfo
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Timeout
 import spock.lang.Unroll
 
+import java.security.Security
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -38,6 +40,10 @@ class LoxoneWebSocketTest extends Specification {
         }
     }
     CountDownLatch listenerLatch
+
+    void setupSpec() {
+        Security.addProvider(new BouncyCastleProvider())
+    }
 
     void setup() {
         server = new MockWebSocketServer(listener)

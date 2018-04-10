@@ -19,21 +19,31 @@ import java.security.MessageDigest
 import java.security.PrivateKey
 import java.security.spec.PKCS8EncodedKeySpec
 
+import static cz.smarteon.loxone.Codec.hexToBytes
+
 class MockWebSocketServer extends WebSocketServer implements SerializationSupport {
 
     private static final PrivateKey SERVER_PRIVATE_KEY =
             KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec((
-                    'MIIBUgIBADANBgkqhkiG9w0BAQEFAASCATwwggE4AgEAAkBvWMsdnPTw50V/rV2l\n' +
-                    'A8UpYmO3yN1vWjdxtg5PldOMb4F1x4t1KuUQwbeIUv01D53vEpjAsueg9U0wSv9m\n' +
-                    'cDX/AgMBAAECQA6DRkYf1RUpL7fKgvAlI6eXOWQU/DetTJi3n/njj2U4X2L49qZN\n' +
-                    'l6UyTDZsAsBFKAzQlWy0adq7WY3LFaWfICECIQCtAwykjRGaSyQnWesk08co9TAJ\n' +
-                    'uU+ea47QuIY20+mXqQIhAKTBmXefJUgNEItN/KOQspl62uEbWjfpa99F8Kz6rUln\n' +
-                    'AiBwVryM1DSL1SKikpZGkWSOSbZpefQiz4AqMsajLzJMEQIgcU0GCgJys/rwDqyh\n' +
-                    '+aXPfMbE8RtLTroCSfgiDAMT2i8CIAUj9Pw09bHYITj3GY1x9G2wm1/C3GpwE+HL\n' +
-                    'AFlnnuvp').decodeBase64()))
+                    'MIICWgIBAAKBgF/vs3xVxg0T7WO8jVKl8RwrswkGAj+RsVHK49IEb+YA4kPXGx4f\n' +
+                    'LnCC7XfN+F8MFTOTulSsoCVXp0zXwdm1TwoxtDLKx6FN2dTbMHiydPmTKPFMMQ+Y\n' +
+                    '8is62sAKiQ6aBxM2U4jsTrQXY3mUUUsGbDX2w0iXzWdjFRcLV0bk2yXXAgMBAAEC\n' +
+                    'gYAzadB0x7r180H7e2b5bfkDMeAm69N0oe23edYSDVKynrKjzLm5sNhAb8o3tGhw\n' +
+                    '95a9J2RqUIEawhjks5Qtyl7q3Q/nXBNk9tcY7PIs+qT7mgy4t+9qKrfgsneOWZQv\n' +
+                    'UJ1G0YAn7YMFlpLxEyU+p5Znssf3+p0dGuBxDT+Ryjtd0QJBAKr5dTLL0IfO8GXH\n' +
+                    'F15l7RuVrh3SEEeFIAFsz4FqyyMYOcqEehLE8hsc+eXJ4/Nqro92pgETGJfvPPGm\n' +
+                    'ZjkhiesCQQCPpTw+0hJi6dEze6WL2R+wCFSvKiM8mBErZ1+nUcZaOZ9s1jSM3eR+\n' +
+                    'c24SOU+gjFutGZ87TXykAofTZHfQfwzFAkAe1BYuz5NNOaIdJ/XtvoEvbSDVHbBz\n' +
+                    'xOxNdXpBAqmYLWEWRCbixYJGI0ZoCaxBkuXg1mr+XJwdoTSi+fcKrCJ7AkANusVf\n' +
+                    'W8TWH3MXcKIKE96rfKBbfbOQfxhlBaRm4bILvaY3SOIM9Mh6LZ4/r6qktcWtbd2C\n' +
+                    'VY2sP3GsCtZI31vhAkA9s3YnXfXmlFrLZJpFFQi81JZWuJJEHfHHDwqRo3xFPzat\n' +
+                    'YXiOKj/osQWJR9AtxN+10y/MYusRgbMd35BtKWAh').decodeBase64()))
 
-    static byte[] PUBLIC_KEY = ('MFswDQYJKoZIhvcNAQEBBQADSgAwRwJAb1jLHZz08OdFf61dpQPFKWJjt8jdb1o3' +
-            'cbYOT5XTjG+BdceLdSrlEMG3iFL9NQ+d7xKYwLLnoPVNMEr/ZnA1/wIDAQAB').decodeBase64()
+    static byte[] PUBLIC_KEY = (
+            'MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgF/vs3xVxg0T7WO8jVKl8RwrswkG\n' +
+            'Aj+RsVHK49IEb+YA4kPXGx4fLnCC7XfN+F8MFTOTulSsoCVXp0zXwdm1TwoxtDLK\n' +
+            'x6FN2dTbMHiydPmTKPFMMQ+Y8is62sAKiQ6aBxM2U4jsTrQXY3mUUUsGbDX2w0iX\n' +
+            'zWdjFRcLV0bk2yXXAgMBAAE=').decodeBase64()
 
     static String USER = 'mocker'
     static String PASS = 'pass'
@@ -93,9 +103,9 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
             def sharedKeyEnc =  exchange.group(1).decodeBase64()
             Cipher.getInstance("RSA/ECB/PKCS1Padding").with {
                 init(DECRYPT_MODE, SERVER_PRIVATE_KEY)
-                byte[] decryptedbytes = doFinal(sharedKeyEnc)
-                sharedKey = new SecretKeySpec(decryptedbytes, 0, decryptedbytes.length - 17, "AES")
-                sharedKeyIv = decryptedbytes[-16..-1]
+                def decryptedKey = new String(doFinal(sharedKeyEnc))
+                sharedKey = new SecretKeySpec(hexToBytes(decryptedKey[0..-34]), "AES")
+                sharedKeyIv = hexToBytes(decryptedKey[-32..-1])
             }
             return
         }
@@ -109,7 +119,7 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
         if (encryptedMsg.find()) {
             def encrypted = URLDecoder.decode(encryptedMsg.group(1), 'UTF-8').decodeBase64()
 
-            Cipher.getInstance("AES/CBC/PKCS5Padding").with {
+            Cipher.getInstance("AES/CBC/ZeroBytePadding").with {
                 init(DECRYPT_MODE, sharedKey, new IvParameterSpec(sharedKeyIv))
                 def decrypted = new String(doFinal(encrypted)) =~ /^(.+)\/jdev\/sys\/(.*)$/
 

@@ -1,0 +1,14 @@
+{
+  "name": "CallState",
+  "type": "Switch",
+  "uuidAction": "110cb849-0125-20fc-ffff373f9870b52a",
+  "room": "0f869a64-025f-0c20-ffffd4c75dbaf53c",
+  "cat": "0f869a64-0200-0af0-ffffd4c75dbaf53c",
+  "defaultRating": 0,
+  "isFavorite": false,
+  "isSecured": false,
+  "defaultIcon": null,
+  "states": {
+    "active": "110cb849-0125-20f9-ffffac0ced78bcf2"
+  }
+}

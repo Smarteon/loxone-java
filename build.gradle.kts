@@ -36,10 +36,6 @@ dependencies {
     testImplementation("org.bouncycastle:bcprov-jdk15on:1.59")
 }
 
-release {
-    versionPropertyFile = "version.properties"
-}
-
 val sourcesJar by tasks.creating(Jar::class) {
     classifier = "sources"
     from(java.sourceSets["main"].allSource)
@@ -90,6 +86,8 @@ tasks {
                     pom.project {
                         withGroovyBuilder {
                             "packaging"("jar")
+                            "name"(name)
+                            "url"("https://github.com/Smarteon/loxone-java")
                             "description"("Java implementation of the Loxone&trade; communication protocol (Web Socket)")
                             "organization" {
                                 "name"("Smarteon Systems s.r.o")

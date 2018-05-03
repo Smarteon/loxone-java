@@ -5,12 +5,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import cz.smarteon.loxone.LoxoneUuid;
 import cz.smarteon.loxone.LoxoneUuids;
 
 import java.util.Map;
 
+/**
+ * Base class for all the controls in config
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(defaultImpl = UnknownControl.class, use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
@@ -31,10 +33,18 @@ public abstract class Control {
     @JsonProperty("states") @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     protected Map<String, LoxoneUuids> states;
 
+    /**
+     * UUID of this control, should be unique
+     * @return control UUID
+     */
     public LoxoneUuid getUuid() {
         return uuid;
     }
 
+    /**
+     * Control name - usually localized, non unique
+     * @return control name
+     */
     public String getName() {
         return name;
     }
@@ -47,11 +57,21 @@ public abstract class Control {
         return secured;
     }
 
+    /**
+     * Control states map
+     * @return control states
+     */
     public Map<String, LoxoneUuids> getStates() {
         return states;
     }
 
-    protected LoxoneUuids getCompulsoryState(String stateName) {
+    /**
+     * Helper to get state by name, which should be in this control.
+     * @param stateName name of the desired state
+     * @return UUID of desired state if there is such
+     * @throws IllegalStateException in case there is no state of desired name
+     */
+    protected LoxoneUuids getCompulsoryState(final String stateName) {
         if (states != null && states.containsKey(stateName)) {
             return states.get(stateName);
         } else {

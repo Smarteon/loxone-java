@@ -21,8 +21,13 @@ public abstract class Control {
 
     @JsonProperty("uuidAction")
     protected LoxoneUuid uuid;
+
     @JsonProperty("name")
     protected String name;
+
+    @JsonProperty("isSecured")
+    protected boolean secured;
+
     @JsonProperty("states") @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     protected Map<String, LoxoneUuids> states;
 
@@ -32,6 +37,14 @@ public abstract class Control {
 
     public String getName() {
         return name;
+    }
+
+    /**
+     * Whether this control is secured by visualization password.
+     * @return true when this control is secured, false otherwise
+     */
+    public boolean isSecured() {
+        return secured;
     }
 
     public Map<String, LoxoneUuids> getStates() {

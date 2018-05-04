@@ -15,6 +15,7 @@ class ControlTest extends Specification implements SerializationSupport {
 
         then:
         control.name == controlName
+        control.secured == secured
         control.states.size() == statesSize
         control."$specificProp" == specificPropVal
 
@@ -24,5 +25,6 @@ class ControlTest extends Specification implements SerializationSupport {
         SwitchControl | 'CallState' | 1          | 'active'     | new LoxoneUuid('110cb849-0125-20f9-ffffac0ced78bcf2')
 
         typeName = type.simpleName
+        secured = type == AlarmControl
     }
 }

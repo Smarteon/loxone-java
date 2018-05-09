@@ -11,12 +11,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Locale;
 
 import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS;
 import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES;
@@ -25,9 +28,15 @@ import static cz.smarteon.loxone.message.MessageHeader.PAYLOAD_LENGTH;
 
 public abstract class Codec {
 
+    private static String DATE_PATTERN = "yyyy-MM-dd hh:mm:ss";
+
+    public static DateFormat DATE_FORMAT = new SimpleDateFormat(DATE_PATTERN);
+
     private static ObjectMapper MAPPER = new ObjectMapper()
             .configure(ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-            .configure(ALLOW_UNQUOTED_CONTROL_CHARS, true);
+            .configure(ALLOW_UNQUOTED_CONTROL_CHARS, true)
+            .setDateFormat(DATE_FORMAT)
+            .setLocale(Locale.getDefault());
 
     private static final char SEPARATOR = ':';
 
@@ -71,6 +80,10 @@ public abstract class Codec {
         }
 
         return sb.toString();
+    }
+
+    public static String writeMessage(final Object message) throws IOException {
+        return MAPPER.writeValueAsString(message);
     }
 
     public static LoxoneMessage readMessage(final String message) throws IOException {

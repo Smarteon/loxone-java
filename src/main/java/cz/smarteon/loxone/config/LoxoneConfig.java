@@ -23,9 +23,7 @@ public class LoxoneConfig implements Serializable {
     private final Map<LoxoneUuid, Control> controls;
 
     @JsonCreator
-    public LoxoneConfig(@JsonProperty("lastModified")
-                            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
-                                    Date lastModified,
+    public LoxoneConfig(@JsonProperty("lastModified") Date lastModified,
                         @JsonProperty("controls") Map<LoxoneUuid, Control> controls) {
         this.lastModified = lastModified;
         this.controls = controls;

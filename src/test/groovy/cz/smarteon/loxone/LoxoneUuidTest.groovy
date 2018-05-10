@@ -13,12 +13,12 @@ class LoxoneUuidTest extends Specification implements SerializationSupport {
 
     def "should serialize"() {
         expect:
-        MAPPER.writeValueAsString(testUuid) == "\"$testUuidString\""
+        writeValue(testUuid) == "\"$testUuidString\""
     }
 
     def "should deserialize"() {
         expect:
-        MAPPER.readValue("\"$testUuidString\"", LoxoneUuid) == testUuid
+        readValue("\"$testUuidString\"", LoxoneUuid) == testUuid
     }
 
     def "should have toString"() {

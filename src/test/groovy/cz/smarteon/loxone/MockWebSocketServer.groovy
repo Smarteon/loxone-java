@@ -111,7 +111,7 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
         }
 
         if (message == "jdev/sys/getkey2/$USER") {
-            broadcast(MAPPER.writeValueAsString(USER_KEY))
+            broadcast(writeValue(USER_KEY))
             return
         }
 
@@ -147,7 +147,7 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
         }
 
         if (message == "jdev/sys/getvisusalt/$USER") {
-            broadcast(MAPPER.writeValueAsString(USER_VISUSALT))
+            broadcast(writeValue(USER_VISUSALT))
             return
         }
 
@@ -193,7 +193,7 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
     }
 
     private void broadcast(String control, int code, LoxoneValue val) {
-        broadcast(MAPPER.writeValueAsString(new LoxoneMessage(control, code, val)))
+        broadcast(writeValue(new LoxoneMessage(control, code, val)))
     }
 
     // stubbing methods an stuff vvvvvvvvvvvv

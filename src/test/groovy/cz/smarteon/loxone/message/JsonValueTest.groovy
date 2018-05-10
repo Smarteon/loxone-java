@@ -7,7 +7,7 @@ class JsonValueTest extends Specification implements SerializationSupport {
 
     def "should deserialize"() {
         expect:
-        MAPPER.readValue(json, JsonValue)
+        readValue(json, JsonValue)
 
         where:
         json << ['""', '123', '{}', '[null, -6]', '{"a":null,"b":34.5}']
@@ -15,6 +15,6 @@ class JsonValueTest extends Specification implements SerializationSupport {
 
     def "should serialize"() {
         expect:
-        MAPPER.writeValueAsString(new JsonValue(new TextNode('haha'))) == '"haha"'
+        writeValue(new JsonValue(new TextNode('haha'))) == '"haha"'
     }
 }

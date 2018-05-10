@@ -10,11 +10,11 @@ class PubKeyInfoTest extends Specification implements SerializationSupport {
 
     def "should deserialize"() {
         expect:
-        MAPPER.readValue(PUB_KEY_JSON, PubKeyInfo).pubKey == PUB_KEY_STRING.decodeBase64()
+        readValue(PUB_KEY_JSON, PubKeyInfo).pubKey == PUB_KEY_STRING.decodeBase64()
     }
 
     def "should serialize"() {
         expect:
-        MAPPER.writeValueAsString(new PubKeyInfo(PUB_KEY_STRING.decodeBase64())) == PUB_KEY_JSON
+        writeValue(new PubKeyInfo(PUB_KEY_STRING.decodeBase64())) == PUB_KEY_JSON
     }
 }

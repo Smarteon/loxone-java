@@ -6,7 +6,7 @@ import spock.lang.Specification
 
 class LoxoneConfigTest extends Specification implements SerializationSupport {
 
-    private static final Date LAST_MODIFIED = new Date(117, 10, 22, 19, 41, 1)
+    private static final Date LAST_MODIFIED = parseDate('2017-11-22 18:41:01')
     private static final LoxoneUuid UUID = new LoxoneUuid('0f869a64-0200-0a9b-ffffd4c75dbaf53c')
 
     def "should deserialize"() {

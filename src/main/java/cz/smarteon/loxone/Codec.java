@@ -28,7 +28,7 @@ import static cz.smarteon.loxone.message.MessageHeader.PAYLOAD_LENGTH;
 
 public abstract class Codec {
 
-    private static String DATE_PATTERN = "yyyy-MM-dd hh:mm:ss";
+    private static String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
     public static DateFormat DATE_FORMAT = new SimpleDateFormat(DATE_PATTERN);
 

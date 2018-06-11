@@ -18,11 +18,13 @@ repositories {
     mavenCentral()
 }
 
+val jacksonVersion = "2.9.5"
+
 dependencies {
     implementation("org.java-websocket:Java-WebSocket:1.3.8")
-    implementation("com.fasterxml.jackson.core:jackson-core:2.9.2")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.9.2")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:2.9.2")
+    implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("org.slf4j:slf4j-api:1.7.25")
 
     testImplementation("org.spockframework:spock-core:1.1-groovy-2.4")

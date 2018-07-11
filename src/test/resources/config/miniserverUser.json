@@ -1,0 +1,7 @@
+{
+  "name": "showroom",
+  "uuid": "0f86a25d-026f-1c1e-ffffd4c75dbaf53c",
+  "isAdmin": true,
+  "changePassword": true,
+  "userRights": 2047
+}

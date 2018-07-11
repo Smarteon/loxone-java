@@ -15,13 +15,14 @@ class LoxoneConfigTest extends Specification implements SerializationSupport {
 
         then:
         config.lastModified == LAST_MODIFIED
+        config.miniserverInfo?.name == 'ShowRoom'
         config.controls.size() == 6
         config.controls.values().first() instanceof AlarmControl
     }
 
     def "should getControl by type"() {
         given:
-        LoxoneConfig config = new LoxoneConfig(LAST_MODIFIED, [(UUID) : alarmControl])
+        LoxoneConfig config = new LoxoneConfig(LAST_MODIFIED, null, [(UUID) : alarmControl])
 
         expect:
         config.getControl(AlarmControl) == alarmControl
@@ -34,7 +35,7 @@ class LoxoneConfigTest extends Specification implements SerializationSupport {
         given:
         def control = new SwitchControl()
         control.name = 'SomeControl'
-        LoxoneConfig config = new LoxoneConfig(LAST_MODIFIED, [(UUID) : control])
+        LoxoneConfig config = new LoxoneConfig(LAST_MODIFIED, null, [(UUID) : control])
 
         expect:
         config.getControl('SomeControl', SwitchControl) == control

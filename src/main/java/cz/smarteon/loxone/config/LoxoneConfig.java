@@ -1,7 +1,6 @@
 package cz.smarteon.loxone.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,17 +19,29 @@ import java.util.Objects;
 public class LoxoneConfig implements Serializable {
 
     private final Date lastModified;
+    private final MiniserverInfo miniserverInfo;
     private final Map<LoxoneUuid, Control> controls;
 
     @JsonCreator
     public LoxoneConfig(@JsonProperty("lastModified") Date lastModified,
+                        @JsonProperty("msInfo") MiniserverInfo miniserverInfo,
                         @JsonProperty("controls") Map<LoxoneUuid, Control> controls) {
         this.lastModified = lastModified;
+        this.miniserverInfo = miniserverInfo;
         this.controls = controls;
     }
 
     public Date getLastModified() {
         return lastModified;
+    }
+
+    /**
+     * Gets this miniserver info.
+     *
+     * @return miniserver info as {@link MiniserverInfo}
+     */
+    public MiniserverInfo getMiniserverInfo() {
+        return miniserverInfo;
     }
 
     public Map<LoxoneUuid, Control> getControls() {

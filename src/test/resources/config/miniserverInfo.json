@@ -1,0 +1,28 @@
+{
+  "serialNr": "504F9410B84A",
+  "msName": "ShowRoom",
+  "projectName": "ShowRoom project",
+  "localUrl": "192.168.88.246",
+  "remoteUrl": "dns.loxonecloud.com/504F9410B84A",
+  "tempUnit": 0,
+  "currency": "€",
+  "squareMeasure": "m²",
+  "location": "Brno",
+  "languageCode": "CSY",
+  "heatPeriodStart": "10-01",
+  "heatPeriodEnd": "04-30",
+  "coolPeriodStart": "05-01",
+  "coolPeriodEnd": "09-30",
+  "catTitle": "Kategorie",
+  "roomTitle": "Místnost",
+  "miniserverType": 1,
+  "deviceMonitor": "0f869a64-0200-0aec-ffffd4c75dbaf53c",
+  "sortByRating": false,
+  "currentUser": {
+    "name": "showroom",
+    "uuid": "0f86a25d-026f-1c1e-ffffd4c75dbaf53c",
+    "isAdmin": true,
+    "changePassword": true,
+    "userRights": 2047
+  }
+}

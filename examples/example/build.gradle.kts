@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation("cz.smarteon:loxone-java:0.1.1-SNAPSHOT")
+    implementation("cz.smarteon:loxone-java:0.2.0")
     implementation("org.bouncycastle:bcprov-jdk15on:1.59")
     runtimeOnly("org.slf4j:slf4j-simple:1.7.25")
 }

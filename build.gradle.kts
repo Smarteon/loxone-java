@@ -9,8 +9,8 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_7
-    targetCompatibility = JavaVersion.VERSION_1_7
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 
@@ -39,14 +39,14 @@ dependencies {
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
-    classifier = "sources"
-    from(java.sourceSets["main"].allSource)
+    archiveClassifier.set("sources")
+    from(sourceSets["main"].allSource)
 }
 
 val javadocJar by tasks.creating(Jar::class) {
-    dependsOn(tasks["javadoc"])
-    classifier = "javadoc"
-    from(java.docsDir)
+    dependsOn("javadoc")
+    archiveClassifier.set("javadoc")
+    from(tasks["javadoc"])
 }
 
 artifacts {
@@ -60,16 +60,16 @@ if (hasProperty("signing.keyId")) {
             !project.version.toString().endsWith("-SNAPSHOT")
                     && gradle.taskGraph.hasTask("uploadArchives")
         })
-        sign(configurations.archives)
+        sign(configurations.archives.get())
     }
 }
 
-val ossUser by project
-val ossPass by project
+val ossUser: String? by project
+val ossPass: String? by project
 
 tasks {
     "afterReleaseBuild" {
-        dependsOn(tasks["uploadArchives"])
+        dependsOn("uploadArchives")
     }
     "uploadArchives"(Upload::class) {
         repositories {

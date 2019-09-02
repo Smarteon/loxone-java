@@ -28,3 +28,11 @@ loxoneWebSocket.sendCommand(...);
 ...
 ```
 Study [examples](examples) for detailed usage information.
+
+## Development & Contributions
+Start by generating gradle wrapper binaries (using local gradle installation)
+```bash
+gradle wrapper
+```
+
+_Note:_ Build currently requires JDK 8

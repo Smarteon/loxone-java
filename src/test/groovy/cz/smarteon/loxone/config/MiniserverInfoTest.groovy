@@ -7,7 +7,7 @@ class MiniserverInfoTest extends Specification implements SerializationSupport {
 
     def "should deserialize"() {
         when:
-        MiniserverInfo info = readResource('/config/miniserverInfo.json', MiniserverInfo)
+        MiniserverInfo info = readResource('config/miniserverInfo.json', MiniserverInfo)
 
         then:
         info.serialNumber == '504F9410B84A'

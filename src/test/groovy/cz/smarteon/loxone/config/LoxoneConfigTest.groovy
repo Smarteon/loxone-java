@@ -11,7 +11,7 @@ class LoxoneConfigTest extends Specification implements SerializationSupport {
 
     def "should deserialize"() {
         when:
-        LoxoneConfig config = readResource('/config/LoxAPP3.json', LoxoneConfig)
+        LoxoneConfig config = readResource('config/LoxAPP3.json', LoxoneConfig)
 
         then:
         config.lastModified == LAST_MODIFIED

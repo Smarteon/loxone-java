@@ -11,7 +11,7 @@ class ControlTest extends Specification implements SerializationSupport {
     @Unroll
     def "should deserialize #typeName"() {
         when:
-        def control = readResource("/config/${typeName.uncapitalize()}.json", Control)
+        def control = readResource("config/${typeName.uncapitalize()}.json", Control)
 
         then:
         control.name == controlName

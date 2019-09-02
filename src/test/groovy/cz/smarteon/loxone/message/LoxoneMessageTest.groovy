@@ -16,7 +16,7 @@ class LoxoneMessageTest extends Specification implements SerializationSupport {
 
     def "should deserialize get key"() {
         when:
-        LoxoneMessage message = readResource('/message/getKeyMessage.json', LoxoneMessage)
+        LoxoneMessage message = readResource('message/getKeyMessage.json', LoxoneMessage)
 
         then:
         message
@@ -32,6 +32,6 @@ class LoxoneMessageTest extends Specification implements SerializationSupport {
 
     def "should deserialize alarm all"() {
         expect:
-        readResource('/message/alarmAll.json', LoxoneMessage)
+        readResource('message/alarmAll.json', LoxoneMessage)
     }
 }

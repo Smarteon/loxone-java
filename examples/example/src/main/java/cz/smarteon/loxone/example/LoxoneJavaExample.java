@@ -51,9 +51,6 @@ public class LoxoneJavaExample {
             }
         });
 
-
-        loxoneWebSocket.sendCommand(Protocol.C_APP);
-
         loxoneWebSocket.close();  // websocket lib creates daemon threads so we need to close explicitly
     }
 }

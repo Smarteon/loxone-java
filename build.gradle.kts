@@ -9,8 +9,8 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_7
-    targetCompatibility = JavaVersion.VERSION_1_7
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 
@@ -27,11 +27,11 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("org.slf4j:slf4j-api:1.7.25")
 
-    testImplementation("org.spockframework:spock-core:1.1-groovy-2.4")
-    testImplementation("org.codehaus.groovy:groovy-all:2.4.10")
+    testImplementation("org.spockframework:spock-core:1.3-groovy-2.5")
+    testImplementation("org.codehaus.groovy:groovy-all:2.5.7")
     testRuntimeOnly("cglib:cglib-nodep:3.2.5")
     testRuntimeOnly("org.objenesis:objenesis:2.5.1")
-    testImplementation("nl.jqno.equalsverifier:equalsverifier:2.4")
+    testImplementation("nl.jqno.equalsverifier:equalsverifier:3.1.9")
     testImplementation("net.javacrumbs.json-unit:json-unit:1.23.0")
     testImplementation("net.javacrumbs.json-unit:json-unit-core:1.23.0")
     testRuntimeOnly("org.slf4j:slf4j-simple:1.7.25")
@@ -39,14 +39,14 @@ dependencies {
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
-    classifier = "sources"
-    from(java.sourceSets["main"].allSource)
+    archiveClassifier.set("sources")
+    from(sourceSets["main"].allSource)
 }
 
 val javadocJar by tasks.creating(Jar::class) {
-    dependsOn(tasks["javadoc"])
-    classifier = "javadoc"
-    from(java.docsDir)
+    dependsOn("javadoc")
+    archiveClassifier.set("javadoc")
+    from(tasks["javadoc"])
 }
 
 artifacts {
@@ -60,16 +60,16 @@ if (hasProperty("signing.keyId")) {
             !project.version.toString().endsWith("-SNAPSHOT")
                     && gradle.taskGraph.hasTask("uploadArchives")
         })
-        sign(configurations.archives)
+        sign(configurations.archives.get())
     }
 }
 
-val ossUser by project
-val ossPass by project
+val ossUser: String? by project
+val ossPass: String? by project
 
 tasks {
     "afterReleaseBuild" {
-        dependsOn(tasks["uploadArchives"])
+        dependsOn("uploadArchives")
     }
     "uploadArchives"(Upload::class) {
         repositories {

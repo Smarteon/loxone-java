@@ -5,7 +5,8 @@ import cz.smarteon.loxone.Codec
 trait SerializationSupport {
 
     static <T> T readResource(String path, Class<T> type) {
-        return Codec.readMessage(getClass().getResourceAsStream(path), type)
+        def stream = SerializationSupport.class.getClassLoader().getResourceAsStream(path)
+        return Codec.readMessage(stream, type)
     }
 
     static <T> T readValue(String value, Class<T> type) {

@@ -1,12 +1,18 @@
 package cz.smarteon.loxone;
 
 import cz.smarteon.loxone.message.LoxoneMessage;
+import cz.smarteon.loxone.system.status.MiniserverStatus;
 
 /**
  * Represents miniserver command
  * @param <T>  type of command response
  */
 public class Command<T> {
+
+    /**
+     * Miniserver status API.
+     */
+    public static final Command<MiniserverStatus> DATA_STATUS = xmlHttpCommand("data/status", MiniserverStatus.class);
 
     /**
      * Basic information about API. Unauthenticated.
@@ -35,6 +41,10 @@ public class Command<T> {
 
     private static Command<LoxoneMessage> loxoneMessageCommand(final String command) {
         return new Command<>(command, Type.JSON, LoxoneMessage.class, true, false);
+    }
+
+    private static <T> Command<T> xmlHttpCommand(final String command, final Class<T> responseType) {
+        return new Command<>(command, Type.XML, responseType, true, false);
     }
 
     /**

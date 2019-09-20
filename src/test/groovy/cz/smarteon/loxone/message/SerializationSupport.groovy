@@ -9,6 +9,11 @@ trait SerializationSupport {
         return Codec.readMessage(stream, type)
     }
 
+    static <T> T readResourceXml(String path, Class<T> type) {
+        def stream = SerializationSupport.class.getClassLoader().getResourceAsStream(path)
+        return Codec.readXml(stream, type)
+    }
+
     static <T> T readValue(String value, Class<T> type) {
         return Codec.readMessage(value, type)
     }

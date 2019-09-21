@@ -281,7 +281,7 @@ public class LoxoneAuth implements CommandListener {
     private void fetchApiInfo() {
         log.trace("Fetching ApiInfo start");
         try {
-            final LoxoneMessage msg = loxoneHttp.get(Protocol.C_JSON_API);
+            final LoxoneMessage msg = loxoneHttp.get(Command.DEV_CFG_API);
             if (msg.getValue() != null) {
                 if (msg.getValue() instanceof ApiInfo) {
                     apiInfo = (ApiInfo) msg.getValue();
@@ -299,7 +299,7 @@ public class LoxoneAuth implements CommandListener {
     private void fetchPublicKey() {
         log.trace("Fetching PublicKey start");
         try {
-            final LoxoneMessage msg = loxoneHttp.get(Protocol.C_JSON_PUBLIC_KEY);
+            final LoxoneMessage msg = loxoneHttp.get(Command.DEV_SYS_GETPUBLICKEY);
             if (msg.getValue() != null) {
                 if (msg.getValue() instanceof PubKeyInfo) {
                     publicKey = ((PubKeyInfo) msg.getValue()).asPublicKey();

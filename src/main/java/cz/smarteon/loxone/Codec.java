@@ -1,6 +1,7 @@
 package cz.smarteon.loxone;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import cz.smarteon.loxone.message.LoxoneMessage;
 import cz.smarteon.loxone.message.MessageHeader;
 import cz.smarteon.loxone.message.MessageKind;
@@ -37,6 +38,8 @@ public abstract class Codec {
             .configure(ALLOW_UNQUOTED_CONTROL_CHARS, true)
             .setDateFormat(DATE_FORMAT)
             .setLocale(Locale.getDefault());
+
+    private static XmlMapper XML = new XmlMapper().setDefaultUseWrapper(false);
 
     private static final char SEPARATOR = ':';
 
@@ -100,6 +103,10 @@ public abstract class Codec {
 
     public static <T> T readMessage(final InputStream message, final Class<T> clazz) throws IOException {
         return MAPPER.readValue(message, clazz);
+    }
+
+    public static <T> T readXml(final InputStream xml, final Class<T> clazz) throws IOException {
+        return XML.readValue(xml, clazz);
     }
 
     public static MessageHeader readHeader(final ByteBuffer bytes) {

@@ -1,6 +1,5 @@
 package cz.smarteon.loxone;
 
-import cz.smarteon.loxone.message.LoxoneMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,46 +30,23 @@ public class LoxoneHttp {
         this.port = port;
     }
 
-    public LoxoneMessage get(String command) {
-        return get(command, null, LoxoneMessage.class);
+    public <T> T get(Command<T> command) {
+        return get(command, Collections.emptyMap());
     }
 
-    public LoxoneMessage get(String command, LoxoneAuth loxoneAuth) {
-        return get(command, loxoneAuth, LoxoneMessage.class);
-    }
-
-    public <T> T get(String command, Class<T> clazz) {
-        return get(command, null, clazz);
-    }
-
-    public <T> T get(String command, LoxoneAuth loxoneAuth, Class<T> clazz) {
-        final String sanitizedUri = command.startsWith("/") ? command : "/" + command;
-        log.debug("Get for JSON uri=" + sanitizedUri);
-
+    public <T> T get(Command<T> command, LoxoneAuth loxoneAuth) {
         return get(
-                urlFromCommand(command),
-                loxoneAuth != null ? loxoneAuth.authHeaders() : Collections.<String, String>emptyMap(),
-                clazz);
+                command,
+                loxoneAuth != null ? loxoneAuth.authHeaders() : Collections.<String, String>emptyMap());
     }
 
     public void setConnectionTimeout(int connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
     }
 
-    LoxoneMessage get(URL url) {
-        return get(url, Collections.<String, String>emptyMap(), LoxoneMessage.class);
-    }
-
-    <T> T get(URL url, Class<T> clazz) {
-        return get(url, Collections.<String, String>emptyMap(), clazz);
-    }
-
-    LoxoneMessage get(URL url, Map<String, String> properties) {
-        return get(url, properties, LoxoneMessage.class);
-    }
-
-    <T> T get(URL url, Map<String, String> properties, Class<T> clazz) {
-        log.debug("Get for JSON url=" + url);
+    <T> T get(Command<T> command, Map<String, String> properties) {
+        final URL url = urlFromCommand(command.getCommand());
+        log.debug("Trigger command url=" + url);
         HttpURLConnection connection = null;
         try {
             connection = (HttpURLConnection) url.openConnection();
@@ -81,14 +57,21 @@ public class LoxoneHttp {
             final int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 try (InputStream is = connection.getInputStream()) {
-                    return Codec.readMessage(is, clazz);
+                    switch (command.getType()) {
+                        case JSON:
+                            return Codec.readMessage(is, command.getResponseType());
+                        case XML:
+                            return Codec.readXml(is, command.getResponseType());
+                        default:
+                            throw new IllegalStateException("Unknown command type " + command.getType());
+                    }
                 }
             } else {
-                throw new LoxoneException("Get for loxone json responded by status " + responseCode);
+                throw new LoxoneException("Loxone command responded by status " + responseCode);
             }
         } catch (IOException e) {
-            log.error("Can't get for JSON on url=" + url, e);
-            throw new LoxoneException("Error while requesting loxone json", e);
+            log.error("Can't trigger command on url=" + url, e);
+            throw new LoxoneException("Error while triggering loxone command", e);
         } finally {
             if (connection != null) {
                 connection.disconnect();

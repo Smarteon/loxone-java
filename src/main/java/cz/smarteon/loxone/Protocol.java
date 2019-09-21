@@ -14,8 +14,6 @@ public abstract class Protocol {
     public static final int HTTP_AUTH_TOO_LONG = 420;
     public static final int HTTP_UNAUTHORIZED = 500;
 
-    public static final String C_JSON_API = "jdev/cfg/api";
-    public static final String C_JSON_PUBLIC_KEY = "jdev/sys/getPublicKey";
     public static final String C_JSON_GET_KEY = "jdev/sys/getkey2";
     public static final String C_XML_GET_KEY = "dev/sys/getkey";
     public static final String C_SYS_ENC = "dev/sys/enc";

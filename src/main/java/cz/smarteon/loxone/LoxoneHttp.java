@@ -16,10 +16,13 @@ import static java.util.Objects.requireNonNull;
 public class LoxoneHttp {
 
     private static final Logger log = LoggerFactory.getLogger(LoxoneHttp.class);
+    private static final int MAX_REDIRECTS = 5;
 
     private final String loxoneAddress;
     private final int port;
     private int connectionTimeout = 5000;
+
+    private ThreadLocal<Integer> redirects;
 
     public LoxoneHttp(String loxoneAddress) {
         this(loxoneAddress, 80);
@@ -45,7 +48,10 @@ public class LoxoneHttp {
     }
 
     <T> T get(Command<T> command, Map<String, String> properties) {
-        final URL url = urlFromCommand(command.getCommand());
+        return get(urlFromCommand(command.getCommand()), command.getType(), properties, command.getResponseType());
+    }
+
+    <T> T get(URL url, Command.Type type, Map<String, String> properties, Class<T> responseType) {
         log.debug("Trigger command url=" + url);
         HttpURLConnection connection = null;
         try {
@@ -56,16 +62,28 @@ public class LoxoneHttp {
             }
             final int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
+                redirects = null;
                 try (InputStream is = connection.getInputStream()) {
-                    switch (command.getType()) {
+                    switch (type) {
                         case JSON:
-                            return Codec.readMessage(is, command.getResponseType());
+                            return Codec.readMessage(is, responseType);
                         case XML:
-                            return Codec.readXml(is, command.getResponseType());
+                            return Codec.readXml(is, responseType);
                         default:
-                            throw new IllegalStateException("Unknown command type " + command.getType());
+                            throw new IllegalStateException("Unknown command type " + type);
                     }
                 }
+            } else if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
+                    || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
+                    || responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
+                if (redirects == null) {
+                    redirects = new ThreadLocal<>();
+                    redirects.set(0);
+                } else if (redirects.get() > MAX_REDIRECTS){
+                    throw new IllegalStateException("Too many redirects!");
+                }
+                redirects.set(redirects.get() + 1);
+                return get(new URL(connection.getHeaderField("Location")), type, properties, responseType);
             } else {
                 throw new LoxoneException("Loxone command responded by status " + responseCode);
             }

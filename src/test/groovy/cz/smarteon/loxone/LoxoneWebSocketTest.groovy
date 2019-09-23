@@ -14,12 +14,12 @@ import java.security.Security
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
+import static cz.smarteon.loxone.Command.DEV_CFG_API
+import static cz.smarteon.loxone.Command.DEV_SYS_GETPUBLICKEY
 import static cz.smarteon.loxone.MockWebSocketServer.PASS
 import static cz.smarteon.loxone.MockWebSocketServer.PUBLIC_KEY
 import static cz.smarteon.loxone.MockWebSocketServer.USER
 import static cz.smarteon.loxone.MockWebSocketServer.VISU_PASS
-import static cz.smarteon.loxone.Protocol.C_JSON_API
-import static cz.smarteon.loxone.Protocol.C_JSON_PUBLIC_KEY
 import static org.hamcrest.CoreMatchers.equalTo
 
 class LoxoneWebSocketTest extends Specification {
@@ -50,8 +50,8 @@ class LoxoneWebSocketTest extends Specification {
         startServer()
         authMock = Stub(LoxoneAuth)
         def http = Stub(LoxoneHttp) {
-            get(C_JSON_API) >> new LoxoneMessage(C_JSON_API, 200, new ApiInfo('50:4F:94:10:B8:4A', '9.1.10.30'))
-            get(C_JSON_PUBLIC_KEY) >> new LoxoneMessage(C_JSON_PUBLIC_KEY, 200, new PubKeyInfo(PUBLIC_KEY))
+            get(DEV_CFG_API) >> new LoxoneMessage(DEV_CFG_API.command, 200, new ApiInfo('50:4F:94:10:B8:4A', '9.1.10.30'))
+            get(DEV_SYS_GETPUBLICKEY) >> new LoxoneMessage(DEV_SYS_GETPUBLICKEY.command, 200, new PubKeyInfo(PUBLIC_KEY))
         }
         lws = new LoxoneWebSocket("localhost:${server.port}", new LoxoneAuth(http, USER, PASS, VISU_PASS))
     }

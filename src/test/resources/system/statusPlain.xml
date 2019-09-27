@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Status>
+    <Miniserver>
+        <Extension Code="180">
+            <TreeBranch Branch="2" Devices="6" Errors="1">
+                <TreeDevice Code="-2147417931" Name="U okna" Place="Děcák" Inst="" Serial="B01746DC" Version="10.2.2.12"
+                            Online="true" LastReceived="2019-09-02 20:38:50" TimeDiff="88" DummyDev="false"/>
+                <TreeDevice Code="-2147417931" Name="Koupelna" Place="Guests&apos; Bathroom" Inst="" Serial="B017477E"
+                            Version="10.2.2.12" Online="true" LastReceived="2019-09-02 20:38:51" TimeDiff="87"
+                            DummyDev="false"/>
+                <TreeDevice Code="-2147417931" Name="U okna" Place="Ložnice" Inst="" Serial="B01747D9"
+                            Version="10.2.2.12" Online="true" LastReceived="2019-09-02 20:30:25" TimeDiff="593"
+                            DummyDev="false"/>
+                <TreeDevice Code="-2147417931" Name="U dveří" Place="Ložnice" Inst="" Serial="B0174934"
+                            Version="10.2.2.12" Online="true" LastReceived="2019-09-02 20:30:23" TimeDiff="595"
+                            DummyDev="false"/>
+                <TreeDevice Code="-2147417931" Name="U dveří" Place="Děcák" Inst="" Serial="B017724A"
+                            Version="10.2.2.12" Online="true" LastReceived="2019-09-02 20:33:06" TimeDiff="432"
+                            DummyDev="false"/>
+                <TreeDevice Code="-2147417931" Name="U hostů" Place="Guests" Inst="" Serial="B017736A"
+                            Version="10.2.2.12" Online="true" LastReceived="2019-09-02 20:38:55" TimeDiff="83"
+                            DummyDev="false"/>
+            </TreeBranch>
+            <TreeBranch Branch="3" Devices="2" Errors="7">
+                <TreeDevice Code="-2147286859" Name="Touch Tree" Place="Ložnice" Inst="Nad postelí" Serial="B0173D60"
+                            Version="10.2.1.30" Online="true" LastReceived="2019-09-02 20:36:57" TimeDiff="201"
+                            DummyDev="false"/>
+                <TreeDevice Code="-2146697035" Name="RGBW 24V Dimmer Tree" Place="Ložnice" Inst="Za postelí"
+                            Serial="C0108F54" Version="10.2.2.20" Online="true" LastReceived="2019-09-02 20:38:59"
+                            TimeDiff="79" DummyDev="false"/>
+            </TreeBranch>
+        </Extension>
+        <Extension Code="170" Type="Air Base Extension" Name="Air Base Extension" Serial="0cd87947" Version="10.2.2.17"
+                   Online="true" DummyDev="false" Occupied="false" Interfered="false" IntDev="false"
+                   UpdateProgress="100">
+            <AirDevice Type="Senzor teploty/vlhkosti Air" Code="393387" Name="Koupelna 2NP"
+                       Place="Koupelna v prvním patře" Inst="Koupelna 2NP" Serial="50:4F:94:FF:FE:87:6E:30"
+                       LastReceived="2019-09-02 20:39:48" TimeDiff="31" Version="10.0.9.3" MinVersion="10000903"
+                       HwVersion="1" Hops="2" RoundTripTime="0" QualityExt="4" QualityDev="0" Online="true" Battery="95"
+                       DummyDev="false"/>
+            <AirDevice Type="Senzor teploty/vlhkosti Air" Code="393387" Name="Dvůr" Place="Zahrada" Inst="Dvůr"
+                       Serial="50:4F:94:FF:FE:87:6F:2D" LastReceived="2019-09-02 20:26:28" TimeDiff="831"
+                       Version="10.0.9.3" MinVersion="10000903" HwVersion="1" Hops="1" RoundTripTime="0" QualityExt="3"
+                       QualityDev="0" Online="true" Battery="95" DummyDev="false"/>
+            <AirDevice Type="Nano IO Air" Code="458923" Name="Obývák" Place="Obývák" Inst="Obývák"
+                       Serial="50:4F:94:FF:FE:83:BD:6F" LastReceived="2019-09-02 20:40:18" TimeDiff="1"
+                       Version="10.2.1.22" MinVersion="10020122" HwVersion="1" Hops="1" RoundTripTime="92"
+                       QualityExt="5" QualityDev="5" Online="true" Battery="127" DummyDev="false"/>
+            <AirDevice Type="Nano IO Air" Code="458923" Name="Koupelna 2NP" Place="Koupelna v prvním patře"
+                       Inst="Koupelna 2NP" Serial="50:4F:94:FF:FE:83:BF:BA" LastReceived="2019-09-02 20:40:18"
+                       TimeDiff="1" Version="10.2.1.22" MinVersion="10020122" HwVersion="1" Hops="1" RoundTripTime="96"
+                       QualityExt="4" QualityDev="5" Online="true" Battery="127" DummyDev="false"/>
+            <AirDevice Type="RGBW 24V Dimmer Air" Code="655531" Name="Koupelna 2NP" Place="Koupelna v prvním patře"
+                       Inst="Koupelna 2NP" Serial="50:4F:94:FF:FE:86:F0:B8" LastReceived="2019-09-02 20:40:18"
+                       TimeDiff="1" Version="10.2.2.20" MinVersion="10020220" HwVersion="1" Hops="1" RoundTripTime="86"
+                       QualityExt="5" QualityDev="5" Online="true" Battery="127" DummyDev="false"/>
+            <AirDevice Type="RGBW 24V Dimmer Air" Code="655531" Name="Pásek police" Place="Obývák" Inst="Police"
+                       Serial="50:4F:94:FF:FE:86:F0:A5" LastReceived="2019-09-02 20:40:19" TimeDiff="0"
+                       Version="10.2.2.20" MinVersion="10020220" HwVersion="1" Hops="1" RoundTripTime="92"
+                       QualityExt="4" QualityDev="5" Online="true" Battery="127" DummyDev="false"/>
+            <AirDevice Type="Air hlavice" Code="589995" Name="Hlavice žebřík" Place="Koupelna v prvním patře"
+                       Inst="Koupelna 2NP" Serial="50:4F:94:FF:FE:86:00:B0" LastReceived="2019-09-02 20:24:51"
+                       TimeDiff="928" Version="10.1.12.17" MinVersion="10011217" HwVersion="1" Hops="2"
+                       RoundTripTime="0" QualityExt="4" QualityDev="0" Online="true" Battery="100" DummyDev="false"/>
+            <AirDevice Type="Air hlavice" Code="589995" Name="Hlavice radiátor" Place="Koupelna v prvním patře"
+                       Inst="Koupelna 2NP" Serial="50:4F:94:FF:FE:85:61:9E" LastReceived="2019-09-02 20:26:00"
+                       TimeDiff="859" Version="10.1.12.17" MinVersion="10011217" HwVersion="1" Hops="2"
+                       RoundTripTime="0" QualityExt="4" QualityDev="0" Online="true" Battery="100" DummyDev="false"/>
+            <AirDevice Type="Senzor teploty/vlhkosti Air" Code="393387" Name="Senzor teploty/vlhkosti"
+                       Place="Obývák v přízemí" Inst="Obývák" Serial="50:4F:94:FF:FE:89:17:A1"
+                       LastReceived="2019-09-02 20:31:11" TimeDiff="548" Version="10.0.9.3" MinVersion="10000903"
+                       HwVersion="1" Hops="2" RoundTripTime="0" QualityExt="5" QualityDev="0" Online="true"
+                       Battery="100" DummyDev="false"/>
+            <AirDevice Type="Air hlavice" Code="589995" Name="Hlavice radiátor" Place="Obývák v přízemí" Inst="Kuchyně"
+                       Serial="50:4F:94:FF:FE:85:7F:DC" LastReceived="2019-09-02 20:33:53" TimeDiff="386"
+                       Version="10.1.12.17" MinVersion="10011217" HwVersion="1" Hops="2" RoundTripTime="0"
+                       QualityExt="2" QualityDev="0" Online="true" Battery="100" DummyDev="false"/>
+            <AirDevice Type="Air hlavice" Code="589995" Name="Hlavice radiátor" Place="Obývák v přízemí" Inst="Obývák"
+                       Serial="50:4F:94:FF:FE:85:62:A3" LastReceived="2019-09-02 20:39:48" TimeDiff="31"
+                       Version="10.1.12.17" MinVersion="10011217" HwVersion="1" Hops="2" RoundTripTime="0"
+                       QualityExt="2" QualityDev="0" Online="true" Battery="100" DummyDev="false"/>
+            <AirDevice Type="Okenní a dveřní kontakt Air" Code="2031787" Name="Door and Window Contact Air"
+                       Place="Obývák v přízemí" Inst="Okno vpravo" Serial="50:4F:94:FF:FE:85:D1:4C"
+                       LastReceived="2019-09-02 19:01:27" TimeDiff="5932" Version="10.0.9.3" MinVersion="10000903"
+                       HwVersion="1" Hops="1" RoundTripTime="0" QualityExt="1" QualityDev="0" Online="true" Battery="51"
+                       DummyDev="false"/>
+            <AirDevice Type="Okenní a dveřní kontakt Air" Code="2031787" Name="Door and Window Contact Air"
+                       Place="Obývák v přízemí" Inst="Okno vlevo" Serial="50:4F:94:FF:FE:87:2B:65"
+                       LastReceived="2019-09-02 19:29:45" TimeDiff="4234" Version="10.0.9.3" MinVersion="10000903"
+                       HwVersion="1" Hops="1" RoundTripTime="0" QualityExt="2" QualityDev="0" Online="true" Battery="56"
+                       DummyDev="false"/>
+            <AirDevice Type="Okenní a dveřní kontakt Air" Code="2031787" Name="Door and Window Contact Air"
+                       Place="Vstupní hala" Inst="Vstupní dveře" Serial="50:4F:94:FF:FE:87:2B:61"
+                       LastReceived="2019-09-02 19:44:04" TimeDiff="3375" Version="10.0.9.3" MinVersion="10000903"
+                       HwVersion="1" Hops="2" RoundTripTime="0" QualityExt="5" QualityDev="0" Online="true"
+                       Battery="100" DummyDev="false"/>
+            <AirDevice Type="Okenní a dveřní kontakt Air" Code="2031787" Name="Door and Window Contact Air"
+                       Place="Vstupní hala" Inst="Dveře na dvůr" Serial="50:4F:94:FF:FE:85:D1:8F"
+                       LastReceived="2019-09-02 19:49:45" TimeDiff="3034" Version="10.0.9.3" MinVersion="10000903"
+                       HwVersion="1" Hops="1" RoundTripTime="0" QualityExt="3" QualityDev="0" Online="true"
+                       Battery="100" DummyDev="false"/>
+            <AirDevice Type="Senzor úniku vody Air" Code="2097323" Name="Senzor úniku vody Air" Place="Obývák v přízemí"
+                       Inst="Pod dřezem" Serial="50:4F:94:FF:FE:85:D2:8A" LastReceived="2019-09-02 06:09:21"
+                       TimeDiff="52258" Version="10.0.9.3" MinVersion="10000903" HwVersion="1" Hops="1"
+                       RoundTripTime="0" QualityExt="1" QualityDev="0" Online="true" BattWeak="true" Battery="4"
+                       BatTooWeakForUpdate="true" DummyDev="false"/>
+            <AirDevice Type="Senzor úniku vody Air" Code="2097323" Name="Senzor úniku vody Air" Place="Guests"
+                       Inst="Pod dřezem" Serial="50:4F:94:FF:FE:89:A3:A0" LastReceived="2019-09-01 21:27:56"
+                       TimeDiff="83543" Version="10.0.9.3" MinVersion="10000903" HwVersion="1" Hops="1"
+                       RoundTripTime="0" QualityExt="5" QualityDev="0" Online="true" Battery="100" DummyDev="false"/>
+        </Extension>
+        <Extension Type="1-Wire Extension" Code="8" Name="1-Wire Extension" Serial="05d8726f" Version="10.2.3.5"
+                   Online="true" DummyDev="false" Occupied="false" Interfered="false" IntDev="false">
+            <OneWireDevice Name="Koupelna naši" Code="101" Serial="28.BB.CE.AD.07.00.00.2F" Family="00000028"
+                           LastReceived="2019-09-02 20:39:59" TimeDiff="20"/>
+            <OneWireDevice Name="Děcák" Code="101" Serial="28.62.A9.AC.0A.00.00.A2" Family="00000028"
+                           LastReceived="2019-09-02 20:40:08" TimeDiff="11"/>
+            <OneWireDevice Name="Hosté" Code="101" Serial="28.E4.A5.AC.0A.00.00.DB" Family="00000028"
+                           LastReceived="2019-09-02 20:40:10" TimeDiff="9"/>
+            <OneWireDevice Name="Bečka nahoře" Code="101" Serial="28.94.A9.AC.0A.00.00.62" Family="00000028"
+                           LastReceived="2019-09-02 20:39:58" TimeDiff="21"/>
+            <OneWireDevice Name="Bečka dole" Code="101" Serial="28.84.F0.AD.07.00.00.C0" Family="00000028"
+                           LastReceived="2019-09-02 20:40:18" TimeDiff="1"/>
+            <OneWireDevice Name="Koupelna podkroví" Code="101" Serial="28.A5.B9.AD.07.00.00.5B" Family="00000028"
+                           LastReceived="2019-09-02 20:40:17" TimeDiff="2"/>
+            <OneWireDevice Name="Solární panel" Code="101" Serial="28.65.DB.A2.09.00.00.38" Family="00000028"
+                           LastReceived="2019-09-02 20:40:15" TimeDiff="4"/>
+            <OneWireDevice Name="Výstup kotle" Code="101" Serial="28.B2.7B.AC.0A.00.00.BB" Family="00000028"
+                           LastReceived="2019-09-02 20:40:08" TimeDiff="11"/>
+        </Extension>
+    </Miniserver>
+</Status>

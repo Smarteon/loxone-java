@@ -18,6 +18,121 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
      */
     public static final LoxoneMessageCommand<PubKeyInfo> DEV_SYS_GETPUBLICKEY = jsonHttpCommand("jdev/sys/getPublicKey", PubKeyInfo.class);
 
+    /**
+     * Number of system tasks.
+     */
+    public static final LoxoneMessageCommand<IntValue> DEV_SYS_NUMTASKS = jsonHttpCommand("jdev/sys/numtasks", IntValue.class);
+
+    /**
+     * Number of system interruptions.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_SYS_INTS = jsonHttpCommand("jdev/sys/ints", LongValue.class);
+
+    /**
+     * Number of system communication interruptions.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_SYS_COMINTS = jsonHttpCommand("jdev/sys/comints", LongValue.class);
+
+    /**
+     * Number of system LAN interruptions.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_SYS_LANINTS = jsonHttpCommand("jdev/sys/lanints", LongValue.class);
+
+    /**
+     * Number of system context switches.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_SYS_CONTEXTSWITCHES = jsonHttpCommand("jdev/sys/contextswitches", LongValue.class);
+
+    /**
+     * Number of system context switches of interrupted tasks.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_SYS_CONTEXTSWITCHESI = jsonHttpCommand("jdev/sys/contextswitchesi", LongValue.class);
+
+    /**
+     * Current heap status.
+     */
+    public static final LoxoneMessageCommand<Heap> DEV_SYS_HEAP = jsonHttpCommand("jdev/sys/heap", Heap.class);
+
+    /**
+     * Current cpu load.
+     */
+    public static final LoxoneMessageCommand<PercentValue> DEV_SYS_CPU = jsonHttpCommand("jdev/sys/cpu", PercentValue.class);
+
+    /**
+     * Cumulative count of LAN transmitted packets.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_LAN_TXP = jsonHttpCommand("jdev/lan/txp", LongValue.class);
+
+    /**
+     * Cumulative count of LAN transmitted error packets.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_LAN_TXE = jsonHttpCommand("jdev/lan/txe", LongValue.class);
+
+    /**
+     * Cumulative count of LAN transmitted collision packets.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_LAN_TXC = jsonHttpCommand("jdev/lan/txc", LongValue.class);
+
+    /**
+     * Cumulative count of LAN buffer failures.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_LAN_EXH = jsonHttpCommand("jdev/lan/exh", LongValue.class);
+
+    /**
+     * Cumulative count of LAN underrun failures.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_LAN_TXU = jsonHttpCommand("jdev/lan/txu", LongValue.class);
+
+    /**
+     * Cumulative count of LAN received packets.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_LAN_RXP = jsonHttpCommand("jdev/lan/rxp", LongValue.class);
+
+    /**
+     * Cumulative count of LAN EOF failures.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_LAN_EOF = jsonHttpCommand("jdev/lan/eof", LongValue.class);
+
+    /**
+     * Cumulative count of LAN receive overrun failures.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_LAN_RXO = jsonHttpCommand("jdev/lan/rxo", LongValue.class);
+
+    /**
+     * Cumulative count of LAN no receive buffer failures.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_LAN_NOB = jsonHttpCommand("jdev/lan/nob", LongValue.class);
+
+    /**
+     * Cumulative count of Loxone BUS packets sent.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_BUS_PACKETSSENT = jsonHttpCommand("jdev/bus/packetssent", LongValue.class);
+
+    /**
+     * Cumulative count of Loxone BUS packets received.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_BUS_PACKETSRECEIVED = jsonHttpCommand("jdev/bus/packetsreceived", LongValue.class);
+
+    /**
+     * Cumulative count of Loxone BUS receive errors.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_BUS_RECEIVEERRORS = jsonHttpCommand("jdev/bus/receiveerrors", LongValue.class);
+
+    /**
+     * Cumulative count of Loxone BUS frame errors.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_BUS_FRAMEERRORS = jsonHttpCommand("jdev/bus/frameerrors", LongValue.class);
+
+    /**
+     * Cumulative count of Loxone BUS overrun errors.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_BUS_OVERRUNS = jsonHttpCommand("jdev/bus/overruns", LongValue.class);
+
+    /**
+     * Cumulative count of Loxone BUS parity errors.
+     */
+    public static final LoxoneMessageCommand<LongValue> DEV_BUS_PARITYERRORS = jsonHttpCommand("jdev/bus/parityerrors", LongValue.class);
+
     private final Class<V> valueType;
 
     @SuppressWarnings("unchecked")

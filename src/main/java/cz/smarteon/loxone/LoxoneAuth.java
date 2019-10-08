@@ -3,6 +3,7 @@ package cz.smarteon.loxone;
 import cz.smarteon.loxone.message.ApiInfo;
 import cz.smarteon.loxone.message.Hashing;
 import cz.smarteon.loxone.message.LoxoneMessage;
+import cz.smarteon.loxone.message.LoxoneMessageCommand;
 import cz.smarteon.loxone.message.LoxoneValue;
 import cz.smarteon.loxone.message.PubKeyInfo;
 import org.java_websocket.util.Base64;
@@ -281,13 +282,9 @@ public class LoxoneAuth implements CommandListener {
     private void fetchApiInfo() {
         log.trace("Fetching ApiInfo start");
         try {
-            final LoxoneMessage msg = loxoneHttp.get(Command.DEV_CFG_API);
+            final LoxoneMessage<ApiInfo> msg = loxoneHttp.get(LoxoneMessageCommand.DEV_CFG_API);
             if (msg.getValue() != null) {
-                if (msg.getValue() instanceof ApiInfo) {
-                    apiInfo = (ApiInfo) msg.getValue();
-                } else {
-                    throw new LoxoneException("Unexpected apiInfo message type " + msg.getValue().getClass());
-                }
+                apiInfo = msg.getValue();
             } else {
                 throw new LoxoneException("Got empty apiInfo");
             }
@@ -299,13 +296,9 @@ public class LoxoneAuth implements CommandListener {
     private void fetchPublicKey() {
         log.trace("Fetching PublicKey start");
         try {
-            final LoxoneMessage msg = loxoneHttp.get(Command.DEV_SYS_GETPUBLICKEY);
+            final LoxoneMessage<PubKeyInfo> msg = loxoneHttp.get(LoxoneMessageCommand.DEV_SYS_GETPUBLICKEY);
             if (msg.getValue() != null) {
-                if (msg.getValue() instanceof PubKeyInfo) {
-                    publicKey = ((PubKeyInfo) msg.getValue()).asPublicKey();
-                } else {
-                    throw new LoxoneException("Unexpected pubKeyInfo message type " + msg.getValue().getClass());
-                }
+                publicKey = msg.getValue().asPublicKey();
             } else {
                 throw new LoxoneException("Got empty pubKeyInfo");
             }

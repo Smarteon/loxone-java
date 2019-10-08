@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
 
 import java.io.IOException;
 
+import static cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_CFG_API;
+import static cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_SYS_GETPUBLICKEY;
+
 class LoxoneValueTypeResolver implements TypeIdResolver {
 
     private JavaType baseType;
@@ -21,10 +24,10 @@ class LoxoneValueTypeResolver implements TypeIdResolver {
         if (id.contains("dev/sys/getkey")
                 || id.contains("dev/sys/getvisusalt")) {
             return context.constructSpecializedType(baseType, Hashing.class);
-        } else if (id.contains("dev/cfg/api")) {
-            return context.constructSpecializedType(baseType, ApiInfo.class);
-        } else if (id.contains("dev/sys/getPublicKey")) {
-            return context.constructSpecializedType(baseType, PubKeyInfo.class);
+        } else if (DEV_CFG_API.is(id)) {
+            return context.constructSpecializedType(baseType, DEV_CFG_API.getValueType());
+        } else if (DEV_SYS_GETPUBLICKEY.is(id)) {
+            return context.constructSpecializedType(baseType, DEV_SYS_GETPUBLICKEY.getValueType());
         } else if (id.contains("dev/sps/LoxAPPversion3")) {
             return context.constructSpecializedType(baseType, DateValue.class);
         } else {

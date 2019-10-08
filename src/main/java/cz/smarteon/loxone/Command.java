@@ -14,37 +14,40 @@ public class Command<T> {
      */
     public static final Command<MiniserverStatus> DATA_STATUS = xmlHttpCommand("data/status", MiniserverStatus.class);
 
-    /**
-     * Basic information about API. Unauthenticated.
-     */
-    public static final Command<LoxoneMessage> DEV_CFG_API = loxoneMessageCommand("jdev/cfg/api");
-
-    /**
-     * API's public key.
-     */
-    public static final Command<LoxoneMessage> DEV_SYS_GETPUBLICKEY = loxoneMessageCommand("jdev/sys/getPublicKey");
-
     private final String command;
     private final Type type;
     private final Class<T> responseType;
     private final boolean httpSupported;
     private final boolean wsSupported;
 
-    private Command(final String command, final Type type, final Class<T> responseType, final boolean httpSupported,
+    private final String toMatch;
+
+    protected Command(final String command, final Type type, final Class<T> responseType, final boolean httpSupported,
                     final boolean wsSupported) {
         this.command = command;
         this.type = type;
         this.responseType = responseType;
         this.httpSupported = httpSupported;
         this.wsSupported = wsSupported;
-    }
 
-    private static Command<LoxoneMessage> loxoneMessageCommand(final String command) {
-        return new Command<>(command, Type.JSON, LoxoneMessage.class, true, false);
+        if (Type.JSON.equals(type)) {
+            this.toMatch = command.substring(1);
+        } else {
+            this.toMatch = command;
+        }
     }
 
     private static <T> Command<T> xmlHttpCommand(final String command, final Class<T> responseType) {
         return new Command<>(command, Type.XML, responseType, true, false);
+    }
+
+    /**
+     * Check whether this command matches the given argument.
+     * @param toCompare command to compare
+     * @return true when the argument contains this command identifier, false otherwise
+     */
+    public boolean is(final String toCompare) {
+        return toCompare != null && toCompare.contains(this.toMatch);
     }
 
     /**

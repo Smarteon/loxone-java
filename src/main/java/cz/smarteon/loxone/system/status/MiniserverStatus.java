@@ -1,9 +1,12 @@
 package cz.smarteon.loxone.system.status;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import cz.smarteon.loxone.PercentDoubleDeserializer;
 import cz.smarteon.loxone.config.MiniserverType;
 
 import java.util.List;
@@ -70,7 +73,7 @@ public class MiniserverStatus {
         return content.version;
     }
 
-    public String getLanErrorsPercent() {
+    public Double getLanErrorsPercent() {
         return content.lanErrorsPercent;
     }
 
@@ -102,7 +105,7 @@ public class MiniserverStatus {
         private final String mac;
         private final String device;
         private final String version;
-        private final String lanErrorsPercent; // TODO float
+        private final Double lanErrorsPercent;
         private final Integer linkErrorsCount;
         private final List<Extension> extensions;
 
@@ -112,7 +115,8 @@ public class MiniserverStatus {
                 @JsonProperty("Gateway") final String gateway, @JsonProperty("DHCP") final Boolean dhcp,
                 @JsonProperty("DNS1") final String dns1, @JsonProperty("DNS2") final String dns2,
                 @JsonProperty("MAC") final String mac, @JsonProperty("Device") final String device,
-                @JsonProperty("Version") final String version, @JsonProperty("LANErrors") final String lanErrorsPercent,
+                @JsonProperty("Version") final String version,
+                @JsonProperty("LANErrors") @JsonDeserialize(using = PercentDoubleDeserializer.class) final Double lanErrorsPercent,
                 @JsonProperty("LinkErrors") final Integer linkErrorsCount,
                 @JsonProperty("Extension") final List<Extension> extensions) {
             this.type = type;

@@ -14,8 +14,8 @@ import java.security.Security
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-import static cz.smarteon.loxone.Command.DEV_CFG_API
-import static cz.smarteon.loxone.Command.DEV_SYS_GETPUBLICKEY
+import static cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_CFG_API
+import static cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_SYS_GETPUBLICKEY
 import static cz.smarteon.loxone.MockWebSocketServer.PASS
 import static cz.smarteon.loxone.MockWebSocketServer.PUBLIC_KEY
 import static cz.smarteon.loxone.MockWebSocketServer.USER

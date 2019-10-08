@@ -2,6 +2,9 @@ package cz.smarteon.loxone.message;
 
 import cz.smarteon.loxone.Command;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Specific command which results into {@link LoxoneMessage} response.
  * @param <V> type of the {@link LoxoneMessage} value
@@ -145,6 +148,37 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
     private static <V extends LoxoneValue> LoxoneMessageCommand<V> jsonHttpCommand(final String command, final Class<V> valueType) {
         return new LoxoneMessageCommand<>(command, Type.JSON, valueType, true, false);
     }
+
+    /**
+     * List of known commands
+     */
+    public static List<LoxoneMessageCommand<?>> COMMANDS = Arrays.asList(
+            DEV_BUS_FRAMEERRORS,
+            DEV_BUS_OVERRUNS,
+            DEV_BUS_PACKETSRECEIVED,
+            DEV_BUS_PACKETSSENT,
+            DEV_BUS_PARITYERRORS,
+            DEV_BUS_RECEIVEERRORS,
+            DEV_CFG_API,
+            DEV_LAN_EOF,
+            DEV_LAN_EXH,
+            DEV_LAN_NOB,
+            DEV_LAN_RXO,
+            DEV_LAN_RXP,
+            DEV_LAN_TXC,
+            DEV_LAN_TXE,
+            DEV_LAN_TXP,
+            DEV_LAN_TXU,
+            DEV_SYS_COMINTS,
+            DEV_SYS_CONTEXTSWITCHESI,
+            DEV_SYS_CONTEXTSWITCHES,
+            DEV_SYS_CPU,
+            DEV_SYS_GETPUBLICKEY,
+            DEV_SYS_HEAP,
+            DEV_SYS_INTS,
+            DEV_SYS_LANINTS,
+            DEV_SYS_NUMTASKS
+    );
 
     /**
      * Type of the {@link LoxoneMessage} value

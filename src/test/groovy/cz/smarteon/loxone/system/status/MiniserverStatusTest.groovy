@@ -24,7 +24,7 @@ class MiniserverStatusTest extends Specification implements SerializationSupport
         ms.mac == '504F9411234'
         ms.device == 'TestDevice'
         ms.version == '10.2.3.26'
-        ms.lanErrorsPercent == '0.000%'
+        ms.lanErrorsPercent == 0.0
         ms.linkErrorsCount == 0
 
         ms.extensions?.size() == 4

@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.DatabindContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
 
-import java.io.IOException;
-
-import static cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_CFG_API;
-import static cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_SYS_GETPUBLICKEY;
+import static cz.smarteon.loxone.message.LoxoneMessageCommand.COMMANDS;
 
 class LoxoneValueTypeResolver implements TypeIdResolver {
 
@@ -24,14 +21,14 @@ class LoxoneValueTypeResolver implements TypeIdResolver {
         if (id.contains("dev/sys/getkey")
                 || id.contains("dev/sys/getvisusalt")) {
             return context.constructSpecializedType(baseType, Hashing.class);
-        } else if (DEV_CFG_API.is(id)) {
-            return context.constructSpecializedType(baseType, DEV_CFG_API.getValueType());
-        } else if (DEV_SYS_GETPUBLICKEY.is(id)) {
-            return context.constructSpecializedType(baseType, DEV_SYS_GETPUBLICKEY.getValueType());
         } else if (id.contains("dev/sps/LoxAPPversion3")) {
             return context.constructSpecializedType(baseType, DateValue.class);
         } else {
-            return context.constructSpecializedType(baseType, JsonValue.class);
+            return COMMANDS.stream()
+                    .filter(command -> command.is(id))
+                    .findFirst()
+                    .map(command -> context.constructSpecializedType(baseType, command.getValueType()))
+                    .orElseGet(() -> context.constructSpecializedType(baseType, JsonValue.class));
         }
     }
 

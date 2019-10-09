@@ -12,7 +12,13 @@ public class PercentDoubleDeserializer extends JsonDeserializer<Double> {
     public Double deserialize(final JsonParser p, final DeserializationContext ctxt) throws IOException {
         final String stringVal = p.getValueAsString();
         try {
-            return Double.valueOf(stripPercent(stringVal));
+            if (stringVal == null) {
+                return null;
+            } else if (stringVal.isEmpty()) {
+                return -1.0;
+            } else {
+                return Double.valueOf(stripPercent(stringVal));
+            }
         } catch (Exception e) {
             throw JsonMappingException.from(p, "Unable to deserialize percentage from" + stringVal, e);
         }

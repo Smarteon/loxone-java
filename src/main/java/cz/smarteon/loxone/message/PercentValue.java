@@ -11,7 +11,8 @@ public class PercentValue extends IntValue {
 
     @JsonCreator
     PercentValue(final String value) {
-        super(stripPercent(value));
+        // in case of null / missing property in JSON this constructor is not called
+        super((value.trim().isEmpty()) ? -1 : Integer.parseInt(stripPercent(value)));
     }
 
     @Override

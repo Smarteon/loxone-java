@@ -7,10 +7,15 @@ class PercentValueTest extends Specification implements SerializationSupport {
 
     def "should deserialize"() {
         when:
-        PercentValue percentValue = readValue('"99%"', PercentValue)
+        PercentValue percentValue = readValue(value, PercentValue)
 
         then:
-        percentValue.value == 99
+        percentValue.value == expected
+
+        where:
+        value   || expected
+        '"99%"' || 99
+        '""'    || -1
     }
 
     def "should verify equals"() {

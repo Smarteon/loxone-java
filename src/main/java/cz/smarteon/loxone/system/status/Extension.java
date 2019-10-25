@@ -13,7 +13,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(name = "Tree Extension", value = TreeExtension.class),
         @JsonSubTypes.Type(name = "Air Base Extension", value = AirBaseExtension.class),
         @JsonSubTypes.Type(name = "RS485 Extension", value = RS485Extension.class),
-        @JsonSubTypes.Type(name = "1-Wire Extension", value = OneWireExtension.class)
+        @JsonSubTypes.Type(name = "1-Wire Extension", value = OneWireExtension.class),
+        @JsonSubTypes.Type(name = "DMX Extension", value = DmxExtension.class)
 })
 public abstract class Extension {
 

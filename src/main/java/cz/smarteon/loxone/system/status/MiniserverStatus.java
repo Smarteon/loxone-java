@@ -7,10 +7,15 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import cz.smarteon.loxone.PercentDoubleDeserializer;
 import cz.smarteon.loxone.config.MiniserverType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Represents {@link cz.smarteon.loxone.Command#DATA_STATUS} payload. Only intended for deserialization.
@@ -25,9 +30,10 @@ public class MiniserverStatus {
     MiniserverStatus(@JsonProperty("Modified") final String modified,
                      @JsonProperty("Miniserver") final Content content) {
         this.modified = modified;
-        this.content = content;
+        this.content = requireNonNull(content, "content can't be null");
     }
 
+    @Nullable
     public String getModified() {
         return modified;
     }
@@ -36,6 +42,7 @@ public class MiniserverStatus {
      * Miniserver type
      * @return type of miniserver
      */
+    @NotNull
     public MiniserverType getType() {
         return MiniserverType.fromValue(content.type);
     }
@@ -44,6 +51,7 @@ public class MiniserverStatus {
      * Miniserver name
      * @return name
      */
+    @Nullable
     public String getName() {
         return content.name;
     }
@@ -52,6 +60,7 @@ public class MiniserverStatus {
      * Miniserver IP address
      * @return IP address
      */
+    @Nullable
     public String getIp() {
         return content.ip;
     }
@@ -60,6 +69,7 @@ public class MiniserverStatus {
      * Miniserver network address mask
      * @return network mask
      */
+    @Nullable
     public String getMask() {
         return content.mask;
     }
@@ -68,6 +78,7 @@ public class MiniserverStatus {
      * Network gateway miniserver uses
      * @return gateway
      */
+    @Nullable
     public String getGateway() {
         return content.gateway;
     }
@@ -84,6 +95,7 @@ public class MiniserverStatus {
      * Assigned DNS server 1
      * @return DNS server address
      */
+    @Nullable
     public String getDns1() {
         return content.dns1;
     }
@@ -92,6 +104,7 @@ public class MiniserverStatus {
      * Assigned DNS server 2
      * @return DNS server address
      */
+    @Nullable
     public String getDns2() {
         return content.dns2;
     }
@@ -100,6 +113,7 @@ public class MiniserverStatus {
      * Miniserver's MAC address
      * @return mac address
      */
+    @Nullable
     public String getMac() {
         return content.mac;
     }
@@ -108,6 +122,7 @@ public class MiniserverStatus {
      * Miniserver device label
      * @return device
      */
+    @Nullable
     public String getDevice() {
         return content.device;
     }
@@ -116,6 +131,7 @@ public class MiniserverStatus {
      * Miniserver version
      * @return version
      */
+    @Nullable
     public String getVersion() {
         return content.version;
     }
@@ -124,6 +140,7 @@ public class MiniserverStatus {
      * Percentage of LAN errors.
      * @return LAN errors
      */
+    @Nullable
     public Double getLanErrorsPercent() {
         return content.lanErrorsPercent;
     }
@@ -132,6 +149,7 @@ public class MiniserverStatus {
      * Count of loxone link errors
      * @return loxone link errors
      */
+    @Nullable
     public Integer getLinkErrorsCount() {
         return content.linkErrorsCount;
     }
@@ -140,6 +158,7 @@ public class MiniserverStatus {
      * List of configured extensions.
      * @return configured extensions or empty list
      */
+    @NotNull
     public List<Extension> getExtensions() {
         return content.extensions != null ? content.extensions : Collections.emptyList();
     }
@@ -150,6 +169,7 @@ public class MiniserverStatus {
      * @param <T> extension type
      * @return configured extensions of given type or empty list
      */
+    @NotNull
     public <T extends Extension> List<T> getExtensions(Class<T> extensionType) {
         return getExtensions().stream()
                 .filter(e -> extensionType.isAssignableFrom(e.getClass()))

@@ -2,6 +2,7 @@ package cz.smarteon.loxone.system.status;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jetbrains.annotations.Nullable;
 
 public class OneWireDevice extends Device {
 
@@ -22,14 +23,17 @@ public class OneWireDevice extends Device {
         this.timeDiff = timeDiff;
     }
 
+    @Nullable
     public String getFamily() {
         return family;
     }
 
+    @Nullable
     public String getLastReceived() {
         return lastReceived;
     }
 
+    @Nullable
     public String getTimeDiff() {
         return timeDiff;
     }

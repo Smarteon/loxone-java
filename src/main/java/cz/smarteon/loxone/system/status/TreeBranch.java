@@ -2,6 +2,8 @@ package cz.smarteon.loxone.system.status;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,18 +26,22 @@ public class TreeBranch implements DevicesProvider<TreeDevice> {
         this.devices = devices;
     }
 
+    @Nullable
     public String getBranch() {
         return branch;
     }
 
+    @Nullable
     public Integer getDevicesCount() {
         return devicesCount;
     }
 
+    @Nullable
     public Integer getErrors() {
         return errors;
     }
 
+    @NotNull
     public List<TreeDevice> getDevices() {
         return devices != null ? devices : Collections.emptyList();
     }

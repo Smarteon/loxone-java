@@ -2,6 +2,7 @@ package cz.smarteon.loxone.system.status;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +22,7 @@ public class AirBaseExtension extends Extension implements DevicesProvider<AirDe
         this.devices = devices;
     }
 
+    @NotNull
     public List<AirDevice> getDevices() {
         return devices != null ? devices : Collections.emptyList();
     }

@@ -2,6 +2,7 @@ package cz.smarteon.loxone.system.status;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jetbrains.annotations.Nullable;
 
 public class TreeDevice extends Device {
 
@@ -34,14 +35,17 @@ public class TreeDevice extends Device {
         this.dummy = dummy;
     }
 
+    @Nullable
     public String getPlace() {
         return place;
     }
 
+    @Nullable
     public String getInstallation() {
         return installation;
     }
 
+    @Nullable
     public String getVersion() {
         return version;
     }
@@ -50,10 +54,12 @@ public class TreeDevice extends Device {
         return Boolean.TRUE.equals(online);
     }
 
+    @Nullable
     public String getLastReceived() {
         return lastReceived;
     }
 
+    @Nullable
     public Integer getTimeDiff() {
         return timeDiff;
     }

@@ -3,6 +3,7 @@ package cz.smarteon.loxone.system.status;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Common predecessor to all miniserver's extensions.
@@ -49,6 +50,7 @@ public abstract class Extension {
      * Extension code
      * @return code
      */
+    @Nullable
     public String getCode() {
         return code;
     }
@@ -57,6 +59,7 @@ public abstract class Extension {
      * Extension configured name
      * @return name
      */
+    @Nullable
     public String getName() {
         return name;
     }
@@ -65,6 +68,7 @@ public abstract class Extension {
      * Extension serial number (set by factory)
      * @return serial number
      */
+    @Nullable
     public String getSerialNumber() {
         return serialNumber;
     }
@@ -73,6 +77,7 @@ public abstract class Extension {
      * Extension version
      * @return version
      */
+    @Nullable
     public String getVersion() {
         return version;
     }

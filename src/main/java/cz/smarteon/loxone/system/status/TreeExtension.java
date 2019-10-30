@@ -3,6 +3,7 @@ package cz.smarteon.loxone.system.status;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class TreeExtension extends Extension {
      * Left Tree branch if configured.
      * @return left branch or null
      */
+    @Nullable
     public TreeBranch getLeftBranch() {
         return leftBranch;
     }
@@ -34,6 +36,7 @@ public class TreeExtension extends Extension {
      * Right Tree branch if configured.
      * @return right branch or null
      */
+    @Nullable
     public TreeBranch getRightBranch() {
         return rightBranch;
     }

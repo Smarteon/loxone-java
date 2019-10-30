@@ -3,6 +3,8 @@ package cz.smarteon.loxone.system.status;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AirDevice extends Device {
@@ -60,50 +62,62 @@ public class AirDevice extends Device {
         this.dummy = dummy;
     }
 
+    @Nullable
     public String getType() {
         return type;
     }
 
+    @Nullable
     public String getPlace() {
         return place;
     }
 
+    @Nullable
     public String getInstallation() {
         return installation;
     }
 
+    @Nullable
     public String getLastReceived() {
         return lastReceived;
     }
 
+    @Nullable
     public Integer getTimeDiff() {
         return timeDiff;
     }
 
+    @Nullable
     public String getVersion() {
         return version;
     }
 
+    @Nullable
     public String getMinVersion() {
         return minVersion;
     }
 
+    @Nullable
     public String getHwVersion() {
         return hwVersion;
     }
 
+    @Nullable
     public Integer getHops() {
         return hops;
     }
 
+    @Nullable
     public Integer getRoundTripTime() {
         return roundTripTime;
     }
 
+    @Nullable
     public String getQualityExt() {
         return qualityExt;
     }
 
+    @Nullable
     public String getQualityDev() {
         return qualityDev;
     }
@@ -112,6 +126,7 @@ public class AirDevice extends Device {
         return Boolean.TRUE.equals(online);
     }
 
+    @Nullable
     public Integer getBattery() {
         return battery;
     }

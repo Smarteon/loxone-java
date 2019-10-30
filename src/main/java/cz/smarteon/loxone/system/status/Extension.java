@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+/**
+ * Common predecessor to all miniserver's extensions.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "Type")
 @JsonSubTypes({
@@ -42,39 +45,75 @@ public abstract class Extension {
         this.intDev = intDev;
     }
 
+    /**
+     * Extension code
+     * @return code
+     */
     public String getCode() {
         return code;
     }
 
+    /**
+     * Extension configured name
+     * @return name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Extension serial number (set by factory)
+     * @return serial number
+     */
     public String getSerialNumber() {
         return serialNumber;
     }
 
+    /**
+     * Extension version
+     * @return version
+     */
     public String getVersion() {
         return version;
     }
 
-    public Boolean getOnline() {
-        return online;
+    /**
+     * Whether this extension is online on loxone - link.
+     * @return true when online, false otherwise
+     */
+    public boolean isOnline() {
+        return Boolean.TRUE.equals(online);
     }
 
-    public Boolean getDummy() {
-        return dummy;
+    /**
+     * Whether this extension is configured as dummy.
+     * @return true when dummy, false otherwise
+     */
+    public boolean isDummy() {
+        return Boolean.TRUE.equals(dummy);
     }
 
-    public Boolean getOccupied() {
-        return occupied;
+    /**
+     * Whether this extension is occupied.
+     * @return false when not occupied, true otherwise
+     */
+    public boolean isOccupied() {
+        return Boolean.FALSE.equals(occupied);
     }
 
-    public Boolean getInterfered() {
-        return interfered;
+    /**
+     * Whether this extension is interfered.
+     * @return false when not interfered, true otherwise
+     */
+    public boolean isInterfered() {
+        return Boolean.FALSE.equals(interfered);
     }
 
-    public Boolean getIntDev() {
-        return intDev;
+    /**
+     * Internal device
+     * @return true if internal, false otherwise
+     */
+    public boolean isIntDev() {
+        return Boolean.TRUE.equals(intDev);
     }
 }

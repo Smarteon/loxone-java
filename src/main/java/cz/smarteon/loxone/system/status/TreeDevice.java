@@ -46,8 +46,8 @@ public class TreeDevice extends Device {
         return version;
     }
 
-    public Boolean getOnline() {
-        return online;
+    public boolean isOnline() {
+        return Boolean.TRUE.equals(online);
     }
 
     public String getLastReceived() {
@@ -58,7 +58,7 @@ public class TreeDevice extends Device {
         return timeDiff;
     }
 
-    public Boolean getDummy() {
-        return dummy;
+    public boolean isDummy() {
+        return Boolean.TRUE.equals(dummy);
     }
 }

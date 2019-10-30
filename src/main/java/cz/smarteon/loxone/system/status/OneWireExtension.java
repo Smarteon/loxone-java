@@ -4,9 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Collections;
 import java.util.List;
 
-public class OneWireExtension extends Extension {
+public class OneWireExtension extends Extension implements DevicesProvider<OneWireDevice> {
 
     private final List<OneWireDevice> devices;
 
@@ -22,6 +23,6 @@ public class OneWireExtension extends Extension {
     }
 
     public List<OneWireDevice> getDevices() {
-        return devices;
+        return devices != null ? devices : Collections.emptyList();
     }
 }

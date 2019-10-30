@@ -3,9 +3,10 @@ package cz.smarteon.loxone.system.status;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Collections;
 import java.util.List;
 
-public class TreeBranch {
+public class TreeBranch implements DevicesProvider<TreeDevice> {
 
     private final String branch;
     private final Integer devicesCount;
@@ -36,6 +37,6 @@ public class TreeBranch {
     }
 
     public List<TreeDevice> getDevices() {
-        return devices;
+        return devices != null ? devices : Collections.emptyList();
     }
 }

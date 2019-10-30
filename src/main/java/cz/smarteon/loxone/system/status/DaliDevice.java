@@ -16,7 +16,7 @@ public class DaliDevice extends Device {
         this.error = error;
     }
 
-    public Boolean getError() {
-        return error;
+    public boolean isError() {
+        return Boolean.FALSE.equals(error);
     }
 }

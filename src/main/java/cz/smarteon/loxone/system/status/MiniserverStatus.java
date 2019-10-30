@@ -1,7 +1,6 @@
 package cz.smarteon.loxone.system.status;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -9,9 +8,13 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import cz.smarteon.loxone.PercentDoubleDeserializer;
 import cz.smarteon.loxone.config.MiniserverType;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Represents {@link cz.smarteon.loxone.Command#DATA_STATUS} payload. Only intended for deserialization.
+ */
 @JacksonXmlRootElement(localName = "Status")
 public class MiniserverStatus {
 
@@ -29,65 +32,129 @@ public class MiniserverStatus {
         return modified;
     }
 
+    /**
+     * Miniserver type
+     * @return type of miniserver
+     */
     public MiniserverType getType() {
         return MiniserverType.fromValue(content.type);
     }
 
+    /**
+     * Miniserver name
+     * @return name
+     */
     public String getName() {
         return content.name;
     }
 
+    /**
+     * Miniserver IP address
+     * @return IP address
+     */
     public String getIp() {
         return content.ip;
     }
 
+    /**
+     * Miniserver network address mask
+     * @return network mask
+     */
     public String getMask() {
         return content.mask;
     }
 
+    /**
+     * Network gateway miniserver uses
+     * @return gateway
+     */
     public String getGateway() {
         return content.gateway;
     }
 
+    /**
+     * Whether the network was set by DHCP
+     * @return true if DHCP used, false otherwise
+     */
     public boolean usesDhcp() {
         return Boolean.TRUE.equals(content.dhcp);
     }
 
+    /**
+     * Assigned DNS server 1
+     * @return DNS server address
+     */
     public String getDns1() {
         return content.dns1;
     }
 
+    /**
+     * Assigned DNS server 2
+     * @return DNS server address
+     */
     public String getDns2() {
         return content.dns2;
     }
 
+    /**
+     * Miniserver's MAC address
+     * @return mac address
+     */
     public String getMac() {
         return content.mac;
     }
 
+    /**
+     * Miniserver device label
+     * @return device
+     */
     public String getDevice() {
         return content.device;
     }
 
+    /**
+     * Miniserver version
+     * @return version
+     */
     public String getVersion() {
         return content.version;
     }
 
+    /**
+     * Percentage of LAN errors.
+     * @return LAN errors
+     */
     public Double getLanErrorsPercent() {
         return content.lanErrorsPercent;
     }
 
+    /**
+     * Count of loxone link errors
+     * @return loxone link errors
+     */
     public Integer getLinkErrorsCount() {
         return content.linkErrorsCount;
     }
 
+    /**
+     * List of configured extensions.
+     * @return configured extensions or empty list
+     */
     public List<Extension> getExtensions() {
-        return content.extensions;
+        return content.extensions != null ? content.extensions : Collections.emptyList();
     }
 
+    /**
+     * List of extensions of given type.
+     * @param extensionType extension type class
+     * @param <T> extension type
+     * @return configured extensions of given type or empty list
+     */
     public <T extends Extension> List<T> getExtensions(Class<T> extensionType) {
-        return getExtensions().stream().filter(e -> extensionType.isAssignableFrom(e.getClass()))
-                .map(extensionType::cast).collect(Collectors.toList());
+        return getExtensions().stream()
+                .filter(e -> extensionType.isAssignableFrom(e.getClass()))
+                .map(extensionType::cast)
+                .collect(Collectors.toList());
     }
 
 

@@ -27,6 +27,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
     implementation("org.slf4j:slf4j-api:1.7.25")
+    compileOnly("org.jetbrains:annotations:17.0.0")
 
     testImplementation("org.spockframework:spock-core:1.3-groovy-2.5")
     testImplementation("org.codehaus.groovy:groovy-all:2.5.7")

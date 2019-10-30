@@ -3,6 +3,7 @@ package cz.smarteon.loxone.system.status;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +23,7 @@ public class OneWireExtension extends Extension implements DevicesProvider<OneWi
         this.devices = devices;
     }
 
+    @NotNull
     public List<OneWireDevice> getDevices() {
         return devices != null ? devices : Collections.emptyList();
     }

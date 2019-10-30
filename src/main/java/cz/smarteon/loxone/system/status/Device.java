@@ -1,5 +1,7 @@
 package cz.smarteon.loxone.system.status;
 
+import org.jetbrains.annotations.Nullable;
+
 public abstract class Device {
 
     private final String code;
@@ -12,14 +14,17 @@ public abstract class Device {
         this.serialNumber = serialNumber;
     }
 
+    @Nullable
     public String getCode() {
         return code;
     }
 
+    @Nullable
     public String getName() {
         return name;
     }
 
+    @Nullable
     public String getSerialNumber() {
         return serialNumber;
     }

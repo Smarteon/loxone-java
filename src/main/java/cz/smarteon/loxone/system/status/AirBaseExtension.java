@@ -3,9 +3,10 @@ package cz.smarteon.loxone.system.status;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Collections;
 import java.util.List;
 
-public class AirBaseExtension extends Extension {
+public class AirBaseExtension extends Extension implements DevicesProvider<AirDevice> {
 
     private final List<AirDevice> devices;
 
@@ -21,6 +22,6 @@ public class AirBaseExtension extends Extension {
     }
 
     public List<AirDevice> getDevices() {
-        return devices;
+        return devices != null ? devices : Collections.emptyList();
     }
 }

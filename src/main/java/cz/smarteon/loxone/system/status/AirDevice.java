@@ -108,15 +108,15 @@ public class AirDevice extends Device {
         return qualityDev;
     }
 
-    public Boolean getOnline() {
-        return online;
+    public boolean isOnline() {
+        return Boolean.TRUE.equals(online);
     }
 
     public Integer getBattery() {
         return battery;
     }
 
-    public Boolean getDummy() {
-        return dummy;
+    public boolean getDummy() {
+        return Boolean.TRUE.equals(dummy);
     }
 }

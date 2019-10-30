@@ -3,9 +3,10 @@ package cz.smarteon.loxone.system.status;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Collections;
 import java.util.List;
 
-public class DaliExtension extends Extension {
+public class DaliExtension extends Extension implements DevicesProvider<DaliDevice> {
 
     private final List<DaliDevice> devices;
 
@@ -21,6 +22,6 @@ public class DaliExtension extends Extension {
     }
 
     public List<DaliDevice> getDevices() {
-        return devices;
+        return devices != null ? devices : Collections.emptyList();
     }
 }

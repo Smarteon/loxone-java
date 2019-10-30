@@ -22,10 +22,18 @@ public class TreeExtension extends Extension {
         this.rightBranch = branches.stream().filter(b -> "3".equals(b.getBranch())).findFirst().orElse(null);
     }
 
+    /**
+     * Left Tree branch if configured.
+     * @return left branch or null
+     */
     public TreeBranch getLeftBranch() {
         return leftBranch;
     }
 
+    /**
+     * Right Tree branch if configured.
+     * @return right branch or null
+     */
     public TreeBranch getRightBranch() {
         return rightBranch;
     }

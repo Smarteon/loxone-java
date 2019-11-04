@@ -52,6 +52,9 @@ class LoxoneWebSocketAT extends Specification {
         loxoneWebSocket.close()
     }
 
+    /**
+     * This only passes when the deviceId is not guarded by visualization password
+     */
     def "should ask for device status"() {
         given:
         def latch = commands.expectCommand(".*/$deviceId/all")
@@ -64,6 +67,9 @@ class LoxoneWebSocketAT extends Specification {
         commands.matched.size() == 1
     }
 
+    /**
+     * This only passes when the deviceId is really guarded by visualization password
+     */
     def "should ask for secured device status"() {
         given:
         def latch = commands.expectCommand(".*/$deviceId/all")

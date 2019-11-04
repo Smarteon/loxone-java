@@ -5,6 +5,7 @@ import cz.smarteon.loxone.message.ApiInfo
 import cz.smarteon.loxone.message.LoxoneMessage
 import cz.smarteon.loxone.message.PubKeyInfo
 import org.bouncycastle.jce.provider.BouncyCastleProvider
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Timeout
@@ -22,6 +23,8 @@ import static cz.smarteon.loxone.MockWebSocketServer.USER
 import static cz.smarteon.loxone.MockWebSocketServer.VISU_PASS
 import static org.hamcrest.CoreMatchers.equalTo
 
+// MockWebSocketServer needs to be refactored, however it's value is questionable
+@Ignore
 class LoxoneWebSocketTest extends Specification {
 
     MockWebSocketServer server

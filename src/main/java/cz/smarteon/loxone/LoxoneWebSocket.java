@@ -20,15 +20,14 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import static cz.smarteon.loxone.Command.ENABLE_STATUS_UPDATE;
 import static cz.smarteon.loxone.Protocol.HTTP_AUTH_FAIL;
 import static cz.smarteon.loxone.Protocol.HTTP_AUTH_TOO_LONG;
 import static cz.smarteon.loxone.Protocol.HTTP_NOT_AUTHENTICATED;
 import static cz.smarteon.loxone.Protocol.HTTP_NOT_FOUND;
 import static cz.smarteon.loxone.Protocol.HTTP_OK;
 import static cz.smarteon.loxone.Protocol.HTTP_UNAUTHORIZED;
-import static cz.smarteon.loxone.Protocol.isCommandGetToken;
 import static cz.smarteon.loxone.Protocol.isCommandGetVisuSalt;
-import static cz.smarteon.loxone.Protocol.jsonGetKey;
 import static cz.smarteon.loxone.Protocol.jsonGetVisuSalt;
 import static cz.smarteon.loxone.Protocol.jsonSecured;
 import static java.lang.String.format;
@@ -63,6 +62,15 @@ public class LoxoneWebSocket {
         this.eventListeners = new LinkedList<>();
 
         registerListener(loxoneAuth);
+        loxoneAuth.registerAuthListener(() -> {
+            if (authSeqLatch != null) {
+                sendInternal(ENABLE_STATUS_UPDATE);
+                authSeqLatch.countDown();
+            } else {
+                throw new IllegalStateException("Authentication not guarded");
+            }
+        });
+        loxoneAuth.setCommandSender(this::sendInternal);
     }
 
     public void registerListener(final CommandListener listener) {
@@ -134,6 +142,9 @@ public class LoxoneWebSocket {
                     connectRwLock.writeLock().unlock();
                 }
             }
+        } else if (!loxoneAuth.isUsable()) {
+            authSeqLatch = new CountDownLatch(1);
+            loxoneAuth.startAuthentication();
         }
     }
 
@@ -212,6 +223,12 @@ public class LoxoneWebSocket {
     }
 
 
+    void sendInternal(final Command command) {
+        log.debug("Sending websocket message: " + command.getCommand());
+        webSocketClient.send(command.getCommand());
+    }
+
+    @Deprecated
     void sendInternal(final String command) {
         log.debug("Sending websocket message: " + command);
         webSocketClient.send(command);
@@ -290,22 +307,6 @@ public class LoxoneWebSocket {
 
         if (command != null && command.startsWith(Protocol.C_SYS_ENC)) {
             log.debug("Encrypted message");
-        }
-
-        if (jsonGetKey(loxoneAuth.getUser()).equals(command)) {
-            loxoneAuth.onCommand(command, value);
-            // TODO do not always get new token
-            sendInternal(loxoneAuth.encryptCommand(loxoneAuth.getTokenCommand()));
-        }
-
-        if (isCommandGetToken(command, loxoneAuth.getUser())) {
-            // TODO do not always get new token
-            if (authSeqLatch != null) {
-                sendInternal(Protocol.C_JSON_INIT_STATUS);
-                authSeqLatch.countDown();
-            } else {
-                throw new IllegalStateException("Authentication not guarded");
-            }
         }
 
         if (isCommandGetVisuSalt(command, loxoneAuth.getUser())) {

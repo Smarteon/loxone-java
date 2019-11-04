@@ -23,8 +23,6 @@ class LoxoneValueTypeResolver implements TypeIdResolver {
             return context.constructSpecializedType(baseType, Hashing.class);
         } else if (id.contains("dev/sps/LoxAPPversion3")) {
             return context.constructSpecializedType(baseType, DateValue.class);
-        } else if (id.contains("token")) {
-            return context.constructSpecializedType(baseType, Token.class);
         } else {
             return COMMANDS.stream()
                     .filter(command -> command.is(id))

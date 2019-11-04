@@ -1,8 +1,7 @@
 package cz.smarteon.loxone;
 
+import cz.smarteon.loxone.message.LoxoneMessage;
 import cz.smarteon.loxone.system.status.MiniserverStatus;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * Represents miniserver command
@@ -14,16 +13,6 @@ public class Command<T> {
      * Miniserver status API.
      */
     public static final Command<MiniserverStatus> DATA_STATUS = xmlHttpCommand("data/status", MiniserverStatus.class);
-
-    /**
-     * Allow keep-alive WS guard.
-     */
-    public static final Command<Void> KEEP_ALIVE = voidWsCommand("keepalive");
-
-    /**
-     * Enable sending miniserver status updates through WS.
-     */
-    public static final Command<Void> ENABLE_STATUS_UPDATE = voidWsCommand("jdev/sps/enablebinstatusupdate");
 
     private final String command;
     private final Type type;
@@ -50,19 +39,6 @@ public class Command<T> {
 
     private static <T> Command<T> xmlHttpCommand(final String command, final Class<T> responseType) {
         return new Command<>(command, Type.XML, responseType, true, false);
-    }
-
-    private static Command<Void> voidWsCommand(final String template, final String... params) {
-        return new Command<>(String.format(requireNonNull(template), (Object[]) params), null, Void.class, false, true);
-    }
-
-    /**
-     * Session key exchange command
-     * @param sessionKey key to exchange
-     * @return new key exchange command
-     */
-    public static Command<Void> keyExchange(final String sessionKey) {
-        return voidWsCommand("jdev/sys/keyexchange/%s", sessionKey);
     }
 
     /**

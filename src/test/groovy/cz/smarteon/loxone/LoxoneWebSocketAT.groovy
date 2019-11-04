@@ -38,7 +38,6 @@ class LoxoneWebSocketAT extends Specification {
         final LoxoneAuth loxoneAuth = new LoxoneAuth(new LoxoneHttp(address), getenv(LOX_USER), getenv(LOX_PASS), getenv(LOX_VISPASS))
         loxoneWebSocket = new LoxoneWebSocket(address, loxoneAuth)
 
-        commands = new CommandMemory()
         loxoneWebSocket.registerListener(commands)
 
         deviceId = getenv(LOX_DEVICE)

@@ -1,34 +1,40 @@
 package cz.smarteon.loxone;
 
 import cz.smarteon.loxone.message.ApiInfo;
-import cz.smarteon.loxone.message.EncryptedCommand;
 import cz.smarteon.loxone.message.Hashing;
 import cz.smarteon.loxone.message.LoxoneMessage;
 import cz.smarteon.loxone.message.LoxoneMessageCommand;
 import cz.smarteon.loxone.message.LoxoneValue;
 import cz.smarteon.loxone.message.PubKeyInfo;
-import cz.smarteon.loxone.message.Token;
 import org.java_websocket.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SecureRandom;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import static cz.smarteon.loxone.Codec.bytesToHex;
+import static cz.smarteon.loxone.Codec.concat;
 import static cz.smarteon.loxone.Codec.concatToBytes;
-import static cz.smarteon.loxone.Command.keyExchange;
 import static cz.smarteon.loxone.Protocol.isCommandGetVisuSalt;
-import static cz.smarteon.loxone.message.LoxoneMessageCommand.getKey;
+import static cz.smarteon.loxone.Protocol.jsonEncrypted;
+import static cz.smarteon.loxone.Protocol.jsonGetKey;
+import static cz.smarteon.loxone.Protocol.jsonGetToken;
 import static java.util.Collections.singletonMap;
 import static java.util.Objects.requireNonNull;
 
@@ -60,24 +66,17 @@ public class LoxoneAuth implements CommandListener {
     private final String loxoneVisPass;
 
     private ApiInfo apiInfo;
+    private Hashing hashing;
     private PublicKey publicKey;
     private SecretKey sharedKey;
     private byte[] sharedKeyIv;
     private Hashing visuHashing;
-    private Token token;
 
     private String sharedSalt;
     private int saltUsageCount = 0;
     private SecureRandom sha1PRNG;
 
     private String clientInfo = DEFAULT_CLIENT_INFO;
-
-    private final LoxoneMessageCommand<Hashing> getKeyCommand;
-    private EncryptedCommand<Token> lastTokenCommand;
-
-    private final List<AuthListener> authListeners;
-    private CommandSender commandSender;
-
 
     /**
      * Creates new instance
@@ -91,10 +90,6 @@ public class LoxoneAuth implements CommandListener {
         this.loxoneUser = requireNonNull(loxoneUser, "loxoneUser shouldn't be null");
         this.loxonePass = requireNonNull(loxonePass, "loxonePass shouldn't be null");
         this.loxoneVisPass = requireNonNull(loxoneVisPass, "loxoneVisPass shouldn't be null");
-
-        this.getKeyCommand = getKey(loxoneUser);
-
-        this.authListeners = new LinkedList<>();
     }
 
     /**
@@ -125,17 +120,12 @@ public class LoxoneAuth implements CommandListener {
         return clientInfo;
     }
 
-
     /**
      * Sets the client info sent as part of token request, defaults to {@link #DEFAULT_CLIENT_INFO}
      * @param clientInfo client info
      */
     public void setClientInfo(String clientInfo) {
         this.clientInfo = clientInfo;
-    }
-
-    public void setCommandSender(final CommandSender commandSender) {
-        this.commandSender = commandSender;
     }
 
     /**
@@ -146,12 +136,16 @@ public class LoxoneAuth implements CommandListener {
         fetchApiInfo();
         fetchPublicKey();
 
-        sha1PRNG = LoxoneCrypto.getSecureRandom();
+        try {
+            sha1PRNG = SecureRandom.getInstance("SHA1PRNG");
+        } catch (NoSuchAlgorithmException e) {
+            throw new LoxoneException("No SHA1PRNG provider present", e);
+        }
 
         if (sharedKey == null) {
-            sharedKey = LoxoneCrypto.createSharedKey();
+            createSharedKey();
         }
-        sharedKeyIv = LoxoneCrypto.createSharedKeyIv(sha1PRNG);
+        createSharedKeyIv();
 
         log.trace("LoxoneAuth init finish");
     }
@@ -174,9 +168,61 @@ public class LoxoneAuth implements CommandListener {
      * Returns RSA encrypted generated shared key prepared for key exchange. May throw an exception if not initialized properly.
      * @return RSA encrypted sharedKey
      */
-    private String getSessionKey() {
+    public String getSessionKey() {
         checkInitialized();
-        return LoxoneCrypto.createSessionKey(sharedKey, sharedKeyIv, publicKey);
+        try {
+            final Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+            byte[] encryptedbytes = cipher.doFinal(concatToBytes(bytesToHex(sharedKey.getEncoded()), bytesToHex(sharedKeyIv)));
+            log.trace("Created session key (in hex): {}", bytesToHex(encryptedbytes));
+            return Base64.encodeBytes(encryptedbytes);
+        } catch (NoSuchAlgorithmException | BadPaddingException | NoSuchPaddingException | IllegalBlockSizeException | InvalidKeyException e) {
+            throw new LoxoneException("Can't encrypt sharedKey to obtain sessionKey", e);
+        }
+    }
+
+    /**
+     * Creates gettoken command, implies the hashing has been received from loxone server recently using get key command.
+     * @return new gettoken command
+     */
+    public String getTokenCommand() {
+        try {
+            final MessageDigest md = MessageDigest.getInstance("SHA-1");
+            final byte[] toSha1 = concatToBytes(loxonePass, hashing.getSalt());
+            final String pwHash = bytesToHex(md.digest(toSha1)).toUpperCase();
+            log.trace("getToken password hash: {}", pwHash);
+
+            final Mac mac = Mac.getInstance("HmacSHA1");
+            final SecretKeySpec secret = new SecretKeySpec(hashing.getKey(), "HmacSHA1");
+            mac.init(secret);
+            final byte[] hash = mac.doFinal(concatToBytes(loxoneUser, pwHash));
+            final String finalHash = bytesToHex(hash);
+            log.trace("getToken final hash: {}", finalHash);
+
+            return jsonGetToken(finalHash, loxoneUser, CLIENT_UUID, clientInfo);
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new LoxoneException("Can't perform hashing to prepare gettoken command", e);
+        }
+    }
+
+    /**
+     * Encrypts the given command, returning encrypted command ready to be sent to loxone, may throw exception if not properly initialized.
+     * @param command command to be encrypted
+     * @return new command which carries the given command encrypted
+     */
+    public String encryptCommand(String command) {
+        if (sharedSalt == null) {
+            sharedSalt = generateSalt();
+        }
+        String saltPart = "salt/" + sharedSalt;
+        if (isNewSaltNeeded()) {
+            log.trace("changing the salt");
+            saltPart = "nextSalt/" + sharedSalt + "/";
+            sharedSalt = generateSalt();
+            saltPart += sharedSalt;
+        }
+
+        return jsonEncrypted(encryptWithSharedKey(saltPart + "/" + command));
     }
 
     /**
@@ -205,82 +251,17 @@ public class LoxoneAuth implements CommandListener {
         }
     }
 
-    public boolean isUsable() {
-        return new TokenState(token).isUsable();
-    }
-
-    public void startAuthentication() {
-        sendCommand(keyExchange(getSessionKey())); // TODO is necessary to recreate the session key everytime?
-        sendCommand(getKeyCommand);
-    }
-
     @Override
     public State onCommand(String command, LoxoneValue value) {
-        if (getKeyCommand.is(command)) {
-            final Hashing hashing = getKeyCommand.ensureValue(value);
-            final TokenState tokenState = new TokenState(token);
-            if (tokenState.isExpired()) {
-                lastTokenCommand = EncryptedCommand.getToken(
-                        LoxoneCrypto.loxoneHashing(loxonePass, loxoneUser, hashing, "gettoken"),
-                        loxoneUser, CLIENT_UUID, clientInfo, this::encryptCommand
-                );
-            } else if (tokenState.needsRefresh()) {
-                lastTokenCommand = EncryptedCommand.refreshToken(
-                        LoxoneCrypto.loxoneHashing(token.getToken(), loxoneUser, hashing, "refreshtoken"),
-                        loxoneUser, this::encryptCommand
-                );
-            } else {
-                lastTokenCommand = EncryptedCommand.authWithToken(
-                        LoxoneCrypto.loxoneHashing(token.getToken(), loxoneUser, hashing, "authwithtoken"),
-                        loxoneUser, this::encryptCommand
-                );
-            }
-            sendCommand(lastTokenCommand);
-            return State.CONSUMED;
+        if (jsonGetKey(loxoneUser).equals(command)) {
+            hashing = parseHashing(value);
+            return hashing != null ? State.CONSUMED : State.IGNORED;
         } else if (isCommandGetVisuSalt(command, loxoneUser)) {
             visuHashing = parseHashing(value);
             return visuHashing != null ? State.CONSUMED : State.IGNORED;
-        } else if (lastTokenCommand != null && lastTokenCommand.is(command)) {
-            token = lastTokenCommand.ensureValue(value);
-            authListeners.forEach(AuthListener::authCompleted);
-            lastTokenCommand = null;
-            return State.CONSUMED;
         }
 
         return State.IGNORED;
-    }
-
-    public void registerAuthListener(final AuthListener listener) {
-        authListeners.add(listener);
-    }
-
-
-    private void sendCommand(final Command command) {
-        if (commandSender != null) {
-            commandSender.send(command);
-        } else {
-            throw new IllegalStateException("CommandSender not set, authentication cannot work correctly");
-        }
-    }
-
-    /**
-     * Encrypts the given command, returning encrypted command ready to be sent to loxone, may throw exception if not properly initialized.
-     * @param command command to be encrypted
-     * @return new command which carries the given command encrypted
-     */
-    private String encryptCommand(String command) {
-        if (sharedSalt == null) {
-            sharedSalt = LoxoneCrypto.generateSalt(sha1PRNG);
-        }
-        String saltPart = "salt/" + sharedSalt;
-        if (isNewSaltNeeded()) {
-            log.trace("changing the salt");
-            saltPart = "nextSalt/" + sharedSalt + "/";
-            sharedSalt = LoxoneCrypto.generateSalt(sha1PRNG);;
-            saltPart += sharedSalt;
-        }
-
-        return encryptWithSharedKey(saltPart + "/" + command);
     }
 
     private Hashing parseHashing(Object value) {
@@ -326,9 +307,47 @@ public class LoxoneAuth implements CommandListener {
         }
     }
 
-    private String encryptWithSharedKey(final String data) {
+    private void createSharedKey() {
+        try {
+            final KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+            keyGen.init(256);
+            sharedKey = keyGen.generateKey();
+            log.trace("Created sharedKey: {}", bytesToHex(sharedKey.getEncoded()));
+        } catch (NoSuchAlgorithmException e) {
+            throw new LoxoneException("No AES provider present", e);
+
+        }
+    }
+
+    private void createSharedKeyIv() {
+        sharedKeyIv = new byte[16];
+        sha1PRNG.nextBytes(sharedKeyIv);
+        log.trace("Created sharedKeyIv: {}", bytesToHex(sharedKeyIv));
+    }
+
+    private String encryptWithSharedKey(String data) {
         checkInitialized();
-        return LoxoneCrypto.encrypt(data, sharedKey, sharedKeyIv);
+        try {
+            final Cipher cipher = Cipher.getInstance("AES/CBC/ZeroBytePadding");
+            final IvParameterSpec ivspec = new IvParameterSpec(sharedKeyIv);
+            cipher.init(Cipher.ENCRYPT_MODE, sharedKey, ivspec);
+            return Base64.encodeBytes(cipher.doFinal(data.getBytes()));
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | IllegalBlockSizeException
+                | InvalidAlgorithmParameterException | InvalidKeyException e) {
+            throw new LoxoneException("Can't perform AES encryption", e);
+        }
+    }
+
+    private String decryptWithSharedKey(String data) {
+        try {
+            final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            final IvParameterSpec ivspec = new IvParameterSpec(sharedKeyIv);
+            cipher.init(Cipher.DECRYPT_MODE, sharedKey, ivspec);
+            return new String(cipher.doFinal(Base64.decode(data)));
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | IllegalBlockSizeException
+                | InvalidAlgorithmParameterException | InvalidKeyException | IOException e) {
+            throw new LoxoneException("Can't perform AES decryption", e);
+        }
     }
 
     /**
@@ -347,5 +366,17 @@ public class LoxoneAuth implements CommandListener {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Generates a random shared salt used for command encryption.
+     * Hex​ ​string​ ​(length​ ​may​ ​vary,​ ​e.g.​ ​2​ ​bytes)​ ​->​ ​{salt}
+     * */
+    private String generateSalt() {
+        byte[] iv = new byte[16];
+        sha1PRNG.nextBytes(iv);
+        final String salt = bytesToHex(iv);
+        log.trace("new command encryption salt generated: {}", salt);
+        return salt;
     }
 }

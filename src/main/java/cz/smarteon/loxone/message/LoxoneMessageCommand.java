@@ -1,12 +1,9 @@
 package cz.smarteon.loxone.message;
 
 import cz.smarteon.loxone.Command;
-import cz.smarteon.loxone.LoxoneException;
 
 import java.util.Arrays;
 import java.util.List;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * Specific command which results into {@link LoxoneMessage} response.
@@ -139,19 +136,10 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
      */
     public static final LoxoneMessageCommand<LongValue> DEV_BUS_PARITYERRORS = jsonHttpCommand("jdev/bus/parityerrors", LongValue.class);
 
-    /**
-     * Get the crypto key for given user.
-     * @param user loxone user
-     * @return command requesting user's crypto key
-     */
-    public static LoxoneMessageCommand<Hashing> getKey(final String user) {
-        return new LoxoneMessageCommand<>("jdev/sys/getkey2/" + requireNonNull(user), Type.JSON, Hashing.class, false, true);
-    }
-
     private final Class<V> valueType;
 
     @SuppressWarnings("unchecked")
-    protected LoxoneMessageCommand(final String command, final Type type, final Class<V> valueType, final boolean httpSupported,
+    private LoxoneMessageCommand(final String command, final Type type, final Class<V> valueType, final boolean httpSupported,
                                 final boolean wsSupported) {
         super(command, type, (Class<LoxoneMessage<V>>) (Class<?>) LoxoneMessage.class, httpSupported, wsSupported);
         this.valueType = valueType;
@@ -198,19 +186,5 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
      */
     public Class<V> getValueType() {
         return valueType;
-    }
-
-    /**
-     * Ensures the given beeing not null and of this command {@link LoxoneMessageCommand#valueType}
-     * @param value value to check
-     * @return checked and cast value
-     */
-    @SuppressWarnings("unchecked")
-    public V ensureValue(final LoxoneValue value) {
-        if (value != null && valueType.isAssignableFrom(value.getClass())) {
-            return (V) value;
-        } else {
-            throw new LoxoneException("Expected value of type " + valueType);
-        }
     }
 }

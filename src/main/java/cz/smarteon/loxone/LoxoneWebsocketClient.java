@@ -18,8 +18,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static cz.smarteon.loxone.Codec.bytesToHex;
-import static cz.smarteon.loxone.Protocol.jsonGetKey;
-import static cz.smarteon.loxone.Protocol.jsonKeyExchange;
 import static cz.smarteon.loxone.Command.KEEP_ALIVE;
 import static java.util.Objects.requireNonNull;
 
@@ -72,8 +70,8 @@ class LoxoneWebsocketClient extends WebSocketClient {
     @Override
     public void onOpen(final ServerHandshake handshakedata) {
         log.info("Opened");
-        ws.sendInternal(jsonKeyExchange(ws.loxoneAuth.getSessionKey()));
-        ws.sendInternal(jsonGetKey(ws.loxoneAuth.getUser()));
+
+        ws.loxoneAuth.startAuthentication();
 
         // schedule the keep alive guard
         keepAliveFuture = keepAliveScheduler.scheduleAtFixedRate(keepAliveTask,

@@ -51,6 +51,15 @@ public class Command<T> {
     }
 
     /**
+     * Session key exchange command
+     * @param sessionKey key to exchange
+     * @return new key exchange command
+     */
+    public static Command<Void> keyExchange(final String sessionKey) {
+        return voidWsCommand("jdev/sys/keyexchange/%s", sessionKey);
+    }
+
+    /**
      * Check whether this command matches the given argument.
      * @param toCompare command to compare
      * @return true when the argument contains this command identifier, false otherwise

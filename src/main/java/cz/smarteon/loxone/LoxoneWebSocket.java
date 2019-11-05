@@ -63,6 +63,7 @@ public class LoxoneWebSocket {
         this.eventListeners = new LinkedList<>();
 
         registerListener(loxoneAuth);
+        loxoneAuth.setCommandSender(this::sendInternal);
     }
 
     public void registerListener(final CommandListener listener) {

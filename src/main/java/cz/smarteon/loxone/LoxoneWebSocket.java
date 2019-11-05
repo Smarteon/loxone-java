@@ -20,6 +20,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import static cz.smarteon.loxone.Command.ENABLE_STATUS_UPDATE;
 import static cz.smarteon.loxone.Protocol.HTTP_AUTH_FAIL;
 import static cz.smarteon.loxone.Protocol.HTTP_AUTH_TOO_LONG;
 import static cz.smarteon.loxone.Protocol.HTTP_NOT_AUTHENTICATED;
@@ -308,7 +309,7 @@ public class LoxoneWebSocket {
         if (isCommandGetToken(command, loxoneAuth.getUser())) {
             // TODO do not always get new token
             if (authSeqLatch != null) {
-                sendInternal(Protocol.C_JSON_INIT_STATUS);
+                sendInternal(ENABLE_STATUS_UPDATE);
                 authSeqLatch.countDown();
             } else {
                 throw new IllegalStateException("Authentication not guarded");

@@ -3,6 +3,7 @@ package cz.smarteon.loxone;
 import cz.smarteon.loxone.system.status.MiniserverStatus;
 
 import static java.util.Objects.requireNonNull;
+
 /**
  * Represents miniserver command
  * @param <T>  type of command response
@@ -18,6 +19,11 @@ public class Command<T> {
      * Allow keep-alive WS guard.
      */
     public static final Command<Void> KEEP_ALIVE = voidWsCommand("keepalive");
+
+    /**
+     * Enable sending miniserver status updates through WS.
+     */
+    public static final Command<Void> ENABLE_STATUS_UPDATE = voidWsCommand("jdev/sps/enablebinstatusupdate");
 
     private final String command;
     private final Type type;

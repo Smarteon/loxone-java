@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static cz.smarteon.loxone.Codec.bytesToHex;
 import static cz.smarteon.loxone.Protocol.jsonGetKey;
 import static cz.smarteon.loxone.Protocol.jsonKeyExchange;
+import static cz.smarteon.loxone.Command.KEEP_ALIVE;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -55,7 +56,7 @@ class LoxoneWebsocketClient extends WebSocketClient {
         super(uri);
         this.ws = requireNonNull(ws);
         this.keepAliveTask = () -> {
-            LoxoneWebsocketClient.this.ws.sendInternal("keepalive");
+            LoxoneWebsocketClient.this.ws.sendInternal(KEEP_ALIVE);
             keepAliveLatch = new CountDownLatch(1);
             try {
                 if (!keepAliveLatch.await(KEEP_ALIVE_RESPONSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {

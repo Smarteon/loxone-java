@@ -1,8 +1,8 @@
 package cz.smarteon.loxone;
 
-import cz.smarteon.loxone.message.LoxoneMessage;
 import cz.smarteon.loxone.system.status.MiniserverStatus;
 
+import static java.util.Objects.requireNonNull;
 /**
  * Represents miniserver command
  * @param <T>  type of command response
@@ -13,6 +13,11 @@ public class Command<T> {
      * Miniserver status API.
      */
     public static final Command<MiniserverStatus> DATA_STATUS = xmlHttpCommand("data/status", MiniserverStatus.class);
+
+    /**
+     * Allow keep-alive WS guard.
+     */
+    public static final Command<Void> KEEP_ALIVE = voidWsCommand("keepalive");
 
     private final String command;
     private final Type type;
@@ -39,6 +44,10 @@ public class Command<T> {
 
     private static <T> Command<T> xmlHttpCommand(final String command, final Class<T> responseType) {
         return new Command<>(command, Type.XML, responseType, true, false);
+    }
+
+    static Command<Void> voidWsCommand(final String template, final String... params) {
+        return new Command<>(String.format(requireNonNull(template), (Object[]) params), null, Void.class, false, true);
     }
 
     /**

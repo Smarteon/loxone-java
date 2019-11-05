@@ -212,6 +212,12 @@ public class LoxoneWebSocket {
     }
 
 
+    void sendInternal(final Command command) {
+        log.debug("Sending websocket message: " + command.getCommand());
+        webSocketClient.send(command.getCommand());
+    }
+
+    @Deprecated
     void sendInternal(final String command) {
         log.debug("Sending websocket message: " + command);
         webSocketClient.send(command);

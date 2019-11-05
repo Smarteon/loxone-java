@@ -5,6 +5,7 @@ import cz.smarteon.loxone.message.ApiInfo
 import cz.smarteon.loxone.message.LoxoneMessage
 import cz.smarteon.loxone.message.PubKeyInfo
 import org.bouncycastle.jce.provider.BouncyCastleProvider
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Timeout
@@ -103,6 +104,7 @@ class LoxoneWebSocketTest extends Specification {
         thrown(LoxoneException)
     }
 
+    @Ignore("Unreliable test since it's impossible to detect when the same port is again free to bind")
     def "should handle server restart"() {
         when:
         server.expect(equalTo('beforeRestart'))

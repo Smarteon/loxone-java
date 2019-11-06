@@ -20,9 +20,7 @@ public abstract class Protocol {
     public static final String C_JSON = "jdev/sps/io";
     public static final String C_XML = "dev/sps/io";
     public static final String CS_JSON = "jdev/sps/ios";
-    public static final String C_JSON_INIT_STATUS = "jdev/sps/enablebinstatusupdate";
     public static final String C_AUTHENTICATE = "authenticate";
-    public static final String C_JSON_KEY_EXCHANGE = "jdev/sys/keyexchange";
     public static final String C_JSON_GET_TOKEN = "jdev/sys/gettoken";
     public static final String C_JSON_GET_VISU_SALT = "jdev/sys/getvisusalt";
     public static final String C_GET_VISU_SALT = "dev/sys/getvisusalt";
@@ -92,10 +90,6 @@ public abstract class Protocol {
 
     public static String authentication(String hmac) {
         return format(TEMPLATE_AUTHENTICATE, hmac);
-    }
-
-    public static String jsonKeyExchange(String sessionKey) {
-        return C_JSON_KEY_EXCHANGE + "/" + sessionKey;
     }
 
     public static String jsonGetKey(String user) {

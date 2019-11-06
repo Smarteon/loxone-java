@@ -38,6 +38,7 @@ class LoxoneWebSocketAT extends Specification {
         final LoxoneAuth loxoneAuth = new LoxoneAuth(new LoxoneHttp(address), getenv(LOX_USER), getenv(LOX_PASS), getenv(LOX_VISPASS))
         loxoneWebSocket = new LoxoneWebSocket(address, loxoneAuth)
 
+        commands = new CommandMemory()
         loxoneWebSocket.registerListener(commands)
 
         deviceId = getenv(LOX_DEVICE)
@@ -51,6 +52,9 @@ class LoxoneWebSocketAT extends Specification {
         loxoneWebSocket.close()
     }
 
+    /**
+     * This only passes when the deviceId is not guarded by visualization password
+     */
     def "should ask for device status"() {
         given:
         def latch = commands.expectCommand(".*/$deviceId/all")
@@ -63,6 +67,9 @@ class LoxoneWebSocketAT extends Specification {
         commands.matched.size() == 1
     }
 
+    /**
+     * This only passes when the deviceId is really guarded by visualization password
+     */
     def "should ask for secured device status"() {
         given:
         def latch = commands.expectCommand(".*/$deviceId/all")

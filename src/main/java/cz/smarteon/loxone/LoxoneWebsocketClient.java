@@ -10,13 +10,25 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static cz.smarteon.loxone.Codec.bytesToHex;
-import static cz.smarteon.loxone.Protocol.jsonGetKey;
-import static cz.smarteon.loxone.Protocol.jsonKeyExchange;
+import static cz.smarteon.loxone.Command.KEEP_ALIVE;
+import static java.util.Objects.requireNonNull;
 
+/**
+ * {@link WebSocketClient} providing:
+ * <ul>
+ *     <li>Initial connection setup</li>
+ *     <li>Keepalive mechanism</li>
+ *     <li>Loxone protocol guard (parses header messages)</li>
+ * </ul>
+ */
 class LoxoneWebsocketClient extends WebSocketClient {
 
     private static final Logger log = LoggerFactory.getLogger(LoxoneWebsocketClient.class);
@@ -33,38 +45,45 @@ class LoxoneWebsocketClient extends WebSocketClient {
     private CountDownLatch keepAliveLatch;
     private ScheduledFuture keepAliveFuture;
 
-    LoxoneWebsocketClient(LoxoneWebSocket ws, URI uri) {
+    /**
+     * Creates new instance
+     * @param ws callback for processing messages and events
+     * @param uri websocket URI to connect to
+     */
+    LoxoneWebsocketClient(final LoxoneWebSocket ws, final URI uri) {
         super(uri);
-        this.ws = ws;
-        this.keepAliveTask = new Runnable() {
-            @Override
-            public void run() {
-                LoxoneWebsocketClient.this.ws.sendInternal("keepalive");
-                keepAliveLatch = new CountDownLatch(1);
-                try {
-                    if (!keepAliveLatch.await(KEEP_ALIVE_RESPONSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
-                        log.info("Keepalive response not received within timeout, closing connection");
-                        LoxoneWebsocketClient.this.ws.close();
-                    }
-                } catch (InterruptedException e) {
-                    log.debug("Keepalive latch has been interrupted");
+        this.ws = requireNonNull(ws);
+        this.keepAliveTask = () -> {
+            LoxoneWebsocketClient.this.ws.sendInternal(KEEP_ALIVE);
+            keepAliveLatch = new CountDownLatch(1);
+            try {
+                if (!keepAliveLatch.await(KEEP_ALIVE_RESPONSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                    log.info("Keepalive response not received within timeout, closing connection");
+                    LoxoneWebsocketClient.this.ws.close();
                 }
+            } catch (InterruptedException e) {
+                log.debug("Keepalive latch has been interrupted");
             }
         };
     }
 
     @Override
-    public void onOpen(ServerHandshake handshakedata) {
+    public void onOpen(final ServerHandshake handshakedata) {
         log.info("Opened");
-        ws.sendInternal(jsonKeyExchange(ws.loxoneAuth.getSessionKey()));
-        ws.sendInternal(jsonGetKey(ws.loxoneAuth.getUser()));
 
+        ws.loxoneAuth.startAuthentication();
+
+        // schedule the keep alive guard
         keepAliveFuture = keepAliveScheduler.scheduleAtFixedRate(keepAliveTask,
                 KEEP_ALIVE_INTERVAL_MINUTES, KEEP_ALIVE_INTERVAL_MINUTES, TimeUnit.MINUTES);
     }
 
+    /**
+     * Processes text message. The previous message header should have been of kind {@link MessageKind#TEXT}
+     * @param message message.
+     */
     @Override
-    public void onMessage(String message) {
+    public void onMessage(final String message) {
         log.trace("Incoming message " + message);
         final MessageHeader msgHeader = msgHeaderRef.getAndSet(null);
         if (msgHeader != null && msgHeader.getKind() != MessageKind.TEXT) {
@@ -77,6 +96,15 @@ class LoxoneWebsocketClient extends WebSocketClient {
         }
     }
 
+    /**
+     * Processes binary message. That can be one of:
+     * <ul>
+     *     <li>{@link MessageHeader#KEEP_ALIVE} - used to guard the connection</li>
+     *     <li>Regular {@link MessageHeader} - set for next message parsing</li>
+     *     <li>Binary message of events - previous header is used to parse and process</li>
+     * </ul>
+     * @param bytes message
+     */
     @Override
     public void onMessage(ByteBuffer bytes) {
         try {

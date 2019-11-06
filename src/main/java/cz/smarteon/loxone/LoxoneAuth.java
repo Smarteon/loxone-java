@@ -31,10 +31,11 @@ import java.util.Map;
 import static cz.smarteon.loxone.Codec.bytesToHex;
 import static cz.smarteon.loxone.Codec.concat;
 import static cz.smarteon.loxone.Codec.concatToBytes;
+import static cz.smarteon.loxone.Command.keyExchange;
 import static cz.smarteon.loxone.Protocol.isCommandGetVisuSalt;
 import static cz.smarteon.loxone.Protocol.jsonEncrypted;
-import static cz.smarteon.loxone.Protocol.jsonGetKey;
 import static cz.smarteon.loxone.Protocol.jsonGetToken;
+import static cz.smarteon.loxone.message.LoxoneMessageCommand.getKey;
 import static java.util.Collections.singletonMap;
 import static java.util.Objects.requireNonNull;
 
@@ -78,6 +79,9 @@ public class LoxoneAuth implements CommandListener {
 
     private String clientInfo = DEFAULT_CLIENT_INFO;
 
+    private final LoxoneMessageCommand<Hashing> getKeyCommand;
+    private CommandSender commandSender;
+
     /**
      * Creates new instance
      * @param loxoneHttp loxone http interface used to perform some necessary http calls to loxone
@@ -90,6 +94,8 @@ public class LoxoneAuth implements CommandListener {
         this.loxoneUser = requireNonNull(loxoneUser, "loxoneUser shouldn't be null");
         this.loxonePass = requireNonNull(loxonePass, "loxonePass shouldn't be null");
         this.loxoneVisPass = requireNonNull(loxoneVisPass, "loxoneVisPass shouldn't be null");
+
+        this.getKeyCommand = getKey(loxoneUser);
     }
 
     /**
@@ -126,6 +132,10 @@ public class LoxoneAuth implements CommandListener {
      */
     public void setClientInfo(String clientInfo) {
         this.clientInfo = clientInfo;
+    }
+
+    public void setCommandSender(final CommandSender commandSender) {
+        this.commandSender = commandSender;
     }
 
     /**
@@ -251,10 +261,15 @@ public class LoxoneAuth implements CommandListener {
         }
     }
 
+    public void startAuthentication() {
+        sendCommand(keyExchange(getSessionKey())); // TODO is necessary to recreate the session key everytime?
+        sendCommand(getKeyCommand);
+    }
+
     @Override
     public State onCommand(String command, LoxoneValue value) {
-        if (jsonGetKey(loxoneUser).equals(command)) {
-            hashing = parseHashing(value);
+        if (getKeyCommand.is(command)) {
+            hashing = getKeyCommand.ensureValue(value);
             return hashing != null ? State.CONSUMED : State.IGNORED;
         } else if (isCommandGetVisuSalt(command, loxoneUser)) {
             visuHashing = parseHashing(value);
@@ -262,6 +277,14 @@ public class LoxoneAuth implements CommandListener {
         }
 
         return State.IGNORED;
+    }
+
+    private void sendCommand(final Command command) {
+        if (commandSender != null) {
+            commandSender.send(command);
+        } else {
+            throw new IllegalStateException("CommandSender not set, authentication cannot work correctly");
+        }
     }
 
     private Hashing parseHashing(Object value) {

@@ -5,6 +5,7 @@ plugins {
     groovy
     signing
     maven
+    jacoco
     id("net.researchgate.release") version "2.6.0"
 }
 
@@ -70,9 +71,21 @@ val ossUser: String? by project
 val ossPass: String? by project
 
 tasks {
+    jacocoTestReport {
+        reports {
+            xml.isEnabled = true
+            html.isEnabled = true
+        }
+    }
+
+    check {
+        dependsOn(jacocoTestReport)
+    }
+
     "afterReleaseBuild" {
         dependsOn("uploadArchives")
     }
+
     "uploadArchives"(Upload::class) {
         repositories {
             withConvention(MavenRepositoryHandlerConvention::class) {

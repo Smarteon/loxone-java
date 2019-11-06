@@ -14,6 +14,6 @@ class LoxoneWebsocketClientTest extends Specification {
 
     def "should parse binary message"() {
         expect:
-        client.onMessage(ByteBuffer.wrap([0xAA] as byte[]))
+        client.onMessage(ByteBuffer.wrap([0x03, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0] as byte[]))
     }
 }

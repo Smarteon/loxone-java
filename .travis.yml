@@ -3,6 +3,8 @@ jdk:
   - openjdk8
   - openjdk11
 script: ./gradlew check -i
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/

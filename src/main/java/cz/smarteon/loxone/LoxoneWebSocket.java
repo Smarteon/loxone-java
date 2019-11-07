@@ -29,6 +29,7 @@ import static cz.smarteon.loxone.Protocol.HTTP_OK;
 import static cz.smarteon.loxone.Protocol.HTTP_UNAUTHORIZED;
 import static cz.smarteon.loxone.Protocol.isCommandGetToken;
 import static cz.smarteon.loxone.Protocol.isCommandGetVisuSalt;
+import static cz.smarteon.loxone.Protocol.jsonEncrypted;
 import static cz.smarteon.loxone.Protocol.jsonGetKey;
 import static cz.smarteon.loxone.Protocol.jsonGetVisuSalt;
 import static cz.smarteon.loxone.Protocol.jsonSecured;
@@ -303,7 +304,7 @@ public class LoxoneWebSocket {
         if (jsonGetKey(loxoneAuth.getUser()).equals(command)) {
             loxoneAuth.onCommand(command, value);
             // TODO do not always get new token
-            sendInternal(loxoneAuth.encryptCommand(loxoneAuth.getTokenCommand()));
+            sendInternal(jsonEncrypted(loxoneAuth.encryptCommand(loxoneAuth.getTokenCommand())));
         }
 
         if (isCommandGetToken(command, loxoneAuth.getUser())) {

@@ -1,8 +1,5 @@
 package cz.smarteon.loxone;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
 import static java.lang.String.format;
 
 public abstract class Protocol {
@@ -14,17 +11,14 @@ public abstract class Protocol {
     public static final int HTTP_AUTH_TOO_LONG = 420;
     public static final int HTTP_UNAUTHORIZED = 500;
 
-    public static final String C_JSON_GET_KEY = "jdev/sys/getkey2";
     public static final String C_XML_GET_KEY = "dev/sys/getkey";
     public static final String C_SYS_ENC = "dev/sys/enc";
     public static final String C_JSON = "jdev/sps/io";
     public static final String C_XML = "dev/sps/io";
     public static final String CS_JSON = "jdev/sps/ios";
     public static final String C_AUTHENTICATE = "authenticate";
-    public static final String C_JSON_GET_TOKEN = "jdev/sys/gettoken";
     public static final String C_JSON_GET_VISU_SALT = "jdev/sys/getvisusalt";
     public static final String C_GET_VISU_SALT = "dev/sys/getvisusalt";
-    public static final String C_JSON_ENC = "jdev/sys/enc/";
     public static final String C_APP = "data/LoxAPP3.json";
     public static final String C_JSON_APP_VERSION = "jdev/sps/LoxAPPversion3";
     public static final String C_APP_VERSION = "dev/sps/LoxAPPversion3";
@@ -92,19 +86,6 @@ public abstract class Protocol {
         return format(TEMPLATE_AUTHENTICATE, hmac);
     }
 
-    public static String jsonGetKey(String user) {
-        return C_JSON_GET_KEY + "/" + user;
-    }
-
-
-    public static String jsonGetToken(String tokenHash, String user, String clientUuid, String clientInfo) {
-        return C_JSON_GET_TOKEN + "/" + tokenHash + "/" + user + "/2/" + clientUuid + "/" + clientInfo;
-    }
-
-    public static boolean isCommandGetToken(String command, String user) {
-        return command.matches(C_JSON_GET_TOKEN + ".*/" + user + "/.*");
-    }
-
     public static String jsonGetVisuSalt(String user) {
         return C_JSON_GET_VISU_SALT + "/" + user ;
     }
@@ -113,19 +94,7 @@ public abstract class Protocol {
         return command.matches(C_GET_VISU_SALT + "/" + user);
     }
 
-    public static String jsonEncrypted(String encryptedCommand) {
-        return C_JSON_ENC + encodeUrl(encryptedCommand);
-    }
-
     public static String jsonSecured(String command, String visuHash) {
         return CS_JSON + "/" + visuHash + "/" + command;
-    }
-
-    private static String encodeUrl(String toEncode) {
-        try {
-            return URLEncoder.encode(toEncode, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("UTF-8 encoding should be present everywhere", e);
-        }
     }
 }

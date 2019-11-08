@@ -151,7 +151,7 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
     private final Class<V> valueType;
 
     @SuppressWarnings("unchecked")
-    private LoxoneMessageCommand(final String command, final Type type, final Class<V> valueType, final boolean httpSupported,
+    protected LoxoneMessageCommand(final String command, final Type type, final Class<V> valueType, final boolean httpSupported,
                                 final boolean wsSupported) {
         super(command, type, (Class<LoxoneMessage<V>>) (Class<?>) LoxoneMessage.class, httpSupported, wsSupported);
         this.valueType = valueType;

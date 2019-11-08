@@ -1,11 +1,13 @@
 package cz.smarteon.loxone;
 
 import cz.smarteon.loxone.message.ApiInfo;
+import cz.smarteon.loxone.message.EncryptedCommand;
 import cz.smarteon.loxone.message.Hashing;
 import cz.smarteon.loxone.message.LoxoneMessage;
 import cz.smarteon.loxone.message.LoxoneMessageCommand;
 import cz.smarteon.loxone.message.LoxoneValue;
 import cz.smarteon.loxone.message.PubKeyInfo;
+import cz.smarteon.loxone.message.Token;
 import org.java_websocket.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,21 +15,22 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.SecretKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import static cz.smarteon.loxone.Codec.concatToBytes;
 import static cz.smarteon.loxone.Command.keyExchange;
 import static cz.smarteon.loxone.Protocol.isCommandGetVisuSalt;
-import static cz.smarteon.loxone.Protocol.jsonGetToken;
 import static cz.smarteon.loxone.message.LoxoneMessageCommand.getKey;
 import static java.util.Collections.singletonMap;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Encapsulates algorithms necessary to perform loxone authentication with loxone server version 9.
+ * Encapsulates algorithms necessary to perform loxone authentication with loxone server version 10.
  * First the {@link #init()} should be called, then the other methods work correctly.
  *
- * @see <a href="https://www.loxone.com/dede/wp-content/uploads/sites/2/2016/08/0900_Communicating-with-the-Miniserver.pdf">Loxone communication</a>
+ * @see <a href="https://www.loxone.com/enen/wp-content/uploads/sites/3/2016/10/1000_Communicating-with-the-Miniserver.pdf">Loxone communication</a>
  */
 public class LoxoneAuth implements CommandListener {
 
@@ -50,20 +53,26 @@ public class LoxoneAuth implements CommandListener {
     private final String loxonePass;
     private final String loxoneVisPass;
 
+    private final LoxoneMessageCommand<Hashing> getKeyCommand;
+    private final List<AuthListener> authListeners;
+
+    // Crypto stuff
     private ApiInfo apiInfo;
-    private Hashing hashing;
     private PublicKey publicKey;
     private SecretKey sharedKey;
+    private SecureRandom sha1PRNG;
     private byte[] sharedKeyIv;
-    private Hashing visuHashing;
-
     private String sharedSalt;
     private int saltUsageCount = 0;
-    private SecureRandom sha1PRNG;
+
+    // Communication stuff
+    private Hashing visuHashing;
+    private Token token;
 
     private String clientInfo = DEFAULT_CLIENT_INFO;
 
-    private final LoxoneMessageCommand<Hashing> getKeyCommand;
+    private EncryptedCommand<Token> lastTokenCommand;
+
     private CommandSender commandSender;
 
     /**
@@ -80,6 +89,8 @@ public class LoxoneAuth implements CommandListener {
         this.loxoneVisPass = requireNonNull(loxoneVisPass, "loxoneVisPass shouldn't be null");
 
         this.getKeyCommand = getKey(loxoneUser);
+
+        this.authListeners = new LinkedList<>();
     }
 
     /**
@@ -111,15 +122,20 @@ public class LoxoneAuth implements CommandListener {
     }
 
     /**
-     * Sets the client info sent as part of token request, defaults to {@link #DEFAULT_CLIENT_INFO}
+     * Allows to modify client info sent as part of token request, defaults to {@link #DEFAULT_CLIENT_INFO}
      * @param clientInfo client info
      */
     public void setClientInfo(String clientInfo) {
         this.clientInfo = clientInfo;
     }
 
+    /**
+     * Set the command sender which allows to send commands over websocket to miniserver. It must be set, otherwise this
+     * class cannot work.
+     * @param commandSender command sender.
+     */
     public void setCommandSender(final CommandSender commandSender) {
-        this.commandSender = commandSender;
+        this.commandSender = requireNonNull(commandSender, "commandSender can't be null");
     }
 
     /**
@@ -164,16 +180,6 @@ public class LoxoneAuth implements CommandListener {
     }
 
     /**
-     * Creates gettoken command, implies the hashing has been received from loxone server recently using get key command.
-     * @return new gettoken command
-     */
-    public String getTokenCommand() {
-        return jsonGetToken(
-                LoxoneCrypto.loxoneHashing(loxonePass, loxoneUser, hashing, "gettoken"),
-                loxoneUser, CLIENT_UUID, clientInfo);
-    }
-
-    /**
      * Computes visualization hash, which can be used in secured command, implies that visualization hashing has been obtained
      * recently using getvisusalt command
      * @return visualization hash
@@ -183,22 +189,71 @@ public class LoxoneAuth implements CommandListener {
         return LoxoneCrypto.loxoneHashing(loxoneVisPass, null, visuHashing, "secured command");
     }
 
-    public void startAuthentication() {
+    /**
+     * Checks whether this authentication is in usable state - in terms to be used for authorized commands. In case
+     * it returns false the authentication must be started over using {@link #startAuthentication()}.
+     * @return true if the connection is authenticated, false otherwise
+     */
+    boolean isUsable() {
+        return new TokenState(token).isUsable();
+    }
+
+    /**
+     * Starts the authentication mechanism.
+     */
+    void startAuthentication() {
         sendCommand(keyExchange(getSessionKey())); // TODO is necessary to recreate the session key everytime?
         sendCommand(getKeyCommand);
     }
 
+    /**
+     * Processes all authentication related incoming commands
+     * @param command command to process
+     * @param value value to process
+     * @return state
+     */
     @Override
-    public State onCommand(String command, LoxoneValue value) {
+    public State onCommand(final String command, final LoxoneValue value) {
         if (getKeyCommand.is(command)) {
-            hashing = getKeyCommand.ensureValue(value);
-            return hashing != null ? State.CONSUMED : State.IGNORED;
+            final Hashing hashing = getKeyCommand.ensureValue(value);
+            final TokenState tokenState = new TokenState(token);
+            if (tokenState.isExpired()) {
+                lastTokenCommand = EncryptedCommand.getToken(
+                        LoxoneCrypto.loxoneHashing(loxonePass, loxoneUser, hashing, "gettoken"),
+                        loxoneUser, CLIENT_UUID, clientInfo, this::encryptCommand
+                );
+            } else if (tokenState.needsRefresh()) {
+                lastTokenCommand = EncryptedCommand.refreshToken(
+                        LoxoneCrypto.loxoneHashing(token.getToken(), loxoneUser, hashing, "refreshtoken"),
+                        loxoneUser, this::encryptCommand
+                );
+            } else {
+                lastTokenCommand = EncryptedCommand.authWithToken(
+                        LoxoneCrypto.loxoneHashing(token.getToken(), loxoneUser, hashing, "authwithtoken"),
+                        loxoneUser, this::encryptCommand
+                );
+            }
+            sendCommand(lastTokenCommand);
+            return State.CONSUMED;
         } else if (isCommandGetVisuSalt(command, loxoneUser)) {
             visuHashing = parseHashing(value);
             return visuHashing != null ? State.CONSUMED : State.IGNORED;
+        } else if (lastTokenCommand != null && lastTokenCommand.is(command)) {
+            token = lastTokenCommand.ensureValue(value);
+            authListeners.forEach(AuthListener::authCompleted);
+            lastTokenCommand = null;
+            return State.CONSUMED;
         }
 
         return State.IGNORED;
+    }
+
+    /**
+     * Registers {@link AuthListener} to notify it about authentication events.
+     * @param listener listener to register
+     */
+    public void registerAuthListener(final AuthListener listener) {
+        authListeners.add(listener);
     }
 
     private void sendCommand(final Command command) {
@@ -214,7 +269,7 @@ public class LoxoneAuth implements CommandListener {
      * @param command command to be encrypted
      * @return new command which carries the given command encrypted
      */
-    String encryptCommand(String command) {
+    private String encryptCommand(String command) {
         if (sharedSalt == null) {
             sharedSalt = LoxoneCrypto.generateSalt(sha1PRNG);
         }

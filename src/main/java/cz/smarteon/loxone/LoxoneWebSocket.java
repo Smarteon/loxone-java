@@ -27,10 +27,7 @@ import static cz.smarteon.loxone.Protocol.HTTP_NOT_AUTHENTICATED;
 import static cz.smarteon.loxone.Protocol.HTTP_NOT_FOUND;
 import static cz.smarteon.loxone.Protocol.HTTP_OK;
 import static cz.smarteon.loxone.Protocol.HTTP_UNAUTHORIZED;
-import static cz.smarteon.loxone.Protocol.isCommandGetToken;
 import static cz.smarteon.loxone.Protocol.isCommandGetVisuSalt;
-import static cz.smarteon.loxone.Protocol.jsonEncrypted;
-import static cz.smarteon.loxone.Protocol.jsonGetKey;
 import static cz.smarteon.loxone.Protocol.jsonGetVisuSalt;
 import static cz.smarteon.loxone.Protocol.jsonSecured;
 import static java.lang.String.format;
@@ -64,7 +61,21 @@ public class LoxoneWebSocket {
         this.commandListeners = new LinkedList<>();
         this.eventListeners = new LinkedList<>();
 
+        // link loxoneAuth as command listener
         registerListener(loxoneAuth);
+
+        // register auth guard as auth listener
+        loxoneAuth.registerAuthListener(() -> {
+            log.info("Authentication completed");
+            if (authSeqLatch != null) {
+                sendInternal(ENABLE_STATUS_UPDATE);
+                authSeqLatch.countDown();
+            } else {
+                throw new IllegalStateException("Authentication not guarded");
+            }
+        });
+
+        // allow auth to send commands
         loxoneAuth.setCommandSender(this::sendInternal);
     }
 
@@ -137,6 +148,10 @@ public class LoxoneWebSocket {
                     connectRwLock.writeLock().unlock();
                 }
             }
+        } else if (!loxoneAuth.isUsable()) {
+            log.info("Authentication is not usable => starting the authentication");
+            authSeqLatch = new CountDownLatch(1);
+            loxoneAuth.startAuthentication();
         }
     }
 
@@ -299,22 +314,6 @@ public class LoxoneWebSocket {
 
         if (command != null && command.startsWith(Protocol.C_SYS_ENC)) {
             log.debug("Encrypted message");
-        }
-
-        if (jsonGetKey(loxoneAuth.getUser()).equals(command)) {
-            loxoneAuth.onCommand(command, value);
-            // TODO do not always get new token
-            sendInternal(jsonEncrypted(loxoneAuth.encryptCommand(loxoneAuth.getTokenCommand())));
-        }
-
-        if (isCommandGetToken(command, loxoneAuth.getUser())) {
-            // TODO do not always get new token
-            if (authSeqLatch != null) {
-                sendInternal(ENABLE_STATUS_UPDATE);
-                authSeqLatch.countDown();
-            } else {
-                throw new IllegalStateException("Authentication not guarded");
-            }
         }
 
         if (isCommandGetVisuSalt(command, loxoneAuth.getUser())) {

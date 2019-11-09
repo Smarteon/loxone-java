@@ -23,6 +23,8 @@ import static cz.smarteon.loxone.Codec.hexToBytes
 
 class MockWebSocketServer extends WebSocketServer implements SerializationSupport {
 
+    private static int LOXONE_EPOCH_BEGIN = 1230768000
+
     private static final PrivateKey SERVER_PRIVATE_KEY =
             KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec((
                     'MIICWgIBAAKBgF/vs3xVxg0T7WO8jVKl8RwrswkGAj+RsVHK49IEb+YA4kPXGx4f\n' +
@@ -52,6 +54,10 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
     private static final Hashing HASHING = new Hashing(
             '41434633443134324337383441373035453333424344364133373431333430413642333442334244'.decodeHex(),
             '31306137336533622D303163352D313732662D66666666616362383139643462636139')
+    private static final Token TOKEN = new Token(
+            '1C368AB5FFB88B964A9F6BE71F27F16E0E42170B',
+            '42444546453033423136354538374539393133433435314331333934394244363642364446353633'.decodeHex(),
+            ((System.currentTimeMillis() / 1000) - LOXONE_EPOCH_BEGIN + 3600).toInteger(), 1666, false)
     private static final LoxoneMessage USER_KEY = new LoxoneMessage("jdev/sys/getkey2/$USER", 200, HASHING)
     private static final LoxoneMessage USER_VISUSALT = new LoxoneMessage("dev/sys/getvisusalt/$USER", 200, HASHING)
 
@@ -130,17 +136,17 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
             return
         }
 
-        def gettoken = message =~ /gettoken\/(?<auth>[^\/]+)\/(?<user>[^\/]+)\/[24]\/.*/
+        def gettoken = message =~ /gettoken\/(?<auth>[^\/]+)\/(?<user>[^\/]+)\/(?<tail>[24]\/[^\/]+\/loxoneJava)/
         if (gettoken.find()) {
-            def control = "jdev/sys/gettoken/${gettoken.group('user')}/"
+            def control = "dev/sys/gettoken/${gettoken.group('auth')}/${gettoken.group('user')}/${gettoken.group('tail')}"
             if (0 < badCredentials) {
                 badCredentials--
                 broadcast(control, 401)
             } else {
                 if (gettoken.group('auth') == USER_HASH) {
-                    broadcast(control, 200) // TODO gen real token
+                    broadcast(control, 200, TOKEN)
                 } else {
-                    // TODO send failure
+                    broadcast(control, 400)
                 }
             }
             return

@@ -145,7 +145,16 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
      * @return command requesting user's crypto key
      */
     public static LoxoneMessageCommand<Hashing> getKey(final String user) {
-        return new LoxoneMessageCommand<>("jdev/sys/getkey2/" + requireNonNull(user), Type.JSON, Hashing.class, false, true);
+        return jsonWsCommand("jdev/sys/getkey2/" + requireNonNull(user), Hashing.class);
+    }
+
+    /**
+     * Get the visu hashing  for given user.
+     * @param user loxone user
+     * @return command requesting user's visu hashing
+     */
+    public static LoxoneMessageCommand<Hashing> getVisuHash(final String user) {
+        return jsonWsCommand("jdev/sys/getvisusalt/" + requireNonNull(user), Hashing.class);
     }
 
     private final Class<V> valueType;
@@ -159,6 +168,10 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
 
     private static <V extends LoxoneValue> LoxoneMessageCommand<V> jsonHttpCommand(final String command, final Class<V> valueType) {
         return new LoxoneMessageCommand<>(command, Type.JSON, valueType, true, false);
+    }
+
+    private static <V extends LoxoneValue> LoxoneMessageCommand<V> jsonWsCommand(final String command, final Class<V> valueType) {
+        return new LoxoneMessageCommand<>(command, Type.JSON, valueType, false, true);
     }
 
     /**

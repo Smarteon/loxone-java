@@ -17,8 +17,6 @@ public abstract class Protocol {
     public static final String C_XML = "dev/sps/io";
     public static final String CS_JSON = "jdev/sps/ios";
     public static final String C_AUTHENTICATE = "authenticate";
-    public static final String C_JSON_GET_VISU_SALT = "jdev/sys/getvisusalt";
-    public static final String C_GET_VISU_SALT = "dev/sys/getvisusalt";
     public static final String C_APP = "data/LoxAPP3.json";
     public static final String C_JSON_APP_VERSION = "jdev/sps/LoxAPPversion3";
     public static final String C_APP_VERSION = "dev/sps/LoxAPPversion3";
@@ -84,14 +82,6 @@ public abstract class Protocol {
 
     public static String authentication(String hmac) {
         return format(TEMPLATE_AUTHENTICATE, hmac);
-    }
-
-    public static String jsonGetVisuSalt(String user) {
-        return C_JSON_GET_VISU_SALT + "/" + user ;
-    }
-
-    public static boolean isCommandGetVisuSalt(String command, String user) {
-        return command.matches(C_GET_VISU_SALT + "/" + user);
     }
 
     public static String jsonSecured(String command, String visuHash) {

@@ -21,7 +21,6 @@ import java.util.Map;
 
 import static cz.smarteon.loxone.Codec.concatToBytes;
 import static cz.smarteon.loxone.Command.keyExchange;
-import static cz.smarteon.loxone.Protocol.isCommandGetVisuSalt;
 import static cz.smarteon.loxone.message.LoxoneMessageCommand.getKey;
 import static java.util.Collections.singletonMap;
 import static java.util.Objects.requireNonNull;
@@ -54,6 +53,7 @@ public class LoxoneAuth implements CommandListener {
     private final String loxoneVisPass;
 
     private final LoxoneMessageCommand<Hashing> getKeyCommand;
+    private final LoxoneMessageCommand<Hashing> getVisuHashCommand;
     private final List<AuthListener> authListeners;
 
     // Crypto stuff
@@ -89,6 +89,7 @@ public class LoxoneAuth implements CommandListener {
         this.loxoneVisPass = requireNonNull(loxoneVisPass, "loxoneVisPass shouldn't be null");
 
         this.getKeyCommand = getKey(loxoneUser);
+        this.getVisuHashCommand = LoxoneMessageCommand.getVisuHash(loxoneUser);
 
         this.authListeners = new LinkedList<>();
     }
@@ -206,6 +207,10 @@ public class LoxoneAuth implements CommandListener {
         sendCommand(getKeyCommand);
     }
 
+    void startVisuAuthentication() {
+        sendCommand(getVisuHashCommand);
+    }
+
     /**
      * Processes all authentication related incoming commands
      * @param command command to process
@@ -235,9 +240,14 @@ public class LoxoneAuth implements CommandListener {
             }
             sendCommand(lastTokenCommand);
             return State.CONSUMED;
-        } else if (isCommandGetVisuSalt(command, loxoneUser)) {
-            visuHashing = parseHashing(value);
-            return visuHashing != null ? State.CONSUMED : State.IGNORED;
+        } else if (getVisuHashCommand.is(command)) {
+            visuHashing = getVisuHashCommand.ensureValue(value);
+            if (visuHashing != null) {
+                authListeners.forEach(AuthListener::visuAuthCompleted);
+                return State.CONSUMED;
+            } else {
+                return State.IGNORED;
+            }
         } else if (lastTokenCommand != null && lastTokenCommand.is(command)) {
             token = lastTokenCommand.ensureValue(value);
             authListeners.forEach(AuthListener::authCompleted);

@@ -27,8 +27,6 @@ import static cz.smarteon.loxone.Protocol.HTTP_NOT_AUTHENTICATED;
 import static cz.smarteon.loxone.Protocol.HTTP_NOT_FOUND;
 import static cz.smarteon.loxone.Protocol.HTTP_OK;
 import static cz.smarteon.loxone.Protocol.HTTP_UNAUTHORIZED;
-import static cz.smarteon.loxone.Protocol.isCommandGetVisuSalt;
-import static cz.smarteon.loxone.Protocol.jsonGetVisuSalt;
 import static cz.smarteon.loxone.Protocol.jsonSecured;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
@@ -65,15 +63,7 @@ public class LoxoneWebSocket {
         registerListener(loxoneAuth);
 
         // register auth guard as auth listener
-        loxoneAuth.registerAuthListener(() -> {
-            log.info("Authentication completed");
-            if (authSeqLatch != null) {
-                sendInternal(ENABLE_STATUS_UPDATE);
-                authSeqLatch.countDown();
-            } else {
-                throw new IllegalStateException("Authentication not guarded");
-            }
-        });
+        loxoneAuth.registerAuthListener(new LoxoneAuthListener());
 
         // allow auth to send commands
         loxoneAuth.setCommandSender(this::sendInternal);
@@ -202,7 +192,7 @@ public class LoxoneWebSocket {
                 waitForAuth(authSeqLatch, authTimeoutSeconds, true);
                 if (visuLatch == null || visuLatch.getCount() == 0) {
                     visuLatch = new CountDownLatch(1);
-                    sendInternal(jsonGetVisuSalt(loxoneAuth.getUser()));
+                    loxoneAuth.startVisuAuthentication();
                 }
                 waitForAuth(visuLatch, visuTimeoutSeconds, false);
 
@@ -315,12 +305,28 @@ public class LoxoneWebSocket {
         if (command != null && command.startsWith(Protocol.C_SYS_ENC)) {
             log.debug("Encrypted message");
         }
+    }
 
-        if (isCommandGetVisuSalt(command, loxoneAuth.getUser())) {
+    private class LoxoneAuthListener implements AuthListener {
+
+        @Override
+        public void authCompleted() {
+            log.info("Authentication completed");
+            if (authSeqLatch != null) {
+                sendInternal(ENABLE_STATUS_UPDATE);
+                authSeqLatch.countDown();
+            } else {
+                throw new IllegalStateException("Authentication not guarded");
+            }
+        }
+
+        @Override
+        public void visuAuthCompleted() {
+            log.info("Visualization authentication completed");
             if (visuLatch != null) {
                 visuLatch.countDown();
             } else {
-                throw new IllegalStateException("Authentication not guarded");
+                throw new IllegalStateException("Visualization authentication not guarded");
             }
         }
     }

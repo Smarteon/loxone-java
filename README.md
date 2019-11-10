@@ -1,4 +1,4 @@
-# loxone-java [![Maven Central](https://maven-badges.herokuapp.com/maven-central/cz.smarteon/loxone-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/cz-smarteon/loxone-java)
+# loxone-java [![Maven Central](https://maven-badges.herokuapp.com/maven-central/cz.smarteon/loxone-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/cz-smarteon/loxone-java) [![codecov](https://codecov.io/gh/Smarteon/loxone-java/branch/master/graph/badge.svg)](https://codecov.io/gh/Smarteon/loxone-java)
 Java implementation of the Loxone™ communication protocol (Web Socket)
 
 *Disclaimer:*
@@ -10,13 +10,17 @@ This library is in early stage of development - public APIs are subject to chang
 <dependency>
     <groupId>cz.smarteon</groupId>
     <artifactId>loxone-java</artifactId>
-    <version>0.1.0</version>
+    <version><!-- desired version -->></version>
 </dependency>
 ```
 
 ### Gradle
 ```
-compile group: 'cz.smarteon', name: 'loxone-java', version: '0.1.0'
+compile group: 'cz.smarteon', name: 'loxone-java', version: 'desired version'
+```
+or
+```kotlin
+implementation("cz.smarteon", "loxone-java", "desired version")
 ```
 
 ### Quick start

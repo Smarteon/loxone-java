@@ -10,4 +10,9 @@ public interface AuthListener {
      * commands.
      */
     void authCompleted();
+
+    /**
+     * Event triggered when visualization authentication is completed and {@link LoxoneAuth} is ready to send secured command.
+     */
+    void visuAuthCompleted();
 }

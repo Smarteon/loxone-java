@@ -1,5 +1,6 @@
 package cz.smarteon.loxone;
 
+import cz.smarteon.loxone.app.LoxoneApp;
 import cz.smarteon.loxone.system.status.MiniserverStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,6 +12,11 @@ import static java.util.Objects.requireNonNull;
  * @param <T>  type of command response
  */
 public class Command<T> {
+
+    /**
+     * Miniserver Application
+     */
+    public static final Command<LoxoneApp> LOX_APP = new Command<>("data/LoxAPP3.json", Type.JSON, LoxoneApp.class, true, true);
 
     /**
      * Miniserver status API.

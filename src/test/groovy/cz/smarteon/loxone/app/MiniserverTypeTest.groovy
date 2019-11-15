@@ -1,11 +1,11 @@
-package cz.smarteon.loxone.config
+package cz.smarteon.loxone.app
 
 import cz.smarteon.loxone.message.SerializationSupport
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static cz.smarteon.loxone.config.MiniserverType.GO
-import static cz.smarteon.loxone.config.MiniserverType.REGULAR
+import static cz.smarteon.loxone.app.MiniserverType.GO
+import static cz.smarteon.loxone.app.MiniserverType.REGULAR
 
 class MiniserverTypeTest extends Specification implements SerializationSupport {
 

@@ -1,6 +1,6 @@
 package cz.smarteon.loxone.system.status
 
-import cz.smarteon.loxone.config.MiniserverType
+import cz.smarteon.loxone.app.MiniserverType
 import cz.smarteon.loxone.message.SerializationSupport
 import spock.lang.Specification
 

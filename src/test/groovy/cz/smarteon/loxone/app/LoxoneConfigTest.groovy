@@ -1,4 +1,4 @@
-package cz.smarteon.loxone.config
+package cz.smarteon.loxone.app
 
 import cz.smarteon.loxone.LoxoneUuid
 import cz.smarteon.loxone.message.SerializationSupport
@@ -11,7 +11,7 @@ class LoxoneConfigTest extends Specification implements SerializationSupport {
 
     def "should deserialize"() {
         when:
-        LoxoneConfig config = readResource('config/LoxAPP3.json', LoxoneConfig)
+        LoxoneApp config = readResource('config/LoxAPP3.json', LoxoneApp)
 
         then:
         config.lastModified == LAST_MODIFIED
@@ -22,7 +22,7 @@ class LoxoneConfigTest extends Specification implements SerializationSupport {
 
     def "should getControl by type"() {
         given:
-        LoxoneConfig config = new LoxoneConfig(LAST_MODIFIED, null, [(UUID) : alarmControl])
+        LoxoneApp config = new LoxoneApp(LAST_MODIFIED, null, [(UUID): alarmControl])
 
         expect:
         config.getControl(AlarmControl) == alarmControl
@@ -35,7 +35,7 @@ class LoxoneConfigTest extends Specification implements SerializationSupport {
         given:
         def control = new SwitchControl()
         control.name = 'SomeControl'
-        LoxoneConfig config = new LoxoneConfig(LAST_MODIFIED, null, [(UUID) : control])
+        LoxoneApp config = new LoxoneApp(LAST_MODIFIED, null, [(UUID): control])
 
         expect:
         config.getControl('SomeControl', SwitchControl) == control

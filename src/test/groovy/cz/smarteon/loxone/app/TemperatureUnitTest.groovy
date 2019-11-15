@@ -1,11 +1,11 @@
-package cz.smarteon.loxone.config
+package cz.smarteon.loxone.app
 
 import cz.smarteon.loxone.message.SerializationSupport
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static cz.smarteon.loxone.config.TemperatureUnit.CELSIUS
-import static cz.smarteon.loxone.config.TemperatureUnit.FAHRENHEIT
+import static cz.smarteon.loxone.app.TemperatureUnit.CELSIUS
+import static cz.smarteon.loxone.app.TemperatureUnit.FAHRENHEIT
 
 class TemperatureUnitTest extends Specification implements SerializationSupport {
 

@@ -1,4 +1,4 @@
-package cz.smarteon.loxone.config;
+package cz.smarteon.loxone.app;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,17 +15,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Represents the loxone application as used in user interface.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LoxoneConfig implements Serializable {
+public class LoxoneApp implements Serializable {
 
     private final Date lastModified;
     private final MiniserverInfo miniserverInfo;
     private final Map<LoxoneUuid, Control> controls;
 
     @JsonCreator
-    public LoxoneConfig(@JsonProperty("lastModified") Date lastModified,
-                        @JsonProperty("msInfo") MiniserverInfo miniserverInfo,
-                        @JsonProperty("controls") Map<LoxoneUuid, Control> controls) {
+    public LoxoneApp(@JsonProperty("lastModified") Date lastModified,
+                     @JsonProperty("msInfo") MiniserverInfo miniserverInfo,
+                     @JsonProperty("controls") Map<LoxoneUuid, Control> controls) {
         this.lastModified = lastModified;
         this.miniserverInfo = miniserverInfo;
         this.controls = controls;

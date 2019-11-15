@@ -250,6 +250,7 @@ public class LoxoneAuth implements CommandListener {
             }
         } else if (lastTokenCommand != null && lastTokenCommand.is(command)) {
             token = lastTokenCommand.ensureValue(value);
+            log.info("Got loxone token, valid until: " + token.getValidUntilDateTime() + ", seconds to expire: " + token.getSecondsToExpire());
             authListeners.forEach(AuthListener::authCompleted);
             lastTokenCommand = null;
             return State.CONSUMED;

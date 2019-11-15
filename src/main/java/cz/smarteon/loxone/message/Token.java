@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -68,9 +71,18 @@ public class Token implements LoxoneValue {
      */
     @JsonIgnore
     public long getSecondsToExpire() {
-        return (System.currentTimeMillis() / 1000) - (LOXONE_EPOCH_BEGIN + validUntil);
+        return (LOXONE_EPOCH_BEGIN + validUntil) - (System.currentTimeMillis() / 1000);
     }
 
+    /**
+     * Get human understandable date and time of validity in system default time zone.
+     * @return valid until date and time
+     */
+    @JsonIgnore
+    public LocalDateTime getValidUntilDateTime() {
+        return LocalDateTime.ofEpochSecond(LOXONE_EPOCH_BEGIN + validUntil, 0,
+                ZoneOffset.systemDefault().getRules().getOffset(Instant.now()));
+    }
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;

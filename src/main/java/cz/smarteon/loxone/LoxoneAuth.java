@@ -5,10 +5,10 @@ import cz.smarteon.loxone.message.EncryptedCommand;
 import cz.smarteon.loxone.message.Hashing;
 import cz.smarteon.loxone.message.LoxoneMessage;
 import cz.smarteon.loxone.message.LoxoneMessageCommand;
-import cz.smarteon.loxone.message.LoxoneValue;
 import cz.smarteon.loxone.message.PubKeyInfo;
 import cz.smarteon.loxone.message.Token;
 import org.java_websocket.util.Base64;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +31,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @see <a href="https://www.loxone.com/enen/wp-content/uploads/sites/3/2016/10/1000_Communicating-with-the-Miniserver.pdf">Loxone communication</a>
  */
-public class LoxoneAuth implements CommandListener {
+public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
 
     /**
      * UUID of this client sent as part of token request
@@ -214,13 +214,13 @@ public class LoxoneAuth implements CommandListener {
     /**
      * Processes all authentication related incoming commands
      * @param command command to process
-     * @param value value to process
+     * @param message message to process
      * @return state
      */
-    @Override
-    public State onCommand(final String command, final LoxoneValue value) {
-        if (getKeyCommand.is(command)) {
-            final Hashing hashing = getKeyCommand.ensureValue(value);
+    @Override @NotNull
+    public State onCommand(@NotNull final Command<? extends LoxoneMessage<?>> command, @NotNull final LoxoneMessage<?> message) {
+        if (getKeyCommand.equals(command)) {
+            final Hashing hashing = getKeyCommand.ensureValue(message.getValue());
             final TokenState tokenState = new TokenState(token);
             if (tokenState.isExpired()) {
                 lastTokenCommand = EncryptedCommand.getToken(
@@ -240,16 +240,12 @@ public class LoxoneAuth implements CommandListener {
             }
             sendCommand(lastTokenCommand);
             return State.CONSUMED;
-        } else if (getVisuHashCommand.is(command)) {
-            visuHashing = getVisuHashCommand.ensureValue(value);
-            if (visuHashing != null) {
-                authListeners.forEach(AuthListener::visuAuthCompleted);
-                return State.CONSUMED;
-            } else {
-                return State.IGNORED;
-            }
-        } else if (lastTokenCommand != null && lastTokenCommand.is(command)) {
-            token = lastTokenCommand.ensureValue(value);
+        } else if (getVisuHashCommand.equals(command)) {
+            visuHashing = getVisuHashCommand.ensureValue(message.getValue());
+            authListeners.forEach(AuthListener::visuAuthCompleted);
+            return State.CONSUMED;
+        } else if (lastTokenCommand != null && lastTokenCommand.equals(command)) {
+            token = lastTokenCommand.ensureValue(message.getValue());
             log.info("Got loxone token, valid until: " + token.getValidUntilDateTime() + ", seconds to expire: " + token.getSecondsToExpire());
             authListeners.forEach(AuthListener::authCompleted);
             lastTokenCommand = null;
@@ -257,6 +253,11 @@ public class LoxoneAuth implements CommandListener {
         }
 
         return State.IGNORED;
+    }
+
+    @Override
+    public boolean accepts(@NotNull final Class clazz) {
+        return LoxoneMessage.class.isAssignableFrom(clazz);
     }
 
     /**
@@ -293,15 +294,6 @@ public class LoxoneAuth implements CommandListener {
         }
 
         return encryptWithSharedKey(saltPart + "/" + command);
-    }
-
-    private Hashing parseHashing(Object value) {
-        if (value instanceof Hashing) {
-            return (Hashing) value;
-        } else {
-            log.warn("Unexpected type of hashing received from loxone: {}", value.getClass());
-            return null;
-        }
     }
 
     private void checkInitialized() {

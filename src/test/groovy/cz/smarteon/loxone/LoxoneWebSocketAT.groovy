@@ -1,6 +1,6 @@
 package cz.smarteon.loxone
 
-import cz.smarteon.loxone.message.LoxoneValue
+
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import spock.lang.Requires
 import spock.lang.Shared
@@ -10,6 +10,7 @@ import java.security.Security
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
+import static cz.smarteon.loxone.message.ControlCommand.genericControlCommand
 import static java.lang.System.getenv
 
 @Requires({(
@@ -28,8 +29,8 @@ class LoxoneWebSocketAT extends Specification {
     public static final String LOX_DEVICE = 'LOX_DEVICE'
 
     @Shared LoxoneWebSocket loxoneWebSocket
-    @Shared def deviceId
-    @Shared CommandMemory commands
+    @Shared String deviceId
+    @Shared CommandResponseMemory commands
 
     void setupSpec() {
         Security.addProvider(new BouncyCastleProvider())
@@ -38,7 +39,7 @@ class LoxoneWebSocketAT extends Specification {
         final LoxoneAuth loxoneAuth = new LoxoneAuth(new LoxoneHttp(address), getenv(LOX_USER), getenv(LOX_PASS), getenv(LOX_VISPASS))
         loxoneWebSocket = new LoxoneWebSocket(address, loxoneAuth)
 
-        commands = new CommandMemory()
+        commands = new CommandResponseMemory()
         loxoneWebSocket.registerListener(commands)
 
         deviceId = getenv(LOX_DEVICE)
@@ -60,7 +61,7 @@ class LoxoneWebSocketAT extends Specification {
         def latch = commands.expectCommand(".*/$deviceId/all")
 
         when:
-        loxoneWebSocket.sendCommand("jdev/sps/io/$deviceId/all")
+        loxoneWebSocket.sendCommand(genericControlCommand(deviceId, 'all'))
 
         then:
         latch.await(1, TimeUnit.SECONDS)
@@ -75,14 +76,14 @@ class LoxoneWebSocketAT extends Specification {
         def latch = commands.expectCommand(".*/$deviceId/all")
 
         when:
-        loxoneWebSocket.sendSecureCommand("$deviceId/all")
+        loxoneWebSocket.sendSecureCommand(genericControlCommand(deviceId, 'all'))
 
         then:
         latch.await(1, TimeUnit.SECONDS)
         commands.matched.size() == 1
     }
 
-    private static class CommandMemory implements CommandListener {
+    private static class CommandResponseMemory implements CommandResponseListener {
 
         LinkedHashMap all = new LinkedHashMap()
         LinkedHashMap matched = new LinkedHashMap()
@@ -90,7 +91,7 @@ class LoxoneWebSocketAT extends Specification {
         CountDownLatch latch
 
         @Override
-        State onCommand(String command, LoxoneValue value) {
+        State onCommand(Command command, Object value) {
             if (latch != null && pattern != null)  {
                 if (command ==~ pattern) {
                     matched.put(command, value)
@@ -99,6 +100,11 @@ class LoxoneWebSocketAT extends Specification {
             }
             all.put(command, value)
             return State.CONSUMED
+        }
+
+        @Override
+        boolean accepts(final Class clazz) {
+            return true
         }
 
         CountDownLatch expectCommand(def pattern) {

@@ -89,11 +89,7 @@ class LoxoneWebsocketClient extends WebSocketClient {
         if (msgHeader != null && msgHeader.getKind() != MessageKind.TEXT) {
             log.warn("Got text message but " + msgHeader.getKind() + " has been expected");
         }
-        try {
-            ws.processMessage(Codec.readMessage(message));
-        } catch (IOException e) {
-            log.error("Can't parse response: " + e.getMessage());
-        }
+        ws.processMessage(message);
     }
 
     /**

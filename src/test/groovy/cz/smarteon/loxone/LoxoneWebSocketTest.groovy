@@ -9,18 +9,19 @@ import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Timeout
-import spock.lang.Unroll
 
 import java.security.Security
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-import static cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_CFG_API
-import static cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_SYS_GETPUBLICKEY
+import static cz.smarteon.loxone.Command.voidWsCommand
 import static cz.smarteon.loxone.MockWebSocketServer.PASS
 import static cz.smarteon.loxone.MockWebSocketServer.PUBLIC_KEY
 import static cz.smarteon.loxone.MockWebSocketServer.USER
 import static cz.smarteon.loxone.MockWebSocketServer.VISU_PASS
+import static cz.smarteon.loxone.message.ControlCommand.genericControlCommand
+import static cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_CFG_API
+import static cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_SYS_GETPUBLICKEY
 import static org.hamcrest.CoreMatchers.equalTo
 
 class LoxoneWebSocketTest extends Specification {
@@ -74,21 +75,26 @@ class LoxoneWebSocketTest extends Specification {
         listenerLatch.await(500, TimeUnit.MILLISECONDS)
     }
 
-    @Unroll
-    def "should send #type command"() {
+    def "should send simple command"() {
         given:
         server.expect(equalTo('testCmd'))
 
         when:
-        lws."$method"('testCmd')
+        lws.sendCommand(voidWsCommand('testCmd'))
 
         then:
         server.verifyExpectations(100)
+    }
 
-        where:
-        type     | method
-        'simple' | 'sendCommand'
-        'secure' | 'sendSecureCommand'
+    def "should send secure command"() {
+        given:
+        server.expect(equalTo('testUuid/pulse'))
+
+        when:
+        lws.sendSecureCommand(genericControlCommand('testUuid', 'pulse'))
+
+        then:
+        server.verifyExpectations(100)
     }
 
     @Timeout(2)
@@ -98,7 +104,7 @@ class LoxoneWebSocketTest extends Specification {
         server.badCredentials = 1
 
         when:
-        lws.sendCommand('baf')
+        lws.sendCommand(voidWsCommand('baf'))
 
         then:
         thrown(LoxoneException)
@@ -108,7 +114,7 @@ class LoxoneWebSocketTest extends Specification {
     def "should handle server restart"() {
         when:
         server.expect(equalTo('beforeRestart'))
-        lws.sendCommand('beforeRestart')
+        lws.sendCommand(voidWsCommand('beforeRestart'))
 
         then:
         server.verifyExpectations(100)
@@ -118,7 +124,7 @@ class LoxoneWebSocketTest extends Specification {
         server = new MockWebSocketServer(server)
         server.expect(equalTo('afterRestart'))
         startServer()
-        lws.sendCommand('afterRestart')
+        lws.sendCommand(voidWsCommand('afterRestart'))
 
         then:
         server.verifyExpectations(100)
@@ -132,7 +138,7 @@ class LoxoneWebSocketTest extends Specification {
         server.badCredentials = 4
 
         when:
-        lws.sendCommand('baf')
+        lws.sendCommand(voidWsCommand('baf'))
 
         then:
         server.verifyExpectations(100)

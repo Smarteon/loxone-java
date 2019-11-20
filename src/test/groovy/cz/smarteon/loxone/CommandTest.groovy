@@ -13,4 +13,24 @@ class CommandTest extends Specification {
         then:
         cmd.command == 'CMD/aabb'
     }
+
+    def "should ensure response"() {
+        when:
+        def cmd = new Command('jdev/test', Command.Type.JSON, String.class, false, true)
+
+        then:
+        cmd.ensureResponse('aa') == 'aa'
+
+        when:
+        cmd.ensureResponse(null)
+
+        then:
+        thrown(LoxoneException)
+
+        when:
+        cmd.ensureResponse(3)
+
+        then:
+        thrown(LoxoneException)
+    }
 }

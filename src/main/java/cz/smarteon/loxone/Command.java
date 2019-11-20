@@ -1,6 +1,8 @@
 package cz.smarteon.loxone;
 
 import cz.smarteon.loxone.system.status.MiniserverStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -52,6 +54,13 @@ public class Command<T> {
         return new Command<>(command, Type.XML, responseType, true, false);
     }
 
+    /**
+     * The response is expected to come, however it's empty or we don't want to process it.
+     *
+     * @param template command template
+     * @param params command params
+     * @return void websocket command
+     */
     static Command<Void> voidWsCommand(final String template, final String... params) {
         return new Command<>(String.format(requireNonNull(template), (Object[]) params), null, Void.class, false, true);
     }
@@ -61,7 +70,7 @@ public class Command<T> {
      * @param sessionKey key to exchange
      * @return new key exchange command
      */
-    public static Command<Void> keyExchange(final String sessionKey) {
+    static Command<Void> keyExchange(final String sessionKey) {
         return voidWsCommand("jdev/sys/keyexchange/%s", sessionKey);
     }
 
@@ -112,6 +121,23 @@ public class Command<T> {
      */
     public boolean isWsSupported() {
         return wsSupported;
+    }
+
+    /**
+     * Ensures the given response being the type of this command's compatible response.
+     * Returns the ensured response or throws the exception.
+     *
+     * @param response response to ensure
+     * @return ensured response
+     */
+    @SuppressWarnings("unchecked")
+    @NotNull
+    T ensureResponse(@Nullable final Object response) {
+        if (response != null && responseType.isAssignableFrom(response.getClass())) {
+            return (T) response;
+        } else {
+            throw new LoxoneException("Expected type of response "+ responseType);
+        }
     }
 
     /**

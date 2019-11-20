@@ -2,6 +2,8 @@ package cz.smarteon.loxone.message;
 
 import cz.smarteon.loxone.Command;
 import cz.smarteon.loxone.LoxoneException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -219,7 +221,8 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
      * @return checked and cast value
      */
     @SuppressWarnings("unchecked")
-    public V ensureValue(final LoxoneValue value) {
+    @NotNull
+    public V ensureValue(@Nullable final LoxoneValue value) {
         if (value != null && valueType.isAssignableFrom(value.getClass())) {
             return (V) value;
         } else {

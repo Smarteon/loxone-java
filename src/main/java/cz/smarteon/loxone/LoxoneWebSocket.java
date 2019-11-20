@@ -1,14 +1,16 @@
 package cz.smarteon.loxone;
 
+import cz.smarteon.loxone.message.ControlCommand;
 import cz.smarteon.loxone.message.LoxoneMessage;
-import cz.smarteon.loxone.message.LoxoneValue;
 import cz.smarteon.loxone.message.MessageHeader;
 import cz.smarteon.loxone.message.TextEvent;
 import cz.smarteon.loxone.message.ValueEvent;
 import org.java_websocket.client.WebSocketClient;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -16,18 +18,21 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static cz.smarteon.loxone.Command.ENABLE_STATUS_UPDATE;
+import static cz.smarteon.loxone.Command.KEEP_ALIVE;
 import static cz.smarteon.loxone.Protocol.HTTP_AUTH_FAIL;
 import static cz.smarteon.loxone.Protocol.HTTP_AUTH_TOO_LONG;
 import static cz.smarteon.loxone.Protocol.HTTP_NOT_AUTHENTICATED;
 import static cz.smarteon.loxone.Protocol.HTTP_NOT_FOUND;
 import static cz.smarteon.loxone.Protocol.HTTP_OK;
 import static cz.smarteon.loxone.Protocol.HTTP_UNAUTHORIZED;
-import static cz.smarteon.loxone.Protocol.jsonSecured;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
@@ -41,8 +46,9 @@ public class LoxoneWebSocket {
     private final String loxoneAddress;
     final LoxoneAuth loxoneAuth;
 
-    private final List<CommandListener> commandListeners;
+    private final List<CommandResponseListener> commandResponseListeners;
     private final List<LoxoneEventListener> eventListeners;
+    private final Queue<Command<?>> commands;
 
     private ReentrantReadWriteLock connectRwLock = new ReentrantReadWriteLock();
     private CountDownLatch authSeqLatch;
@@ -52,12 +58,13 @@ public class LoxoneWebSocket {
     private int visuTimeoutSeconds = 3;
     private int retries = 5;
 
-    public LoxoneWebSocket(String loxoneAddress, LoxoneAuth loxoneAuth) {
+    public LoxoneWebSocket(@NotNull final String loxoneAddress, @NotNull final LoxoneAuth loxoneAuth) {
         this.loxoneAddress = requireNonNull(loxoneAddress, "loxoneAddress shouldn't be null");
         this.loxoneAuth = requireNonNull(loxoneAuth, "loxoneAuth shouldn't be null");
 
-        this.commandListeners = new LinkedList<>();
+        this.commandResponseListeners = new LinkedList<>();
         this.eventListeners = new LinkedList<>();
+        this.commands = new ConcurrentLinkedQueue<>();
 
         // link loxoneAuth as command listener
         registerListener(loxoneAuth);
@@ -69,19 +76,24 @@ public class LoxoneWebSocket {
         loxoneAuth.setCommandSender(this::sendInternal);
     }
 
-    public void registerListener(final CommandListener listener) {
-        commandListeners.add(listener);
+    public void registerListener(@NotNull final CommandResponseListener listener) {
+        commandResponseListeners.add(listener);
     }
 
-    public void registerListener(final LoxoneEventListener listener) {
+    public void registerListener(@NotNull final LoxoneEventListener listener) {
         eventListeners.add(listener);
     }
 
-    public void sendCommand(final String command) {
-        sendWithRetry(command, retries);
+    public void sendCommand(@NotNull final Command command) {
+        requireNonNull(command, "command can't be null");
+        if (command.isWsSupported()) {
+            sendWithRetry(command, retries);
+        } else {
+            throw new IllegalArgumentException("Only websocket commands are supported");
+        }
     }
 
-    public void sendSecureCommand(final String command) {
+    public void sendSecureCommand(@NotNull final ControlCommand command) {
         sendSecureWithRetry(command, retries);
     }
 
@@ -95,12 +107,14 @@ public class LoxoneWebSocket {
         }
     }
 
+    @NotNull
     public LoxoneAuth getLoxoneAuth() {
         return loxoneAuth;
     }
 
     /**
      * Set the seconds, it waits for successful authentication, until give up.
+     *
      * @param authTimeoutSeconds authentication timeout in seconds
      */
     public void setAuthTimeoutSeconds(final int authTimeoutSeconds) {
@@ -109,6 +123,7 @@ public class LoxoneWebSocket {
 
     /**
      * Set the seconds, it waits for successful visual authentication, until give up.
+     *
      * @param visuTimeoutSeconds visual authentication timeout in seconds
      */
     public void setVisuTimeoutSeconds(final int visuTimeoutSeconds) {
@@ -117,6 +132,7 @@ public class LoxoneWebSocket {
 
     /**
      * Set the number of retries for successful authentication, until give up.
+     *
      * @param retries number of retries
      */
     public void setRetries(final int retries) {
@@ -160,7 +176,7 @@ public class LoxoneWebSocket {
         }
     }
 
-    private void sendWithRetry(final String command, final int retries) {
+    private void sendWithRetry(final Command command, final int retries) {
         ensureConnection();
 
         try {
@@ -183,7 +199,7 @@ public class LoxoneWebSocket {
         }
     }
 
-    private void sendSecureWithRetry(final String command, final int retries) {
+    private void sendSecureWithRetry(final ControlCommand<?> command, final int retries) {
         ensureConnection();
 
         try {
@@ -196,7 +212,7 @@ public class LoxoneWebSocket {
                 }
                 waitForAuth(visuLatch, visuTimeoutSeconds, false);
 
-                sendInternal(jsonSecured(command, loxoneAuth.getVisuHash()));
+                sendInternal(new SecuredCommand<>(command, loxoneAuth.getVisuHash()));
             } finally {
                 connectRwLock.readLock().unlock();
             }
@@ -223,20 +239,34 @@ public class LoxoneWebSocket {
     void sendInternal(final Command command) {
         log.debug("Sending websocket message: " + command.getCommand());
         webSocketClient.send(command.getCommand());
-    }
-
-    @Deprecated
-    void sendInternal(final String command) {
-        log.debug("Sending websocket message: " + command);
-        webSocketClient.send(command);
-    }
-
-    void processMessage(final LoxoneMessage response) {
-        if (processHttpResponseCode(response.getCode())) {
-            processCommand(response.getControl(), response.getValue());
-        } else {
-            log.debug(response.toString());
+        // KEEP_ALIVE command has no response at all
+        if (! KEEP_ALIVE.getCommand().equals(command.getCommand())) {
+            commands.add(command);
         }
+    }
+
+    void processMessage(final String message) {
+        try {
+            final Command<?> command = commands.remove();
+            if (! Void.class.equals(command.getResponseType())) {
+                final Object parsedMessage = Codec.readMessage(message, command.getResponseType());
+                if (parsedMessage instanceof LoxoneMessage) {
+                    final LoxoneMessage loxoneMessage = (LoxoneMessage) parsedMessage;
+                    if (checkLoxoneMessage(command, loxoneMessage)) {
+                        processCommand(command, loxoneMessage);
+                    } else {
+                        log.debug(loxoneMessage.toString());
+                    }
+                } else {
+                    processCommand(command, command.ensureResponse(parsedMessage));
+                }
+            }
+        } catch (NoSuchElementException e) {
+            log.error("No command expected!", e);
+        } catch (IOException e) {
+            log.error("Can't parse response: " + e.getMessage());
+        }
+
     }
 
     void processEvents(final MessageHeader msgHeader, final ByteBuffer bytes) {
@@ -264,11 +294,16 @@ public class LoxoneWebSocket {
         }
     }
 
-    private boolean processHttpResponseCode(final int code) {
-        switch (code) {
+    private boolean checkLoxoneMessage(final Command command, final LoxoneMessage loxoneMessage) {
+        switch (loxoneMessage.getCode()) {
             case HTTP_OK:
                 log.debug("Message successfully processed.");
-                return true;
+                if (command.is(loxoneMessage.getControl())) {
+                    return true;
+                } else {
+                    log.error("Unexpected message with control " + loxoneMessage.getControl());
+                    return false;
+                }
             case HTTP_AUTH_TOO_LONG:
                 log.debug("Not authenticated after connection. Authentication took too long.");
                 return false;
@@ -285,24 +320,27 @@ public class LoxoneWebSocket {
                 log.debug("Can't find deviceId.");
                 return false;
             default:
-                log.debug("Unknown response code: " + code + " for message");
+                log.debug("Unknown response code: " + loxoneMessage.getCode() + " for message");
                 return false;
         }
     }
 
-    private void processCommand(final String command, final LoxoneValue value) {
-
-        CommandListener.State commandState = CommandListener.State.IGNORED;
-        final Iterator<CommandListener> listeners = commandListeners.iterator();
-        while (listeners.hasNext() && commandState != CommandListener.State.CONSUMED) {
-            commandState = commandState.fold(listeners.next().onCommand(command, value));
+    @SuppressWarnings("unchecked")
+    private void processCommand(final Command<?> command, final Object message) {
+        CommandResponseListener.State commandState = CommandResponseListener.State.IGNORED;
+        final Iterator<CommandResponseListener> listeners = commandResponseListeners.iterator();
+        while (listeners.hasNext() && commandState != CommandResponseListener.State.CONSUMED) {
+            final CommandResponseListener next = listeners.next();
+            if (next.accepts(message.getClass())) {
+                commandState = commandState.fold(next.onCommand(command, message));
+            }
         }
 
-        if (commandState == CommandListener.State.IGNORED) {
+        if (commandState == CommandResponseListener.State.IGNORED) {
             log.warn("No command listener registered, ignoring command=" + command);
         }
 
-        if (command != null && command.startsWith(Protocol.C_SYS_ENC)) {
+        if (command != null && command.getCommand().startsWith(Protocol.C_SYS_ENC)) {
             log.debug("Encrypted message");
         }
     }

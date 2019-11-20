@@ -106,13 +106,14 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
     void onMessage(final WebSocket conn, final String message) {
         def exchange = message =~ /jdev\/sys\/keyexchange\/(.*)/
         if (exchange.find()) {
-            def sharedKeyEnc =  exchange.group(1).decodeBase64()
+            def sharedKeyEnc = exchange.group(1).decodeBase64()
             Cipher.getInstance("RSA/ECB/PKCS1Padding").with {
                 init(DECRYPT_MODE, SERVER_PRIVATE_KEY)
                 def decryptedKey = new String(doFinal(sharedKeyEnc))
                 sharedKey = new SecretKeySpec(hexToBytes(decryptedKey[0..-34]), "AES")
                 sharedKeyIv = hexToBytes(decryptedKey[-32..-1])
             }
+            broadcast("dev/sys/keyexchange/${exchange.group(1)}", 200)
             return
         }
 
@@ -168,6 +169,7 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
         }
 
         if (message == 'jdev/sps/enablebinstatusupdate') {
+            broadcast('dev/sps/enablebinstatusupdate', 200)
             return
         }
 

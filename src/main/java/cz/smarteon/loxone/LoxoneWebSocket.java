@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Collection;
@@ -27,14 +26,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static cz.smarteon.loxone.Command.ENABLE_STATUS_UPDATE;
 import static cz.smarteon.loxone.Command.KEEP_ALIVE;
-import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
 public class LoxoneWebSocket {
 
     private static final Logger log = LoggerFactory.getLogger(LoxoneWebSocket.class);
-
-    private static final String URI_TEMPLATE = "ws://%s/ws/rfc6455";
 
     private static final int HTTP_OK = 200;
     private static final int HTTP_AUTH_FAIL = 401;
@@ -46,7 +42,7 @@ public class LoxoneWebSocket {
     private static final String C_SYS_ENC = "dev/sys/enc";
 
     private WebSocketClient webSocketClient;
-    private final String loxoneAddress;
+    private final LoxoneEndpoint endpoint;
     final LoxoneAuth loxoneAuth;
 
     private final List<CommandResponseListener> commandResponseListeners;
@@ -61,8 +57,8 @@ public class LoxoneWebSocket {
     private int visuTimeoutSeconds = 3;
     private int retries = 5;
 
-    public LoxoneWebSocket(@NotNull final String loxoneAddress, @NotNull final LoxoneAuth loxoneAuth) {
-        this.loxoneAddress = requireNonNull(loxoneAddress, "loxoneAddress shouldn't be null");
+    public LoxoneWebSocket(@NotNull final LoxoneEndpoint endpoint, @NotNull final LoxoneAuth loxoneAuth) {
+        this.endpoint = requireNonNull(endpoint, "loxone endpoint shouldn't be null");
         this.loxoneAuth = requireNonNull(loxoneAuth, "loxoneAuth shouldn't be null");
 
         this.commandResponseListeners = new LinkedList<>();
@@ -151,7 +147,7 @@ public class LoxoneWebSocket {
             if (connectRwLock.writeLock().tryLock()) {
                 try {
                     authSeqLatch = new CountDownLatch(1);
-                    webSocketClient = new LoxoneWebsocketClient(this, URI.create(format(URI_TEMPLATE, loxoneAddress)));
+                    webSocketClient = new LoxoneWebsocketClient(this, endpoint.webSocketUri());
                     webSocketClient.connect();
                 } finally {
                     connectRwLock.writeLock().unlock();

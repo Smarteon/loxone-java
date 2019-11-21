@@ -35,9 +35,9 @@ class LoxoneWebSocketAT extends Specification {
     void setupSpec() {
         Security.addProvider(new BouncyCastleProvider())
 
-        def address = getenv(LOX_ADDRESS)
-        final LoxoneAuth loxoneAuth = new LoxoneAuth(new LoxoneHttp(address), getenv(LOX_USER), getenv(LOX_PASS), getenv(LOX_VISPASS))
-        loxoneWebSocket = new LoxoneWebSocket(address, loxoneAuth)
+        def endpoint = new LoxoneEndpoint(getenv(LOX_ADDRESS))
+        final LoxoneAuth loxoneAuth = new LoxoneAuth(new LoxoneHttp(endpoint), getenv(LOX_USER), getenv(LOX_PASS), getenv(LOX_VISPASS))
+        loxoneWebSocket = new LoxoneWebSocket(endpoint, loxoneAuth)
 
         commands = new CommandResponseMemory()
         loxoneWebSocket.registerListener(commands)

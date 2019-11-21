@@ -55,7 +55,7 @@ class LoxoneWebSocketTest extends Specification {
             get(DEV_CFG_API) >> new LoxoneMessage(DEV_CFG_API.command, 200, new ApiInfo('50:4F:94:10:B8:4A', '9.1.10.30'))
             get(DEV_SYS_GETPUBLICKEY) >> new LoxoneMessage(DEV_SYS_GETPUBLICKEY.command, 200, new PubKeyInfo(PUBLIC_KEY))
         }
-        lws = new LoxoneWebSocket("localhost:${server.port}", new LoxoneAuth(http, USER, PASS, VISU_PASS))
+        lws = new LoxoneWebSocket(new LoxoneEndpoint('localhost', server.port), new LoxoneAuth(http, USER, PASS, VISU_PASS))
     }
 
     void cleanup() {

@@ -1,5 +1,6 @@
 package cz.smarteon.loxone;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,19 +19,13 @@ public class LoxoneHttp {
     private static final Logger log = LoggerFactory.getLogger(LoxoneHttp.class);
     private static final int MAX_REDIRECTS = 5;
 
-    private final String loxoneAddress;
-    private final int port;
+    private final LoxoneEndpoint endpoint;
     private int connectionTimeout = 5000;
 
     private ThreadLocal<Integer> redirects;
 
-    public LoxoneHttp(String loxoneAddress) {
-        this(loxoneAddress, 80);
-    }
-
-    public LoxoneHttp(String loxoneAddress, int port) {
-        this.loxoneAddress = requireNonNull(loxoneAddress);
-        this.port = port;
+    public LoxoneHttp(@NotNull final LoxoneEndpoint endpoint) {
+        this.endpoint = requireNonNull(endpoint, "endpoint can't be null");
     }
 
     public <T> T get(Command<T> command) {
@@ -99,7 +94,7 @@ public class LoxoneHttp {
 
     private URL urlFromCommand(String command) {
         try {
-            return new URL("http", loxoneAddress, port, command.startsWith("/") ? command : "/" + command);
+            return endpoint.httpUrl(command);
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("Command " + command + " produces malformed URL");
         }

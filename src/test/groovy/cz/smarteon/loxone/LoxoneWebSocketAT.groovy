@@ -93,7 +93,7 @@ class LoxoneWebSocketAT extends Specification {
         @Override
         State onCommand(Command command, Object value) {
             if (latch != null && pattern != null)  {
-                if (command ==~ pattern) {
+                if (command.command ==~ pattern) {
                     matched.put(command, value)
                     latch.countDown()
                 }

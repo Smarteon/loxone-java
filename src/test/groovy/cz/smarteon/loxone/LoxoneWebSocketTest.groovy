@@ -56,6 +56,7 @@ class LoxoneWebSocketTest extends Specification {
             get(DEV_SYS_GETPUBLICKEY) >> new LoxoneMessage(DEV_SYS_GETPUBLICKEY.command, 200, new PubKeyInfo(PUBLIC_KEY))
         }
         lws = new LoxoneWebSocket(new LoxoneEndpoint('localhost', server.port), new LoxoneAuth(http, USER, PASS, VISU_PASS))
+        lws.setAuthTimeoutSeconds(1)
     }
 
     void cleanup() {

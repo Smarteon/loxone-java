@@ -53,7 +53,7 @@ public class LoxoneWebSocket {
     private CountDownLatch authSeqLatch;
     private CountDownLatch visuLatch;
 
-    private int authTimeoutSeconds = 1;
+    private int authTimeoutSeconds = 3;
     private int visuTimeoutSeconds = 3;
     private int retries = 5;
 

@@ -10,7 +10,6 @@ public abstract class Protocol {
     public static final int HTTP_UNAUTHORIZED = 500;
 
     public static final String C_SYS_ENC = "dev/sys/enc";
-    public static final String C_JSON_APP_VERSION = "jdev/sps/LoxAPPversion3";
 
 
 

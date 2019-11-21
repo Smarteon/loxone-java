@@ -1,4 +1,4 @@
-package cz.smarteon.loxone.config;
+package cz.smarteon.loxone.app;
 
 import cz.smarteon.loxone.LoxoneUuid;
 

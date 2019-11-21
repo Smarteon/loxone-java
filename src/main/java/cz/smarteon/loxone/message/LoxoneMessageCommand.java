@@ -2,6 +2,7 @@ package cz.smarteon.loxone.message;
 
 import cz.smarteon.loxone.Command;
 import cz.smarteon.loxone.LoxoneException;
+import cz.smarteon.loxone.app.LoxoneApp;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +21,11 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
      * Basic information about API. Unauthenticated.
      */
     public static final LoxoneMessageCommand<ApiInfo> DEV_CFG_API = jsonHttpCommand("jdev/cfg/api", ApiInfo.class);
+
+    /**
+     * Miniserver Application version. Returns date of last application modification.
+     */
+    public static final LoxoneMessageCommand<DateValue> LOX_APP_VERSION = jsonCommand("jdev/sps/LoxAPPversion3", DateValue.class);
 
     /**
      * API's public key.
@@ -166,6 +172,10 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
                                 final boolean wsSupported) {
         super(command, type, (Class<LoxoneMessage<V>>) (Class<?>) LoxoneMessage.class, httpSupported, wsSupported);
         this.valueType = valueType;
+    }
+
+    private static <V extends LoxoneValue> LoxoneMessageCommand<V> jsonCommand(final String command, final Class<V> valueType) {
+        return new LoxoneMessageCommand<>(command, Type.JSON, valueType, true, true);
     }
 
     private static <V extends LoxoneValue> LoxoneMessageCommand<V> jsonHttpCommand(final String command, final Class<V> valueType) {

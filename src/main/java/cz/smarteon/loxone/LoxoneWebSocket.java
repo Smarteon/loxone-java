@@ -27,12 +27,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static cz.smarteon.loxone.Command.ENABLE_STATUS_UPDATE;
 import static cz.smarteon.loxone.Command.KEEP_ALIVE;
-import static cz.smarteon.loxone.Protocol.HTTP_AUTH_FAIL;
-import static cz.smarteon.loxone.Protocol.HTTP_AUTH_TOO_LONG;
-import static cz.smarteon.loxone.Protocol.HTTP_NOT_AUTHENTICATED;
-import static cz.smarteon.loxone.Protocol.HTTP_NOT_FOUND;
-import static cz.smarteon.loxone.Protocol.HTTP_OK;
-import static cz.smarteon.loxone.Protocol.HTTP_UNAUTHORIZED;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
@@ -41,6 +35,15 @@ public class LoxoneWebSocket {
     private static final Logger log = LoggerFactory.getLogger(LoxoneWebSocket.class);
 
     private static final String URI_TEMPLATE = "ws://%s/ws/rfc6455";
+
+    private static final int HTTP_OK = 200;
+    private static final int HTTP_AUTH_FAIL = 401;
+    private static final int HTTP_NOT_AUTHENTICATED = 400;
+    private static final int HTTP_NOT_FOUND = 404;
+    private static final int HTTP_AUTH_TOO_LONG = 420;
+    private static final int HTTP_UNAUTHORIZED = 500;
+
+    private static final String C_SYS_ENC = "dev/sys/enc";
 
     private WebSocketClient webSocketClient;
     private final String loxoneAddress;
@@ -340,8 +343,8 @@ public class LoxoneWebSocket {
             log.warn("No command listener registered, ignoring command=" + command);
         }
 
-        if (command != null && command.getCommand().startsWith(Protocol.C_SYS_ENC)) {
-            log.debug("Encrypted message");
+        if (command != null && command.getCommand().startsWith(C_SYS_ENC)) {
+            log.warn("Encrypted message receive is not supported");
         }
     }
 

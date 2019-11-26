@@ -1,5 +1,7 @@
 package cz.smarteon.loxone
 
+import cz.smarteon.loxone.message.IntValue
+import nl.jqno.equalsverifier.EqualsVerifier
 import spock.lang.Specification
 
 import static cz.smarteon.loxone.Command.voidWsCommand
@@ -32,5 +34,10 @@ class CommandTest extends Specification {
 
         then:
         thrown(LoxoneException)
+    }
+
+    def "should verify equals"() {
+        expect:
+        EqualsVerifier.forClass(Command).usingGetClass().verify()
     }
 }

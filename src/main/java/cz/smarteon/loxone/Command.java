@@ -5,6 +5,8 @@ import cz.smarteon.loxone.system.status.MiniserverStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -151,5 +153,23 @@ public class Command<T> {
      */
     public enum Type {
         JSON, XML
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Command<?> command1 = (Command<?>) o;
+        return httpSupported == command1.httpSupported &&
+                wsSupported == command1.wsSupported &&
+                Objects.equals(command, command1.command) &&
+                type == command1.type &&
+                Objects.equals(responseType, command1.responseType) &&
+                Objects.equals(toMatch, command1.toMatch);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(command, type, responseType, httpSupported, wsSupported, toMatch);
     }
 }

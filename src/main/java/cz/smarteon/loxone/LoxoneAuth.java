@@ -18,6 +18,10 @@ import java.security.SecureRandom;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import static cz.smarteon.loxone.Codec.concatToBytes;
 import static cz.smarteon.loxone.Command.keyExchange;
@@ -74,6 +78,10 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
     private EncryptedCommand<Token> lastTokenCommand;
 
     private CommandSender commandSender;
+
+    private boolean autoRefreshToken = false;
+    private final ScheduledExecutorService autoRefreshScheduler = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledFuture autoRefreshFuture;
 
     /**
      * Creates new instance
@@ -137,6 +145,24 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
      */
     public void setCommandSender(final CommandSender commandSender) {
         this.commandSender = requireNonNull(commandSender, "commandSender can't be null");
+    }
+
+    /**
+     * Whether is configured to refresh token automatically
+     * @return true if is configured to automatically refresh token, false (default) otherwise
+     */
+    public boolean isAutoRefreshToken() {
+        return autoRefreshToken;
+    }
+
+    /**
+     * Allow or disallow to automatically refresh token. Disabled by default. If set to true the token refresh will
+     * be scheduled after next token receive. If se to false, when previously true, only next token refresh are prevented,
+     * not the currently scheduled one.
+     * @param autoRefreshToken whether to automatically refresh token
+     */
+    public void setAutoRefreshToken(final boolean autoRefreshToken) {
+        this.autoRefreshToken = autoRefreshToken;
     }
 
     /**
@@ -247,6 +273,17 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
         } else if (lastTokenCommand != null && lastTokenCommand.equals(command)) {
             token = lastTokenCommand.ensureValue(message.getValue());
             log.info("Got loxone token, valid until: " + token.getValidUntilDateTime() + ", seconds to expire: " + token.getSecondsToExpire());
+
+            if (autoRefreshToken) {
+                final long secondsToRefresh = new TokenState(token).secondsToRefresh();
+                if (secondsToRefresh > 0) {
+                    log.info("Scheduling token auto refresh in " + secondsToRefresh + " seconds");
+                    autoRefreshFuture = autoRefreshScheduler.schedule(this::startAuthentication, secondsToRefresh, TimeUnit.SECONDS);
+                } else {
+                    log.warn("Can't schedule token auto refresh, token expires too early or is already expired");
+                }
+            }
+
             authListeners.forEach(AuthListener::authCompleted);
             lastTokenCommand = null;
             return State.CONSUMED;
@@ -266,6 +303,15 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
      */
     public void registerAuthListener(final AuthListener listener) {
         authListeners.add(listener);
+    }
+
+    /**
+     * Allows to tear down whn websocket is closed.
+     */
+    void wsClosed() {
+        if (autoRefreshFuture != null) {
+            autoRefreshFuture.cancel(true);
+        }
     }
 
     private void sendCommand(final Command command) {

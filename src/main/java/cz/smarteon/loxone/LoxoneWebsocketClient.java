@@ -126,6 +126,7 @@ class LoxoneWebsocketClient extends WebSocketClient {
     @Override
     public void onClose(int code, String reason, boolean remote) {
         log.info("Closed by " + (remote ? "remote" : "local") + " end because of " + code +": " + reason);
+        ws.loxoneAuth.wsClosed();
         if (keepAliveFuture != null) {
             keepAliveFuture.cancel(true);
         }

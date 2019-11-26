@@ -22,7 +22,7 @@ class TokenState {
 
     /**
      * Check if the token expired or is close to expiry.
-     * @return true if token is not set or is close to expire, false toherwise
+     * @return true if token is not set or is close to expire, false otherwise
      */
     boolean isExpired() {
         return secondsToExpire == null || secondsToExpire <= MAX_SECONDS_TO_EXPIRE;
@@ -37,6 +37,14 @@ class TokenState {
         return secondsToExpire != null
                 && REFRESH_THRESHOLD >= secondsToExpire
                 && secondsToExpire > MAX_SECONDS_TO_EXPIRE;
+    }
+
+    /**
+     * Number of seconds remaining until {@link #needsRefresh()} become true.
+     * @return number of seconds till the token needs refresh
+     */
+    long secondsToRefresh() {
+        return secondsToExpire == null || secondsToExpire < REFRESH_THRESHOLD ? 0 : secondsToExpire - REFRESH_THRESHOLD;
     }
 
     /**

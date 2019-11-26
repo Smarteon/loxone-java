@@ -37,6 +37,14 @@ public class EncryptedCommand<V extends LoxoneValue> extends LoxoneMessageComman
     }
 
     /**
+     * Plain command before encryption.
+     * @return command without encryption applied
+     */
+    public String getDecryptedCommand() {
+        return super.getCommand();
+    }
+
+    /**
      * Creates "authwithtoken" command
      * @param tokenHash hashed token
      * @param user loxone user

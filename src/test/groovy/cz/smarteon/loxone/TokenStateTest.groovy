@@ -19,13 +19,14 @@ class TokenStateTest extends Specification {
         tokenState.usable == usable
         tokenState.expired == expired
         tokenState.needsRefresh() == refresh
+        tokenState.secondsToRefresh() == secsToRefresh
 
         where:
-        tokenName   | expiration || usable | expired | refresh
-        'valid'     | 3600       || true   | false   | false
-        'old'       | -5         || false  | true    | false
-        'expired'   | 5          || false  | true    | false
-        'toRefresh' | 65         || false  | false   | true
-        'null'      | null       || false  | true    | false
+        tokenName   | expiration || usable | expired | refresh | secsToRefresh
+        'valid'     | 3600       || true   | false   | false   | 3300
+        'old'       | -5         || false  | true    | false   | 0
+        'expired'   | 5          || false  | true    | false   | 0
+        'toRefresh' | 65         || false  | false   | true    | 0
+        'null'      | null       || false  | true    | false   | 0
     }
 }

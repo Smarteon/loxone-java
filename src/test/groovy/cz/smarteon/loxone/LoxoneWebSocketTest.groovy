@@ -15,10 +15,10 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 import static cz.smarteon.loxone.Command.voidWsCommand
-import static cz.smarteon.loxone.MockWebSocketServer.PASS
-import static cz.smarteon.loxone.MockWebSocketServer.PUBLIC_KEY
-import static cz.smarteon.loxone.MockWebSocketServer.USER
-import static cz.smarteon.loxone.MockWebSocketServer.VISU_PASS
+import static cz.smarteon.loxone.CryptoSupport.PASS
+import static cz.smarteon.loxone.CryptoSupport.PUBLIC_KEY
+import static cz.smarteon.loxone.CryptoSupport.USER
+import static cz.smarteon.loxone.CryptoSupport.VISU_PASS
 import static cz.smarteon.loxone.message.ControlCommand.genericControlCommand
 import static cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_CFG_API
 import static cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_SYS_GETPUBLICKEY

@@ -7,7 +7,6 @@ import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
@@ -40,7 +39,7 @@ class LoxoneWebsocketClient extends WebSocketClient {
 
     private AtomicReference<MessageHeader> msgHeaderRef = new AtomicReference<>();
 
-    private ScheduledExecutorService keepAliveScheduler = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService keepAliveScheduler = Executors.newSingleThreadScheduledExecutor();
     private Runnable keepAliveTask;
     private CountDownLatch keepAliveLatch;
     private ScheduledFuture keepAliveFuture;
@@ -126,7 +125,8 @@ class LoxoneWebsocketClient extends WebSocketClient {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        log.info("Closed " + reason);
+        log.info("Closed by " + (remote ? "remote" : "local") + " end because of " + code +": " + reason);
+        ws.loxoneAuth.wsClosed();
         if (keepAliveFuture != null) {
             keepAliveFuture.cancel(true);
         }

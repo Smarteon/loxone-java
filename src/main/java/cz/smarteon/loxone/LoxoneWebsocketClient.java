@@ -39,7 +39,6 @@ class LoxoneWebsocketClient extends WebSocketClient {
 
     private AtomicReference<MessageHeader> msgHeaderRef = new AtomicReference<>();
 
-    private final ScheduledExecutorService keepAliveScheduler = Executors.newSingleThreadScheduledExecutor();
     private Runnable keepAliveTask;
     private CountDownLatch keepAliveLatch;
     private ScheduledFuture keepAliveFuture;
@@ -70,10 +69,10 @@ class LoxoneWebsocketClient extends WebSocketClient {
     public void onOpen(final ServerHandshake handshakedata) {
         log.info("Opened");
 
-        ws.loxoneAuth.startAuthentication();
+        ws.connectionOpened();
 
         // schedule the keep alive guard
-        keepAliveFuture = keepAliveScheduler.scheduleAtFixedRate(keepAliveTask,
+        keepAliveFuture = ws.scheduler.scheduleAtFixedRate(keepAliveTask,
                 KEEP_ALIVE_INTERVAL_MINUTES, KEEP_ALIVE_INTERVAL_MINUTES, TimeUnit.MINUTES);
     }
 
@@ -129,6 +128,9 @@ class LoxoneWebsocketClient extends WebSocketClient {
         ws.loxoneAuth.wsClosed();
         if (keepAliveFuture != null) {
             keepAliveFuture.cancel(true);
+        }
+        if (remote) {
+            ws.autoRestart();
         }
     }
 

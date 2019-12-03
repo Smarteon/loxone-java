@@ -7,10 +7,12 @@ import cz.smarteon.loxone.message.TextEvent;
 import cz.smarteon.loxone.message.ValueEvent;
 import org.java_websocket.client.WebSocketClient;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Collection;
@@ -21,8 +23,12 @@ import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.BiFunction;
 
 import static cz.smarteon.loxone.Command.ENABLE_STATUS_UPDATE;
 import static cz.smarteon.loxone.Command.KEEP_ALIVE;
@@ -41,6 +47,7 @@ public class LoxoneWebSocket {
 
     private static final String C_SYS_ENC = "dev/sys/enc";
 
+    private final BiFunction<LoxoneWebSocket, URI, WebSocketClient> webSocketClientProvider;
     private WebSocketClient webSocketClient;
     private final LoxoneEndpoint endpoint;
     final LoxoneAuth loxoneAuth;
@@ -57,9 +64,21 @@ public class LoxoneWebSocket {
     private int visuTimeoutSeconds = 3;
     private int retries = 5;
 
-    public LoxoneWebSocket(@NotNull final LoxoneEndpoint endpoint, @NotNull final LoxoneAuth loxoneAuth) {
+    private boolean autoRestart = false;
+    final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledFuture autoRestartFuture;
+
+    public LoxoneWebSocket(final @NotNull LoxoneEndpoint endpoint, final @NotNull LoxoneAuth loxoneAuth) {
+        this(endpoint, loxoneAuth, LoxoneWebsocketClient::new);
+    }
+
+    // This class is tightly coupled with LoxoneWebsocketClient, however for tests we need to provide different instance
+    @TestOnly
+    LoxoneWebSocket(final @NotNull  LoxoneEndpoint endpoint, final @NotNull LoxoneAuth loxoneAuth,
+                    final @NotNull BiFunction<LoxoneWebSocket, URI, WebSocketClient> webSocketClientProvider) {
         this.endpoint = requireNonNull(endpoint, "loxone endpoint shouldn't be null");
         this.loxoneAuth = requireNonNull(loxoneAuth, "loxoneAuth shouldn't be null");
+        this.webSocketClientProvider = requireNonNull(webSocketClientProvider, "webSocketClientProvider shouldn't be null");
 
         this.commandResponseListeners = new LinkedList<>();
         this.eventListeners = new LinkedList<>();
@@ -73,6 +92,9 @@ public class LoxoneWebSocket {
 
         // allow auth to send commands
         loxoneAuth.setCommandSender(this::sendInternal);
+
+        // set this class scheduler for auth scheduling as well
+        loxoneAuth.setAutoRefreshScheduler(scheduler);
     }
 
     public void registerListener(@NotNull final CommandResponseListener listener) {
@@ -138,6 +160,23 @@ public class LoxoneWebSocket {
         this.retries = retries;
     }
 
+    /**
+     * Web socket auto restart. If enabled it tries to reestablish the connection in case the remote end was closed.
+     * @return true when auto restart is enabled, false otherwise
+     */
+    public boolean isAutoRestart() {
+        return autoRestart;
+    }
+
+    /**
+     * Web socket auto restart. If enabled it tries to reestablish the connection in case the remote end was closed.
+     * Disabled by default.
+     * @param autoRestart true when auto restart should be enabled, false otherwise
+     */
+    public void setAutoRestart(final boolean autoRestart) {
+        this.autoRestart = autoRestart;
+    }
+
     private void ensureConnection() {
         if (!loxoneAuth.isInitialized()) {
             loxoneAuth.init();
@@ -147,7 +186,7 @@ public class LoxoneWebSocket {
             if (connectRwLock.writeLock().tryLock()) {
                 try {
                     authSeqLatch = new CountDownLatch(1);
-                    webSocketClient = new LoxoneWebsocketClient(this, endpoint.webSocketUri());
+                    webSocketClient = webSocketClientProvider.apply(this, endpoint.webSocketUri());
                     webSocketClient.connect();
                 } finally {
                     connectRwLock.writeLock().unlock();
@@ -290,6 +329,22 @@ public class LoxoneWebSocket {
                 break;
             default:
                 log.trace("Incoming binary message " + Codec.bytesToHex(bytes.order(ByteOrder.LITTLE_ENDIAN).array()));
+        }
+    }
+
+    void connectionOpened() {
+        if (autoRestartFuture != null) {
+            autoRestartFuture.cancel(true);
+            autoRestartFuture = null;
+        }
+        loxoneAuth.startAuthentication();
+    }
+
+    void autoRestart() {
+        if (autoRestart) {
+            final int rateSeconds = (retries + 1) * authTimeoutSeconds + 1;
+            log.info("Scheduling automatic web socket restart in " + rateSeconds + " seconds");
+            autoRestartFuture = scheduler.scheduleAtFixedRate(this::ensureConnection, rateSeconds, rateSeconds, TimeUnit.SECONDS);
         }
     }
 

@@ -54,5 +54,5 @@ public interface CommandResponseListener<T> {
      * @param clazz type to check
      * @return true if this listener accepts response of given type, false otherwise
      */
-    boolean accepts(@NotNull final Class<T> clazz);
+    boolean accepts(@NotNull final Class clazz);
 }

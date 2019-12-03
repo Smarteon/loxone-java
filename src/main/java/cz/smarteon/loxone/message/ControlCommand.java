@@ -1,5 +1,7 @@
 package cz.smarteon.loxone.message;
 
+import org.jetbrains.annotations.NotNull;
+
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -21,10 +23,12 @@ public class ControlCommand<V extends LoxoneValue> extends LoxoneMessageCommand<
      * @param operation operation
      * @return control command
      */
-    public static ControlCommand<JsonValue> genericControlCommand(final String uuid, final String operation) {
+    @NotNull
+    public static ControlCommand<JsonValue> genericControlCommand(final @NotNull String uuid, final @NotNull String operation) {
         return new ControlCommand<>(uuid, operation, JsonValue.class);
     }
 
+    @NotNull
     public String getControlCommand() {
         return super.getCommand();
     }

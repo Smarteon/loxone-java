@@ -306,7 +306,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
     }
 
     /**
-     * Allows to tear down whn websocket is closed.
+     * Allows to tear down when websocket is closed.
      */
     void wsClosed() {
         if (autoRefreshFuture != null) {

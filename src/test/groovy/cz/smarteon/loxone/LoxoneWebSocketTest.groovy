@@ -64,6 +64,8 @@ class LoxoneWebSocketTest extends Specification {
         loxoneWebSocket.sendCommand(Command.LOX_APP)
 
         then:
+        loxoneWebSocket.retries == 0
+        loxoneWebSocket.authTimeoutSeconds == 1
         1 * authMock.isInitialized() >> true
         1 * wsClientMock.connect() >> { loxoneWebSocket.connectionOpened() }
         1 * authMock.startAuthentication() >> { authListener.authCompleted() }
@@ -74,5 +76,19 @@ class LoxoneWebSocketTest extends Specification {
 
         then:
         1 * authMock.isInitialized() >> true
+    }
+
+    def "should call websocket listener"() {
+        given:
+        def listener = Mock(LoxoneWebSocketListener)
+
+        when:
+        loxoneWebSocket.setWebSocketListener(listener)
+        loxoneWebSocket.connectionOpened()
+
+        then:
+        loxoneWebSocket.getWebSocketListener() == listener
+        1 * listener.webSocketOpened()
+
     }
 }

@@ -7,6 +7,7 @@ import cz.smarteon.loxone.message.TextEvent;
 import cz.smarteon.loxone.message.ValueEvent;
 import org.java_websocket.client.WebSocketClient;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiFunction;
 
-import static cz.smarteon.loxone.Command.ENABLE_STATUS_UPDATE;
 import static cz.smarteon.loxone.Command.KEEP_ALIVE;
 import static java.util.Objects.requireNonNull;
 
@@ -52,6 +52,7 @@ public class LoxoneWebSocket {
     private final LoxoneEndpoint endpoint;
     final LoxoneAuth loxoneAuth;
 
+    private LoxoneWebSocketListener webSocketListener;
     private final List<CommandResponseListener> commandResponseListeners;
     private final List<LoxoneEventListener> eventListeners;
     private final Queue<Command<?>> commands;
@@ -143,6 +144,15 @@ public class LoxoneWebSocket {
     }
 
     /**
+     * Get seconds, it waits for successful authentication, until give up.
+     *
+     * @return authentication timeout in seconds
+     */
+    public int getAuthTimeoutSeconds() {
+        return authTimeoutSeconds;
+    }
+
+    /**
      * Set the seconds, it waits for successful visual authentication, until give up.
      *
      * @param visuTimeoutSeconds visual authentication timeout in seconds
@@ -161,6 +171,15 @@ public class LoxoneWebSocket {
     }
 
     /**
+     * Get the number of retries for successful authentication, until give up.
+     *
+     * @return number of retries
+     */
+    public int getRetries() {
+        return retries;
+    }
+
+    /**
      * Web socket auto restart. If enabled it tries to reestablish the connection in case the remote end was closed.
      * @return true when auto restart is enabled, false otherwise
      */
@@ -175,6 +194,23 @@ public class LoxoneWebSocket {
      */
     public void setAutoRestart(final boolean autoRestart) {
         this.autoRestart = autoRestart;
+    }
+
+    /**
+     * Set the web socket listener allowing to handle web socket events.
+     * @param webSocketListener web socket listener, accepts null in order to remove the current listener
+     */
+    public void setWebSocketListener(final LoxoneWebSocketListener webSocketListener) {
+        this.webSocketListener = webSocketListener;
+    }
+
+    /**
+     * Get current web socket listener, null by default
+     * @return currently set web socket listener, or null
+     */
+    @Nullable
+    public LoxoneWebSocketListener getWebSocketListener() {
+        return webSocketListener;
     }
 
     private void ensureConnection() {
@@ -338,6 +374,10 @@ public class LoxoneWebSocket {
             autoRestartFuture = null;
         }
         loxoneAuth.startAuthentication();
+
+        if (webSocketListener != null) {
+            webSocketListener.webSocketOpened();
+        }
     }
 
     void autoRestart() {
@@ -405,7 +445,6 @@ public class LoxoneWebSocket {
         public void authCompleted() {
             log.info("Authentication completed");
             if (authSeqLatch != null) {
-                sendInternal(ENABLE_STATUS_UPDATE);
                 authSeqLatch.countDown();
             } else {
                 throw new IllegalStateException("Authentication not guarded");

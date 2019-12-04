@@ -80,7 +80,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
     private CommandSender commandSender;
 
     private boolean autoRefreshToken = false;
-    private final ScheduledExecutorService autoRefreshScheduler = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledExecutorService autoRefreshScheduler;
     private ScheduledFuture autoRefreshFuture;
 
     /**
@@ -163,6 +163,15 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
      */
     public void setAutoRefreshToken(final boolean autoRefreshToken) {
         this.autoRefreshToken = autoRefreshToken;
+    }
+
+    /**
+     * Allows to specify scheduler used to auto refresh tokens. If not set the new single thread scheduler is created internally.
+     * @see #setAutoRefreshToken(boolean)
+     * @param autoRefreshScheduler scheduler use to refresh tokens
+     */
+    public void setAutoRefreshScheduler(final @NotNull ScheduledExecutorService autoRefreshScheduler) {
+        this.autoRefreshScheduler = requireNonNull(autoRefreshScheduler, "autoRefreshScheduler can't be null");
     }
 
     /**
@@ -278,6 +287,10 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
                 final long secondsToRefresh = new TokenState(token).secondsToRefresh();
                 if (secondsToRefresh > 0) {
                     log.info("Scheduling token auto refresh in " + secondsToRefresh + " seconds");
+                    if (autoRefreshScheduler == null) {
+                        log.warn("autoRefreshScheduler not set, creating new one");
+                        autoRefreshScheduler = Executors.newSingleThreadScheduledExecutor();
+                    }
                     autoRefreshFuture = autoRefreshScheduler.schedule(this::startAuthentication, secondsToRefresh, TimeUnit.SECONDS);
                 } else {
                     log.warn("Can't schedule token auto refresh, token expires too early or is already expired");

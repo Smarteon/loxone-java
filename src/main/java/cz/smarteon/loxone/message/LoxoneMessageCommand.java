@@ -165,6 +165,16 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
         return jsonWsCommand("jdev/sys/getvisusalt/" + requireNonNull(user), Hashing.class);
     }
 
+    /**
+     * Get 1-wire details by given extension serial number.
+     * @param extensionSerial serial number of 1-wire extension
+     * @return command requesting 1-wire details
+     */
+    public static LoxoneMessageCommand<OneWireDetails> oneWireDetails(final @NotNull String extensionSerial) {
+        return jsonCommand("jdev/sys/ExtStatistics/" + requireNonNull(extensionSerial, "extensionSerial can't be null"),
+                OneWireDetails.class);
+    }
+
     private final Class<V> valueType;
 
     @SuppressWarnings("unchecked")

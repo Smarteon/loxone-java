@@ -11,7 +11,8 @@ class LoxoneMessageTest extends Specification implements SerializationSupport {
 
     private static final Hashing HASHING = new Hashing(
             '41434633443134324337383441373035453333424344364133373431333430413642333442334244'.decodeHex(),
-            '31306137336533622D303163352D313732662D66666666616362383139643462636139'
+            '31306137336533622D303163352D313732662D66666666616362383139643462636139',
+            'SHA1'
     )
 
     def "should deserialize get key"() {

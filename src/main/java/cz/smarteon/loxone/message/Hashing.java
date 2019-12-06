@@ -1,21 +1,26 @@
 package cz.smarteon.loxone.message;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class Hashing implements LoxoneValue {
     private final byte[] key;
     private final String salt;
+    private final String hashAlg;
 
     @JsonCreator
     public Hashing(@JsonProperty("key") @JsonDeserialize(using = HexDeserializer.class) final byte[] key,
-            @JsonProperty("salt") final String salt) {
+            @JsonProperty("salt") final String salt, @JsonProperty("hashAlg") final String hashAlg) {
         this.key = key;
         this.salt = salt;
+        this.hashAlg = hashAlg;
     }
 
     @JsonSerialize(using = HexSerializer.class)
@@ -27,6 +32,10 @@ public class Hashing implements LoxoneValue {
         return salt;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
+    public String getHashAlg() {return hashAlg;}
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -35,13 +44,15 @@ public class Hashing implements LoxoneValue {
         Hashing hashing = (Hashing) o;
 
         if (!Arrays.equals(key, hashing.key)) return false;
-        return salt != null ? salt.equals(hashing.salt) : hashing.salt == null;
+        if (!Objects.equals(hashAlg, hashing.hashAlg)) return false;
+        return Objects.equals(salt, hashing.salt);
     }
 
     @Override
     public int hashCode() {
         int result = Arrays.hashCode(key);
         result = 31 * result + (salt != null ? salt.hashCode() : 0);
+        result = 31 * result + (hashAlg != null ? hashAlg.hashCode() : 0);
         return result;
     }
 
@@ -50,6 +61,7 @@ public class Hashing implements LoxoneValue {
         return "Hashing{" +
                 "key=" + Arrays.toString(key) +
                 ", salt='" + salt + '\'' +
+                ", hashAlg='" + hashAlg + '\'' +
                 '}';
     }
 }

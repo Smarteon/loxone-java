@@ -21,10 +21,10 @@ class LoxoneValueTypeResolver implements TypeIdResolver {
         if (id.contains("dev/sys/getkey")
                 || id.contains("dev/sys/getvisusalt")) {
             return context.constructSpecializedType(baseType, Hashing.class);
-        } else if (id.contains("dev/sps/LoxAPPversion3")) {
-            return context.constructSpecializedType(baseType, DateValue.class);
         } else if (id.contains("token")) {
             return context.constructSpecializedType(baseType, Token.class);
+        } else if (id.contains("dev/sys/ExtStatistics")) {
+            return context.constructSpecializedType(baseType, OneWireDetails.class);
         } else {
             return COMMANDS.stream()
                     .filter(command -> command.is(id))

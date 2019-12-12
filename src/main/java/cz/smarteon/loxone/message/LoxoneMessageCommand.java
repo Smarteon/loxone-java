@@ -2,7 +2,6 @@ package cz.smarteon.loxone.message;
 
 import cz.smarteon.loxone.Command;
 import cz.smarteon.loxone.LoxoneException;
-import cz.smarteon.loxone.app.LoxoneApp;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -224,7 +223,8 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
             DEV_SYS_HEAP,
             DEV_SYS_INTS,
             DEV_SYS_LANINTS,
-            DEV_SYS_NUMTASKS
+            DEV_SYS_NUMTASKS,
+            LOX_APP_VERSION
     );
 
     /**

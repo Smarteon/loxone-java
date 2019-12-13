@@ -24,6 +24,12 @@ class LoxoneMessageTest extends Specification implements SerializationSupport {
         message.control == 'jdev/sys/getkey2/showroom'
         message.code == 200
         message.value == HASHING
+        with(message.toString()) {
+            contains('jdev/sys/getkey2/showroom')
+            contains('200')
+            contains('key')
+            contains('salt')
+        }
     }
 
     def "should serialize"() {

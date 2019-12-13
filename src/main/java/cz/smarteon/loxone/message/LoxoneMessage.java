@@ -69,4 +69,13 @@ public class LoxoneMessage<V extends LoxoneValue> {
     public void add(final String key, final JsonNode value) {
         // hack causing to ignore unknown fields since @JsonIgnoreProperties(ignoreUnknown = true) doesn't work together custom type resolver
     }
+
+    @Override
+    public String toString() {
+        return "LoxoneMessage{" +
+                "control='" + control + '\'' +
+                ", code=" + code +
+                ", value=" + value +
+                '}';
+    }
 }

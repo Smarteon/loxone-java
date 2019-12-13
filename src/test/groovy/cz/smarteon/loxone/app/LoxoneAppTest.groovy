@@ -4,7 +4,7 @@ import cz.smarteon.loxone.LoxoneUuid
 import cz.smarteon.loxone.message.SerializationSupport
 import spock.lang.Specification
 
-class LoxoneConfigTest extends Specification implements SerializationSupport {
+class LoxoneAppTest extends Specification implements SerializationSupport {
 
     private static final Date LAST_MODIFIED = parseDate('2017-11-22 18:41:01')
     private static final LoxoneUuid UUID = new LoxoneUuid('0f869a64-0200-0a9b-ffffd4c75dbaf53c')
@@ -22,7 +22,7 @@ class LoxoneConfigTest extends Specification implements SerializationSupport {
 
     def "should getControl by type"() {
         given:
-        LoxoneApp config = new LoxoneApp(LAST_MODIFIED, null, [(UUID): alarmControl])
+        LoxoneApp config = new LoxoneApp(LAST_MODIFIED, Mock(MiniserverInfo), [(UUID): alarmControl])
 
         expect:
         config.getControl(AlarmControl) == alarmControl
@@ -35,7 +35,7 @@ class LoxoneConfigTest extends Specification implements SerializationSupport {
         given:
         def control = new SwitchControl()
         control.name = 'SomeControl'
-        LoxoneApp config = new LoxoneApp(LAST_MODIFIED, null, [(UUID): control])
+        LoxoneApp config = new LoxoneApp(LAST_MODIFIED, Mock(MiniserverInfo), [(UUID): control])
 
         expect:
         config.getControl('SomeControl', SwitchControl) == control

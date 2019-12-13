@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.smarteon.loxone.LoxoneException;
 import cz.smarteon.loxone.LoxoneUuid;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,7 +15,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Represents the loxone application as used in user interface.
@@ -29,11 +32,12 @@ public class LoxoneApp implements Serializable {
     public LoxoneApp(@JsonProperty("lastModified") Date lastModified,
                      @JsonProperty("msInfo") MiniserverInfo miniserverInfo,
                      @JsonProperty("controls") Map<LoxoneUuid, Control> controls) {
-        this.lastModified = lastModified;
-        this.miniserverInfo = miniserverInfo;
-        this.controls = controls;
+        this.lastModified = requireNonNull(lastModified, "lastModified can't be null");
+        this.miniserverInfo = requireNonNull(miniserverInfo, "miniserverInfo can't be null");
+        this.controls = requireNonNull(controls, "controls can't be null");
     }
 
+    @NotNull
     public Date getLastModified() {
         return lastModified;
     }
@@ -43,10 +47,12 @@ public class LoxoneApp implements Serializable {
      *
      * @return miniserver info as {@link MiniserverInfo}
      */
+    @NotNull
     public MiniserverInfo getMiniserverInfo() {
         return miniserverInfo;
     }
 
+    @NotNull
     public Map<LoxoneUuid, Control> getControls() {
         return controls;
     }
@@ -58,7 +64,8 @@ public class LoxoneApp implements Serializable {
      * @throws cz.smarteon.loxone.LoxoneException if more than one control of given type exists
      */
     @JsonIgnore
-    public <T extends Control> T getControl(Class<T> type) {
+    @Nullable
+    public <T extends Control> T getControl(final @NotNull Class<T> type) {
         final Collection<T> found = getControls(type);
         switch (found.size()) {
             case 0:
@@ -77,8 +84,9 @@ public class LoxoneApp implements Serializable {
      */
     @JsonIgnore
     @SuppressWarnings("unchecked")
-    public <T extends Control> Collection<T> getControls(Class<T> type) {
-        Objects.requireNonNull(type, "control type can't be null");
+    @NotNull
+    public <T extends Control> Collection<T> getControls(final @NotNull Class<T> type) {
+        requireNonNull(type, "control type can't be null");
         final List<T> found = new ArrayList<>();
         for (Control c : controls.values()) {
             if ( type.isAssignableFrom(c.getClass())) {
@@ -93,12 +101,13 @@ public class LoxoneApp implements Serializable {
      * @param name control name
      * @param type control type
      * @param <T> class of control type
-     * @return the only control of given name and type, or null if no such control exists     *
+     * @return the only control of given name and type, or null if no such control exists
      * @throws cz.smarteon.loxone.LoxoneException if more than one control of given name and type exists
      */
     @JsonIgnore
-    public <T extends Control> T getControl(String name, Class<T> type) {
-        Objects.requireNonNull(name, "control name can't be null");
+    @Nullable
+    public <T extends Control> T getControl(final @NotNull String name, final @NotNull Class<T> type) {
+        requireNonNull(name, "control name can't be null");
         T found = null;
         for (T control : getControls(type)) {
             if (name.equals(control.getName())) {

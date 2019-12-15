@@ -7,6 +7,7 @@ import cz.smarteon.loxone.message.LoxoneMessage;
 import cz.smarteon.loxone.message.LoxoneMessageCommand;
 import cz.smarteon.loxone.message.PubKeyInfo;
 import cz.smarteon.loxone.message.Token;
+import cz.smarteon.loxone.message.TokenPermissionType;
 import org.java_websocket.util.Base64;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -74,6 +75,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
     private Token token;
 
     private String clientInfo = DEFAULT_CLIENT_INFO;
+    private TokenPermissionType tokenPermissionType = TokenPermissionType.WEB;
 
     private EncryptedCommand<Token> lastTokenCommand;
 
@@ -136,6 +138,21 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
      */
     public void setClientInfo(String clientInfo) {
         this.clientInfo = clientInfo;
+    }
+
+    /**
+     * @return used token permission type
+     */
+    public TokenPermissionType getTokenPermissionType() {
+        return tokenPermissionType;
+    }
+
+    /**
+     * Token permission type used to acquire token. Defaults to {@link TokenPermissionType#WEB}
+     * @param tokenPermissionType token permission type
+     */
+    public void setTokenPermissionType(final TokenPermissionType tokenPermissionType) {
+        this.tokenPermissionType = tokenPermissionType;
     }
 
     /**
@@ -260,7 +277,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
             if (tokenState.isExpired()) {
                 lastTokenCommand = EncryptedCommand.getToken(
                         LoxoneCrypto.loxoneHashing(loxonePass, loxoneUser, hashing, "gettoken"),
-                        loxoneUser, CLIENT_UUID, clientInfo, this::encryptCommand
+                        loxoneUser, tokenPermissionType, CLIENT_UUID, clientInfo, this::encryptCommand
                 );
             } else if (tokenState.needsRefresh()) {
                 lastTokenCommand = EncryptedCommand.refreshToken(

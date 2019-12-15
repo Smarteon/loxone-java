@@ -24,6 +24,7 @@ import static cz.smarteon.loxone.CryptoSupport.USER
 import static cz.smarteon.loxone.CryptoSupport.VISU_PASS
 import static cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_CFG_API
 import static cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_SYS_GETPUBLICKEY
+import static cz.smarteon.loxone.message.TokenPermissionType.WEB
 
 class LoxoneAuthTest extends Specification {
 
@@ -54,7 +55,7 @@ class LoxoneAuthTest extends Specification {
         def keyCmd = LoxoneMessageCommand.getKey(USER)
         def tokenCmd =  EncryptedCommand.getToken(
                 LoxoneCrypto.loxoneHashing(PASS, USER, HASHING, "gettoken"),
-                USER, LoxoneAuth.CLIENT_UUID, loxoneAuth.clientInfo, {it}
+                USER, WEB, LoxoneAuth.CLIENT_UUID, loxoneAuth.clientInfo, {it}
         )
         def token = new Token(TOKEN.token, TOKEN.key,
                 ((System.currentTimeMillis() / 1000) - LOXONE_EPOCH_BEGIN + 301).toInteger(),

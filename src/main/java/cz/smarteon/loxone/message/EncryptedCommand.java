@@ -1,5 +1,7 @@
 package cz.smarteon.loxone.message;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.function.Function;
@@ -62,17 +64,22 @@ public class EncryptedCommand<V extends LoxoneValue> extends LoxoneMessageComman
     /**
      * Creates "gettoken" command
      * @param tokenHash hashed token
-     * @param user loxone userauthwithtoken
+     * @param user loxone user
+     * @param permissionType token permission type to acquire
      * @param clientUuid loxone client uuid
      * @param clientInfo  loxone client info
      * @param encryptor encryption function
      * @return command
      */
-    public static EncryptedCommand<Token> getToken(final String tokenHash, final String user, final String clientUuid,
-                                                   final String clientInfo, final Function<String, String> encryptor) {
+    @NotNull
+    public static EncryptedCommand<Token> getToken(final @NotNull String tokenHash, final @NotNull String user,
+                                                   final @NotNull TokenPermissionType permissionType,
+                                                   final @NotNull String clientUuid, final @NotNull String clientInfo,
+                                                   final @NotNull Function<String, String> encryptor) {
         final String cmd = "jdev/sys/gettoken/"
                 + requireNonNull(tokenHash, "tokenHash can't be null") + "/"
-                + requireNonNull(user, "user can't be null") + "/2/"
+                + requireNonNull(user, "user can't be null") + "/" +
+                + requireNonNull(permissionType, "permissionType can't be null").getId() + "/"
                 + requireNonNull(clientUuid, "clientUuid can't be null") + "/"
                 + requireNonNull(clientInfo, "clientInfo can't be null");
         return new EncryptedCommand<>(cmd, Token.class, encryptor);

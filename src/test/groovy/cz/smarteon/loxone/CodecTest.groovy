@@ -1,5 +1,6 @@
 package cz.smarteon.loxone
 
+import com.fasterxml.jackson.databind.node.TextNode
 import cz.smarteon.loxone.message.MessageKind
 import cz.smarteon.loxone.message.ValueEvent
 import spock.lang.Specification
@@ -66,5 +67,10 @@ class CodecTest extends Specification {
 
         events[1].text == '[]'
         events[2].text == ''
+    }
+
+    def "should convertValue"() {
+        expect:
+        Codec.convertValue(TextNode.valueOf('textVal'), String) == 'textVal'
     }
 }

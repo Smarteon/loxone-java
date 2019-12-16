@@ -1,5 +1,6 @@
 package cz.smarteon.loxone;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import cz.smarteon.loxone.message.LoxoneMessage;
@@ -7,6 +8,7 @@ import cz.smarteon.loxone.message.MessageHeader;
 import cz.smarteon.loxone.message.MessageKind;
 import cz.smarteon.loxone.message.TextEvent;
 import cz.smarteon.loxone.message.ValueEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -107,6 +109,18 @@ public abstract class Codec {
 
     public static <T> T readXml(final InputStream xml, final Class<T> clazz) throws IOException {
         return XML.readValue(xml, clazz);
+    }
+
+    /**
+     * Converts the given json node to the type of given class.
+     * @throws IllegalArgumentException in case the node is not convertible.
+     * @param jsonNode to convert
+     * @param clazz type class
+     * @param <T> type
+     * @return converted object
+     */
+    public static <T> T convertValue(final @NotNull JsonNode jsonNode, final @NotNull Class<T> clazz) {
+        return MAPPER.convertValue(jsonNode, clazz);
     }
 
     public static MessageHeader readHeader(final ByteBuffer bytes) {

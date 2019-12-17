@@ -8,7 +8,7 @@ class MiniserverUserTest extends Specification implements SerializationSupport {
 
     def "should deserialize"() {
         when:
-        MiniserverUser user = readResource('config/miniserverUser.json', MiniserverUser)
+        MiniserverUser user = readResource('app/miniserverUser.json', MiniserverUser)
 
         then:
         user.name == 'showroom'

@@ -212,10 +212,10 @@ public class Loxone {
         @Override
         public @NotNull State onCommand(final @NotNull Command<? extends LoxoneApp> command, final @NotNull LoxoneApp message) {
             loxoneApp = command.ensureResponse(message);
-            loxoneAppListeners.forEach(listener -> listener.onLoxoneApp(loxoneApp));
             if (appLatch != null) {
                 appLatch.countDown();
             }
+            loxoneAppListeners.forEach(listener -> listener.onLoxoneApp(loxoneApp));
             return State.READ;
         }
 

@@ -1,0 +1,12 @@
+{
+  "name": "PresTest",
+  "type": "Presence",
+  "uuidAction": "1471d837-00ec-90e3-ffffc0f606ef595c",
+  "room": "13597518-0181-37a6-ffffc0f606ef595c",
+  "cat": "13597487-018f-bf35-ffffc0f606ef595c",
+  "defaultRating": 0,
+  "isFavorite": false,
+  "isSecured": false,
+  "defaultIcon": null,
+  "states": {}
+}

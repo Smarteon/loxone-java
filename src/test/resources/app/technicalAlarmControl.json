@@ -1,0 +1,43 @@
+{
+  "name": "Technical alarm",
+  "type": "SmokeAlarm",
+  "uuidAction": "10a75401-013a-1272-fffff8bbb0459c02",
+  "room": "10a7177d-00fc-90a7-fffff8bbb0459c02",
+  "cat": "10a7177d-00ba-8efa-fffff8bbb0459c02",
+  "defaultRating": 1,
+  "isFavorite": false,
+  "isSecured": false,
+  "details": {
+    "hasAcousticAlarm": true,
+    "availableAlarms": 6
+  },
+  "states": {
+    "sensors": "10a75401-013a-1272-fffff8bbb0459c02",
+    "testAlarm": "10a75401-013a-1270-ffff9084f3b66cb8",
+    "acousticAlarm": "10a75401-013a-126e-ffff9084f3b66cb8",
+    "level": "1351c8fb-0264-7ef4-fffff8bbb0459c02",
+    "nextLevel": "1351c8fb-0264-7ef5-fffff8bbb0459c02",
+    "nextLevelDelay": "1351c8fb-0264-7ef6-fffff8bbb0459c02",
+    "nextLevelDelayTotal": "1351c8fb-0264-7ef7-fffff8bbb0459c02",
+    "timeServiceMode": "1351c8fb-0264-7ef8-fffff8bbb0459c02",
+    "alarmCause": "1351c8fb-0264-7ef9-fffff8bbb0459c02",
+    "startTime": "1351c8fb-0264-7efa-fffff8bbb0459c02",
+    "areAlarmSignalsOff": "1351c8fb-0264-7efb-fffff8bbb0459c02"
+  },
+  "subControls": {
+    "10a75401-013a-1272-fffff8bbb0459c02/sensors": {
+      "name": "sensors",
+      "type": "Tracker",
+      "uuidAction": "10a75401-013a-1272-fffff8bbb0459c02/sensors",
+      "defaultRating": 0,
+      "isFavorite": false,
+      "isSecured": false,
+      "details": {
+        "maxEntries": 40
+      },
+      "states": {
+        "entries": "10a75401-013a-1272-fffff8bbb0459c02"
+      }
+    }
+  }
+}

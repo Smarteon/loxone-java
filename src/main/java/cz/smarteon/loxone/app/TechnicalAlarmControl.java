@@ -1,38 +1,18 @@
 package cz.smarteon.loxone.app;
 
+import cz.smarteon.loxone.LoxoneNotDocumented;
 import cz.smarteon.loxone.LoxoneUuid;
+import cz.smarteon.loxone.LoxoneUuids;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-/**
- * Represents Burglar Alarm block
- */
-public class AlarmControl extends Control {
+import java.util.Optional;
 
-    public static final String NAME = "Alarm";
+import static java.util.Optional.ofNullable;
 
-    /**
-     * @return state referring whether alarm is armed
-     */
-    @NotNull
-    public LoxoneUuid stateArmed() {
-        return getCompulsoryState("armed").only();
-    }
+public class TechnicalAlarmControl extends Control {
 
-    /**
-     * @return state referring alarm arming delay seconds
-     */
-    @NotNull
-    public LoxoneUuid stateArmedDelay() {
-        return getCompulsoryState("armedDelay").only();
-    }
-
-    /**
-     * @return state referring alarm total arming delay seconds
-     */
-    @NotNull
-    public LoxoneUuid stateArmedDelayTotal() {
-        return getCompulsoryState("armedDelayTotal").only();
-    }
+    public static final String NAME = "SmokeAlarm";
 
     /**
      * @return state referring current alarm level
@@ -83,10 +63,39 @@ public class AlarmControl extends Control {
     }
 
     /**
-     * @return state referring whether movement is disabled
+     * @return state referring whether alarm is acoustic
      */
     @NotNull
-    public LoxoneUuid stateDisabledMove() {
-        return getCompulsoryState("disabledMove").only();
+    public LoxoneUuid stateAcousticAlarm() {
+        return getCompulsoryState("acousticAlarm").only();
     }
+
+    /**
+     * @return state referring whether alarm is testing
+     */
+    @NotNull
+    public LoxoneUuid stateTestAlarm() {
+        return getCompulsoryState("testAlarm").only();
+    }
+
+    /**
+     * @return state referring alarm cause
+     */
+    @NotNull
+    public LoxoneUuid stateAlarmCause() {
+        return getCompulsoryState("alarmCause").only();
+    }
+
+    @LoxoneNotDocumented
+    @Nullable
+    public LoxoneUuid stateTimeServiceMode() {
+        return ofNullable(getStates()).map(states -> states.get("timeServiceMode")).map(LoxoneUuids::only).orElse(null);
+    }
+
+    @LoxoneNotDocumented
+    @Nullable
+    public LoxoneUuid stateAreAlarmSignalsOff() {
+        return ofNullable(getStates()).map(states -> states.get("areAlarmSignalsOff")).map(LoxoneUuids::only).orElse(null);
+    }
+
 }

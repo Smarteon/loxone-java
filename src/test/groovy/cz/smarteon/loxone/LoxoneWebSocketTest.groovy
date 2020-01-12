@@ -85,6 +85,7 @@ class LoxoneWebSocketTest extends Specification {
         when:
         loxoneWebSocket.setWebSocketListener(listener)
         loxoneWebSocket.connectionOpened()
+        sleep(10) // wait for another thread execution
 
         then:
         loxoneWebSocket.getWebSocketListener() == listener

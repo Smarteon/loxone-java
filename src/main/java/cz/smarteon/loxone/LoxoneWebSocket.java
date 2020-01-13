@@ -66,7 +66,7 @@ public class LoxoneWebSocket {
     private int retries = 5;
 
     private boolean autoRestart = false;
-    final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture autoRestartFuture;
 
     public LoxoneWebSocket(final @NotNull LoxoneEndpoint endpoint, final @NotNull LoxoneAuth loxoneAuth) {
@@ -373,11 +373,13 @@ public class LoxoneWebSocket {
             autoRestartFuture.cancel(true);
             autoRestartFuture = null;
         }
-        loxoneAuth.startAuthentication();
+        scheduler.execute(() -> {
+            loxoneAuth.startAuthentication();
+            if (webSocketListener != null) {
+                webSocketListener.webSocketOpened();
+            }
+        });
 
-        if (webSocketListener != null) {
-            webSocketListener.webSocketOpened();
-        }
     }
 
     void autoRestart() {

@@ -1,56 +1,107 @@
 package cz.smarteon.loxone.example;
 
 import cz.smarteon.loxone.*;
-import cz.smarteon.loxone.config.LoxoneConfig;
+import cz.smarteon.loxone.app.SwitchControl;
+import cz.smarteon.loxone.message.LoxoneMessage;
+import cz.smarteon.loxone.message.TextEvent;
+import cz.smarteon.loxone.message.ValueEvent;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.jetbrains.annotations.NotNull;
 
 import java.security.Security;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class LoxoneJavaExample {
 
-    public static void main(String[] args)  {
+    public static void main(String[] args) {
         final String address = args[0];
         final String user = args[1];
         final String password = args[2];
         final String uiPassword = args[3];
 
-        // needed under openjdk, alternatively install oracle's JCE
+        final CountDownLatch commandLatch = new CountDownLatch(1);
+        final CountDownLatch eventLatch = new CountDownLatch(1);
+
+        // Needed under openjdk, alternatively install oracle's JCE.
         Security.addProvider(new BouncyCastleProvider());
 
-        // create the HTTP and websocket
-        LoxoneHttp loxoneHttp = new LoxoneHttp(address);
-        LoxoneWebSocket loxoneWebSocket = new LoxoneWebSocket(address, new LoxoneAuth(loxoneHttp, user, password, uiPassword));
+        // Initialize loxone with credentials.
+        Loxone loxone = new Loxone(new LoxoneEndpoint(address), user, password, uiPassword);
 
+        // Set event listener.
+        setEventListener(loxone, eventLatch);
 
-        // get LoxAPP3.json using http (websocket not yet supported)
-        LoxoneConfig loxoneConfig = loxoneHttp.get(Protocol.C_APP, loxoneWebSocket.getLoxoneAuth(), LoxoneConfig.class);
+        // Set listener waiting for our command response.
+        setCommandResponseListener(loxone, commandLatch);
 
-        // get all the info for first control in config using websocket
-        loxoneConfig.getControls().entrySet().stream().findFirst().ifPresent(e -> {
+        // Set Loxone App listener to send a command.
+        setLoxoneAppListener(loxone);
 
-            final String controlId = e.getKey().toString();
-            final CountDownLatch latch = new CountDownLatch(1);
+        try {
+            // Start the service.
+            loxone.start();
 
-            // set listener waiting for our command
-            loxoneWebSocket.registerListener((command, value) -> {
-                System.out.println("Got answer on command=" + command + " value=" + value);
-                if (command.contains(controlId)) {
-                    latch.countDown();
-                }
-                return CommandListener.State.CONSUMED;
-            });
+            // Wait for command and any event.
+            if (!commandLatch.await(30, TimeUnit.SECONDS)) {
+                System.out.println("Command latch timed out.");
+            }
+            if (!eventLatch.await(30, TimeUnit.SECONDS)) {
+                System.out.println("Event latch timed out.");
+            }
 
-            // send the command
-            loxoneWebSocket.sendCommand(Protocol.jsonControlAll(controlId));
+        } catch (InterruptedException | LoxoneException e) {
+            e.printStackTrace();
+        }
 
-            try {
-                latch.await();
-            } catch (InterruptedException e1) {
-                e1.printStackTrace(); //ugly :(
+        // Release all the resources correctly.
+        loxone.stop();
+    }
+
+    private static void setEventListener(Loxone loxone, CountDownLatch latch) {
+        loxone.setEventsEnabled(true);
+        loxone.webSocket().registerListener(new LoxoneEventListener() {
+            @Override
+            public void onEvent(@NotNull final ValueEvent event) {
+                latch.countDown();
+                System.out.println("Received value event=" + event);
+            }
+
+            @Override
+            public void onEvent(@NotNull final TextEvent event) {
+                latch.countDown();
+                System.out.println("Received text event=" + event);
             }
         });
+    }
 
-        loxoneWebSocket.close();  // websocket lib creates daemon threads so we need to close explicitly
+    private static void setCommandResponseListener(Loxone loxone, CountDownLatch latch) {
+        loxone.webSocket().registerListener(new CommandResponseListener<LoxoneMessage>() {
+            @Override
+            @NotNull
+            public State onCommand(@NotNull final Command<? extends LoxoneMessage> command, @NotNull final LoxoneMessage message) {
+                System.out.println("Got answer on command=" + command + " message=" + message);
+                latch.countDown();
+                return State.CONSUMED;
+            }
+
+            @Override
+            public boolean accepts(@NotNull final Class clazz) {
+                return LoxoneMessage.class.equals(clazz);
+            }
+        });
+    }
+
+    private static void setLoxoneAppListener(Loxone loxone) {
+        loxone.registerLoxoneAppListener(loxoneApp -> {
+            // Obtain any Control and send the command.
+            Optional<SwitchControl> switchControl = loxoneApp.getControls(SwitchControl.class).stream().findFirst();
+            if (switchControl.isPresent()) {
+                loxone.sendControlPulse(switchControl.get());
+            } else {
+                System.out.println("No switch control was found. Command won't be send.");
+            }
+        });
     }
 }

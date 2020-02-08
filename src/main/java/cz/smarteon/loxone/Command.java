@@ -41,7 +41,7 @@ public class Command<T> {
     private final boolean httpSupported;
     private final boolean wsSupported;
 
-    private final String toMatch;
+    private final String shouldContain;
 
     protected Command(final String command, final Type type, final Class<T> responseType, final boolean httpSupported,
                     final boolean wsSupported) {
@@ -52,9 +52,9 @@ public class Command<T> {
         this.wsSupported = wsSupported;
 
         if (Type.JSON.equals(type)) {
-            this.toMatch = command.substring(1);
+            this.shouldContain = command.substring(1);
         } else {
-            this.toMatch = command;
+            this.shouldContain = command;
         }
     }
 
@@ -88,7 +88,7 @@ public class Command<T> {
      * @return true when the argument contains this command identifier, false otherwise
      */
     public boolean is(final String toCompare) {
-        return toCompare != null && toCompare.contains(this.toMatch);
+        return toCompare != null && toCompare.contains(this.shouldContain);
     }
 
     /**
@@ -132,6 +132,14 @@ public class Command<T> {
     }
 
     /**
+     * String which should be contained in the argument passed to {@link #is(String)} to return true.
+     * @return string should be contained when comparing this command
+     */
+    public String getShouldContain() {
+        return shouldContain;
+    }
+
+    /**
      * Ensures the given response being the type of this command's compatible response.
      * Returns the ensured response or throws the exception.
      *
@@ -165,11 +173,11 @@ public class Command<T> {
                 Objects.equals(command, command1.command) &&
                 type == command1.type &&
                 Objects.equals(responseType, command1.responseType) &&
-                Objects.equals(toMatch, command1.toMatch);
+                Objects.equals(shouldContain, command1.shouldContain);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(command, type, responseType, httpSupported, wsSupported, toMatch);
+        return Objects.hash(command, type, responseType, httpSupported, wsSupported, shouldContain);
     }
 }

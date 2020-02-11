@@ -397,7 +397,8 @@ public class LoxoneWebSocket {
                 if (command.is(loxoneMessage.getControl())) {
                     return true;
                 } else {
-                    log.error("Unexpected message with control " + loxoneMessage.getControl());
+                    log.error("Expected message with control containing " + command.getShouldContain()
+                            +  " but " + loxoneMessage.getControl() + " received");
                     return false;
                 }
             case HTTP_AUTH_TOO_LONG:

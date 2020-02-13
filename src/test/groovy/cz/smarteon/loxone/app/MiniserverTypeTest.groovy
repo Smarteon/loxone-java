@@ -6,6 +6,8 @@ import spock.lang.Unroll
 
 import static cz.smarteon.loxone.app.MiniserverType.GO
 import static cz.smarteon.loxone.app.MiniserverType.REGULAR
+import static cz.smarteon.loxone.app.MiniserverType.REGULAR_V2
+import static cz.smarteon.loxone.app.MiniserverType.UNKNOWN
 
 class MiniserverTypeTest extends Specification implements SerializationSupport {
 
@@ -18,5 +20,8 @@ class MiniserverTypeTest extends Specification implements SerializationSupport {
         value || type
         "0"   || REGULAR
         "1"   || GO
+        "2"   || REGULAR_V2
+        "3"   || UNKNOWN
+        "5"   || UNKNOWN
     }
 }

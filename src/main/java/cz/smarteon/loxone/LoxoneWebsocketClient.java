@@ -10,8 +10,6 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -57,7 +55,7 @@ class LoxoneWebsocketClient extends WebSocketClient {
             try {
                 if (!keepAliveLatch.await(KEEP_ALIVE_RESPONSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
                     log.info("Keepalive response not received within timeout, closing connection");
-                    LoxoneWebsocketClient.this.ws.close();
+                    LoxoneWebsocketClient.this.ws.closeWebSocket();
                 }
             } catch (InterruptedException e) {
                 log.debug("Keepalive latch has been interrupted");

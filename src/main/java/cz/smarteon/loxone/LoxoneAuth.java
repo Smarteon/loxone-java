@@ -19,7 +19,6 @@ import java.security.SecureRandom;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -303,12 +302,12 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
             if (autoRefreshToken) {
                 final long secondsToRefresh = new TokenState(token).secondsToRefresh();
                 if (secondsToRefresh > 0) {
-                    log.info("Scheduling token auto refresh in " + secondsToRefresh + " seconds");
-                    if (autoRefreshScheduler == null) {
-                        log.warn("autoRefreshScheduler not set, creating new one");
-                        autoRefreshScheduler = Executors.newSingleThreadScheduledExecutor();
+                    if (autoRefreshScheduler != null) {
+                        log.info("Scheduling token auto refresh in " + secondsToRefresh + " seconds");
+                        autoRefreshFuture = autoRefreshScheduler.schedule(this::startAuthentication, secondsToRefresh, TimeUnit.SECONDS);
+                    } else {
+                        log.warn("autoRefreshScheduler not set, can't schedule token refresh");
                     }
-                    autoRefreshFuture = autoRefreshScheduler.schedule(this::startAuthentication, secondsToRefresh, TimeUnit.SECONDS);
                 } else {
                     log.warn("Can't schedule token auto refresh, token expires too early or is already expired");
                 }

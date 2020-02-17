@@ -13,6 +13,8 @@ import spock.lang.Subject
 import spock.lang.Timeout
 
 import java.security.Security
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
 
 import static cz.smarteon.loxone.CommandResponseListener.State.CONSUMED
 import static cz.smarteon.loxone.CryptoSupport.HASHING
@@ -31,6 +33,7 @@ class LoxoneAuthTest extends Specification {
     @Subject private LoxoneAuth loxoneAuth
     private LoxoneHttp http
     private CommandSender senderMock
+    private ScheduledExecutorService scheduler
 
     void setupSpec() {
         Security.addProvider(new BouncyCastleProvider())
@@ -46,7 +49,14 @@ class LoxoneAuthTest extends Specification {
         senderMock = Mock(CommandSender)
         loxoneAuth.commandSender = senderMock
 
+        scheduler = Executors.newSingleThreadScheduledExecutor()
+        loxoneAuth.setAutoRefreshScheduler(scheduler)
+
         loxoneAuth.init()
+    }
+
+    void cleanup() {
+        scheduler.shutdownNow()
     }
 
     @Timeout(2)

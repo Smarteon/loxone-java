@@ -185,6 +185,8 @@ public class Loxone {
 
     /**
      * Stops the service closing underlying resources, namely {@link LoxoneWebSocket}.
+     *
+     * @throws LoxoneException in case the proper close failed
      */
     public void stop() {
         loxoneWebSocket.close();

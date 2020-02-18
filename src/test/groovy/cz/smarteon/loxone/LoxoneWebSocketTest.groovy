@@ -1,18 +1,12 @@
 package cz.smarteon.loxone
 
-import cz.smarteon.loxone.message.ApiInfo
-import cz.smarteon.loxone.message.LoxoneMessage
-import cz.smarteon.loxone.message.PubKeyInfo
+
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.java_websocket.client.WebSocketClient
 import spock.lang.Specification
 import spock.lang.Subject
 
 import java.security.Security
-
-import static cz.smarteon.loxone.CryptoSupport.PUBLIC_KEY
-import static cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_CFG_API
-import static cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_SYS_GETPUBLICKEY
 
 class LoxoneWebSocketTest extends Specification {
 
@@ -34,10 +28,6 @@ class LoxoneWebSocketTest extends Specification {
             setAutoRefreshScheduler(*_) >> {args -> scheduler = args[0]}
         }
         wsClientMock = Mock(WebSocketClient)
-        def http = Stub(LoxoneHttp) {
-            get(DEV_CFG_API) >> new LoxoneMessage(DEV_CFG_API.command, 200, new ApiInfo('50:4F:94:10:B8:4A', '9.1.10.30'))
-            get(DEV_SYS_GETPUBLICKEY) >> new LoxoneMessage(DEV_SYS_GETPUBLICKEY.command, 200, new PubKeyInfo(PUBLIC_KEY))
-        }
         loxoneWebSocket = new LoxoneWebSocket(new LoxoneEndpoint('localhost', 12345), authMock,
                 { lws, uri -> wsClientMock})
         loxoneWebSocket.setAuthTimeoutSeconds(1)
@@ -90,6 +80,39 @@ class LoxoneWebSocketTest extends Specification {
         then:
         loxoneWebSocket.getWebSocketListener() == listener
         1 * listener.webSocketOpened()
+    }
 
+    def "should close properly"() {
+        given:
+        loxoneWebSocket.setRetries(0)
+
+        when:
+        loxoneWebSocket.sendCommand(Command.LOX_APP)
+        loxoneWebSocket.close()
+
+        then:
+        1 * wsClientMock.connect() >> { loxoneWebSocket.connectionOpened() }
+        1 * authMock.startAuthentication() >> { authListener.authCompleted() }
+        1 * wsClientMock.closeBlocking()
+
+        loxoneWebSocket.scheduler.shutdown
+    }
+
+    def "should close properly when ws interrupted"() {
+        given:
+        loxoneWebSocket.setRetries(0)
+
+        when:
+        loxoneWebSocket.sendCommand(Command.LOX_APP)
+        loxoneWebSocket.close()
+
+        then:
+        1 * wsClientMock.connect() >> { loxoneWebSocket.connectionOpened() }
+        1 * authMock.startAuthentication() >> { authListener.authCompleted() }
+        1 * wsClientMock.closeBlocking() >> { throw new InterruptedException('Testing interrupt') }
+
+        loxoneWebSocket.scheduler.shutdown
+
+        thrown(LoxoneException)
     }
 }

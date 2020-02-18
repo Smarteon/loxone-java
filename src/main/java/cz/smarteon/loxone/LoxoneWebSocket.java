@@ -120,13 +120,8 @@ public class LoxoneWebSocket {
     }
 
     public void close() {
-        try {
-            if (webSocketClient != null) {
-                webSocketClient.closeBlocking();
-            }
-        } catch (InterruptedException e) {
-            throw new LoxoneException("Interrupted while closing websocket", e);
-        }
+        scheduler.shutdownNow();
+        closeWebSocket();
     }
 
     @NotNull
@@ -241,7 +236,7 @@ public class LoxoneWebSocket {
                 log.trace("Waiting for authentication has been successful");
             } else {
                 if (close) {
-                    close();
+                    closeWebSocket();
                 }
                 throw new LoxoneConnectionException("Unable to authenticate within timeout");
             }
@@ -387,6 +382,16 @@ public class LoxoneWebSocket {
             final int rateSeconds = (retries + 1) * authTimeoutSeconds + 1;
             log.info("Scheduling automatic web socket restart in " + rateSeconds + " seconds");
             autoRestartFuture = scheduler.scheduleAtFixedRate(this::ensureConnection, rateSeconds, rateSeconds, TimeUnit.SECONDS);
+        }
+    }
+
+    void closeWebSocket() {
+        try {
+            if (webSocketClient != null) {
+                webSocketClient.closeBlocking();
+            }
+        } catch (InterruptedException e) {
+            throw new LoxoneException("Interrupted while closing websocket", e);
         }
     }
 

@@ -51,6 +51,9 @@
                    IntDev="false">
             <DaliDevice Name="9.1 Round design light seg 1" Code="125" Serial="0:83213221" Error="false"/>
         </Extension>
+        <Extension Type="DI Extension" Code="195" Name="DI Extension" Serial="14d8277c" Mac="DI Extension"
+                   Version="10.3.11.8" Online="true" DummyDev="false" Occupied="false" Interfered="false"
+                   IntDev="false"/>
         <UnknownExtension Serial="01d97830"/>
     </Miniserver>
 </Status>

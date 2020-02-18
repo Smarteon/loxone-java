@@ -46,6 +46,11 @@
         </Extension>
         <Extension Type="DMX Extension" Code="11" Name="DMX Extension" Serial="04d82ee5" Version="9.0.9.15"
                    Online="false" Occupied="false" Interfered="false" IntDev="false"/>
+        <Extension Type="Dali Extension" Code="124" Name="Dali Extension" Serial="0dd81fbf" Mac="Dali Extension"
+                   Version="10.3.11.8" Online="true" DummyDev="false" Occupied="false" Interfered="false"
+                   IntDev="false">
+            <DaliDevice Name="9.1 Round design light seg 1" Code="125" Serial="0:83213221" Error="false"/>
+        </Extension>
         <UnknownExtension Serial="01d97830"/>
     </Miniserver>
 </Status>

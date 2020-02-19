@@ -73,4 +73,14 @@ class CodecTest extends Specification {
         expect:
         Codec.convertValue(TextNode.valueOf('textVal'), String) == 'textVal'
     }
+
+    def "should encode and decode Base64"() {
+        given:
+        def encoded = 'U29tZSBraW5kIG9mIGJhc2UgNjQ='
+
+        expect:
+        Codec.bytesToBase64(encoded.decodeBase64()) == encoded
+        Codec.base64ToBytes(encoded) == encoded.decodeBase64()
+        Codec.bytesToBase64(Codec.base64ToBytes(encoded)) == encoded
+    }
 }

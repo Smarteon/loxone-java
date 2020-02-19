@@ -1,17 +1,12 @@
 package cz.smarteon.loxone.message;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import cz.smarteon.loxone.Codec;
 import cz.smarteon.loxone.LoxoneException;
-import org.java_websocket.util.Base64;
 
 import java.io.IOException;
 import java.security.KeyFactory;
@@ -19,6 +14,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+
+import static cz.smarteon.loxone.Codec.base64ToBytes;
 
 @JsonDeserialize(using = PubKeyInfo.Deserializer.class)
 public class PubKeyInfo implements LoxoneValue {
@@ -45,7 +42,7 @@ public class PubKeyInfo implements LoxoneValue {
 
     @JsonValue
     private String jsonValue() {
-        return "-----BEGIN CERTIFICATE-----" + Base64.encodeBytes(pubKey)+ "-----END CERTIFICATE-----";
+        return "-----BEGIN CERTIFICATE-----" + Codec.bytesToBase64(pubKey)+ "-----END CERTIFICATE-----";
     }
 
     public static class Deserializer extends JsonDeserializer<PubKeyInfo> {
@@ -55,7 +52,7 @@ public class PubKeyInfo implements LoxoneValue {
         @Override
         public PubKeyInfo deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             final String keyValue = p.readValueAs(String.class).replaceAll(PUBLIC_KEY_PARSER_PATTERN, "$1");
-            return new PubKeyInfo(Base64.decode(keyValue));
+            return new PubKeyInfo(base64ToBytes(keyValue));
         }
     }
 }

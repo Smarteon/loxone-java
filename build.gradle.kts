@@ -22,7 +22,7 @@ repositories {
 val jacksonVersion = "2.9.9"
 
 dependencies {
-    implementation("org.java-websocket:Java-WebSocket:1.3.8")
+    implementation("org.java-websocket:Java-WebSocket:1.4.0")
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")

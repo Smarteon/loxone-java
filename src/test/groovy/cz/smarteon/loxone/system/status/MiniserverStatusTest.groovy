@@ -27,7 +27,7 @@ class MiniserverStatusTest extends Specification implements SerializationSupport
         ms.lanErrorsPercent == 0.0
         ms.linkErrorsCount == 0
 
-        ms.extensions?.size() == 5
+        ms.extensions?.size() == 8
         ms.extensions[1] instanceof BasicExtension
         ms.extensions[1].name == 'Extension'
         ms.extensions[2] instanceof RS485Extension
@@ -36,6 +36,12 @@ class MiniserverStatusTest extends Specification implements SerializationSupport
         ms.extensions[4] instanceof DmxExtension
         ms.extensions[4].name == 'DMX Extension'
         !ms.extensions[4].online
+        ms.extensions[5].name == 'Dali Extension'
+        ms.extensions[5].online
+        ms.extensions[6].name == 'DI Extension'
+        ms.extensions[6].online
+        ms.extensions[7].name == 'Modbus Extension'
+        ms.extensions[7].online
 
 
         def airBaseExtensions = ms.getExtensions(AirBaseExtension)
@@ -48,5 +54,9 @@ class MiniserverStatusTest extends Specification implements SerializationSupport
         treeExtensions[0].leftBranch.devices.size() == 2
         treeExtensions[0].rightBranch.devices[0].name == 'Linka'
 
+        def daliExtensions = ms.getExtensions(DaliExtension)
+        daliExtensions?.size() == 1
+        daliExtensions[0].devices.size() == 1
+        daliExtensions[0].devices[0].serialNumber == '0:83213221'
     }
 }

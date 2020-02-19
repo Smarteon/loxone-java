@@ -8,7 +8,6 @@ import cz.smarteon.loxone.message.LoxoneMessageCommand;
 import cz.smarteon.loxone.message.PubKeyInfo;
 import cz.smarteon.loxone.message.Token;
 import cz.smarteon.loxone.message.TokenPermissionType;
-import org.java_websocket.util.Base64;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +22,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import static cz.smarteon.loxone.Codec.bytesToBase64;
 import static cz.smarteon.loxone.Codec.concatToBytes;
 import static cz.smarteon.loxone.Command.keyExchange;
 import static cz.smarteon.loxone.message.LoxoneMessageCommand.getKey;
@@ -219,7 +219,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
      * @return headers necessary for authentication of HTTP connection
      */
     public Map<String, String> authHeaders() {
-        return singletonMap("Authorization", "Basic " + Base64.encodeBytes(concatToBytes(loxoneUser, loxonePass)));
+        return singletonMap("Authorization", "Basic " + bytesToBase64(concatToBytes(loxoneUser, loxonePass)));
     }
 
     /**

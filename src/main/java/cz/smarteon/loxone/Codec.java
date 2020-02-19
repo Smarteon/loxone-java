@@ -18,6 +18,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Formatter;
@@ -85,6 +86,27 @@ public abstract class Codec {
         }
 
         return sb.toString();
+    }
+
+    /**
+     * Encodes given bytes to Base64 and returns it as IS0-8859-1 encoded String.
+     * @param bytes bytes to encode
+     * @return encoded bytes
+     */
+    @NotNull
+    public static String bytesToBase64(final @NotNull byte[] bytes) {
+        return Base64.getEncoder().encodeToString(bytes);
+    }
+
+    /**
+     * Decodes given Base64 encoded String to bytes.
+     * @param base64 to decode
+     * @return decoded String
+     * @throws IllegalArgumentException in case the input is not correct Base64
+     */
+    @NotNull
+    public static byte[] base64ToBytes(final @NotNull String base64) {
+        return Base64.getDecoder().decode(base64);
     }
 
     public static String writeMessage(final Object message) throws IOException {

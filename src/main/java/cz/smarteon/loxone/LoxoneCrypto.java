@@ -1,7 +1,6 @@
 package cz.smarteon.loxone;
 
 import cz.smarteon.loxone.message.Hashing;
-import org.java_websocket.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +13,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -22,6 +20,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 
+import static cz.smarteon.loxone.Codec.base64ToBytes;
+import static cz.smarteon.loxone.Codec.bytesToBase64;
 import static cz.smarteon.loxone.Codec.bytesToHex;
 import static cz.smarteon.loxone.Codec.concatToBytes;
 
@@ -86,7 +86,7 @@ abstract class LoxoneCrypto {
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             byte[] encryptedbytes = cipher.doFinal(concatToBytes(bytesToHex(sharedKey.getEncoded()), bytesToHex(sharedKeyIv)));
             log.trace("Created session key (in hex): {}", bytesToHex(encryptedbytes));
-            return Base64.encodeBytes(encryptedbytes);
+            return bytesToBase64(encryptedbytes);
         } catch (NoSuchAlgorithmException | BadPaddingException | NoSuchPaddingException | IllegalBlockSizeException | InvalidKeyException e) {
             throw new LoxoneException("Can't encrypt sharedKey to obtain sessionKey", e);
         }
@@ -146,7 +146,7 @@ abstract class LoxoneCrypto {
             final Cipher cipher = Cipher.getInstance("AES/CBC/ZeroBytePadding");
             final IvParameterSpec ivspec = new IvParameterSpec(sharedKeyIv);
             cipher.init(Cipher.ENCRYPT_MODE, sharedKey, ivspec);
-            return Base64.encodeBytes(cipher.doFinal(data.getBytes()));
+            return bytesToBase64(cipher.doFinal(data.getBytes()));
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | IllegalBlockSizeException
                 | InvalidAlgorithmParameterException | InvalidKeyException e) {
             throw new LoxoneException("Can't perform AES encryption", e);
@@ -165,9 +165,9 @@ abstract class LoxoneCrypto {
             final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             final IvParameterSpec ivspec = new IvParameterSpec(sharedKeyIv);
             cipher.init(Cipher.DECRYPT_MODE, sharedKey, ivspec);
-            return new String(cipher.doFinal(Base64.decode(data)));
+            return new String(cipher.doFinal(base64ToBytes(data)));
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | IllegalBlockSizeException
-                | InvalidAlgorithmParameterException | InvalidKeyException | IOException e) {
+                | InvalidAlgorithmParameterException | InvalidKeyException | IllegalArgumentException e) {
             throw new LoxoneException("Can't perform AES decryption", e);
         }
     }

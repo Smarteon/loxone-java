@@ -13,8 +13,10 @@ import spock.lang.Subject
 import spock.lang.Timeout
 
 import java.security.Security
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 
 import static cz.smarteon.loxone.CommandResponseListener.State.CONSUMED
 import static cz.smarteon.loxone.CryptoSupport.HASHING
@@ -59,7 +61,7 @@ class LoxoneAuthTest extends Specification {
         scheduler.shutdownNow()
     }
 
-    @Timeout(2)
+    @Timeout(5)
     def "test regular flow"() {
         given:
         def keyCmd = LoxoneMessageCommand.getKey(USER)
@@ -67,9 +69,8 @@ class LoxoneAuthTest extends Specification {
                 LoxoneCrypto.loxoneHashing(PASS, USER, HASHING, "gettoken"),
                 USER, WEB, LoxoneAuth.CLIENT_UUID, loxoneAuth.clientInfo, {it}
         )
-        def token = new Token(TOKEN.token, TOKEN.key,
-                ((System.currentTimeMillis() / 1000) - LOXONE_EPOCH_BEGIN + 301).toInteger(),
-                TOKEN.rights, TOKEN.unsecurePassword)
+        def token = new Token(TOKEN.token, TOKEN.key, needsRefreshIn2Secs(), TOKEN.rights, TOKEN.unsecurePassword)
+        def refreshLatch = new CountDownLatch(1)
 
         when:
         loxoneAuth.setAutoRefreshToken(true)
@@ -86,13 +87,20 @@ class LoxoneAuthTest extends Specification {
         0 * senderMock._
 
         when:
-        sleep(1010) // wait for token refresh
-        loxoneAuth.onCommand(keyCmd, new LoxoneMessage<>(keyCmd.command, 200, HASHING))
+        def tokenRefreshed = refreshLatch.await(3, TimeUnit.SECONDS) // wait for token refresh
+        if (tokenRefreshed) {
+            loxoneAuth.onCommand(keyCmd, new LoxoneMessage<>(keyCmd.command, 200, HASHING))
+        }
 
         then:
-        1 * senderMock.send({ it.command ==~ /.*getkey2.*/ })
+        tokenRefreshed
+        1 * senderMock.send({ it.command ==~ /.*getkey2.*/ }) >> { refreshLatch.countDown() }
         1 * senderMock.send({ it.command ==~ /.*keyexchange.*/ })
         1 * senderMock.send({ it.command ==~ /^jdev\/sys\/enc\/.*/ && it.valueType == Token })
         0 * senderMock._
+    }
+
+    private static int needsRefreshIn2Secs() {
+        return ((System.currentTimeMillis() / 1000) - LOXONE_EPOCH_BEGIN + 302).toInteger()
     }
 }

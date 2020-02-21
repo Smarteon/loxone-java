@@ -12,16 +12,16 @@ import org.jetbrains.annotations.Nullable;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "Type", defaultImpl = UnrecognizedExtension.class)
 @JsonSubTypes({
         @JsonSubTypes.Type(name = "Extension", value = BasicExtension.class),
-        @JsonSubTypes.Type(name = "Relay Extension", value = RelayExtension.class),
+        @JsonSubTypes.Type(name = "Relay Extension", value = BasicExtension.class),
         @JsonSubTypes.Type(name = "Dali Extension", value = DaliExtension.class),
         @JsonSubTypes.Type(name = "Tree Extension", value = TreeExtension.class),
         @JsonSubTypes.Type(name = "Air Base Extension", value = AirBaseExtension.class),
-        @JsonSubTypes.Type(name = "RS485 Extension", value = RS485Extension.class),
+        @JsonSubTypes.Type(name = "RS485 Extension", value = BasicExtension.class),
         @JsonSubTypes.Type(name = "1-Wire Extension", value = OneWireExtension.class),
-        @JsonSubTypes.Type(name = "DMX Extension", value = DmxExtension.class),
-        @JsonSubTypes.Type(name = "DI Extension", value = DiExtension.class),
-        @JsonSubTypes.Type(name = "Modbus Extension", value = ModbusExtension.class),
-        @JsonSubTypes.Type(name = "Dimmer Extension", value = DimmerExtension.class)
+        @JsonSubTypes.Type(name = "DMX Extension", value = BasicExtension.class),
+        @JsonSubTypes.Type(name = "DI Extension", value = BasicExtension.class),
+        @JsonSubTypes.Type(name = "Modbus Extension", value = BasicExtension.class),
+        @JsonSubTypes.Type(name = "Dimmer Extension", value = BasicExtension.class)
 })
 public abstract class Extension {
 

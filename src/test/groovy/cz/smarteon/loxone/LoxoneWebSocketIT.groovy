@@ -9,6 +9,7 @@ import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Timeout
+import spock.util.concurrent.PollingConditions
 
 import java.security.Security
 import java.util.concurrent.CountDownLatch
@@ -48,7 +49,7 @@ class LoxoneWebSocketIT extends Specification {
     }
 
     void setup() {
-        server = new MockWebSocketServer(listener)
+        server = new MockWebSocketServer(listener, 20)
         startServer()
         authMock = Stub(LoxoneAuth)
         def http = Stub(LoxoneHttp) {
@@ -78,24 +79,30 @@ class LoxoneWebSocketIT extends Specification {
 
     def "should send simple command"() {
         given:
+        def condition = new PollingConditions(initialDelay: 0.1, delay: 0.02)
         server.expect(equalTo('testCmd'))
 
         when:
         lws.sendCommand(voidWsCommand('testCmd'))
 
         then:
-        server.verifyExpectations(100)
+        condition.eventually {
+            server.verifyExpectations()
+        }
     }
 
     def "should send secure command"() {
         given:
+        def condition = new PollingConditions(initialDelay: 0.1, delay: 0.02)
         server.expect(equalTo('testUuid/pulse'))
 
         when:
         lws.sendSecureCommand(genericControlCommand('testUuid', 'pulse'))
 
         then:
-        server.verifyExpectations(100)
+        condition.eventually {
+            server.verifyExpectations()
+        }
     }
 
     @Timeout(2)
@@ -118,7 +125,7 @@ class LoxoneWebSocketIT extends Specification {
         lws.sendCommand(voidWsCommand('beforeRestart'))
 
         then:
-        server.verifyExpectations(100)
+        server.verifyExpectations()
 
         when:
         stopServer()
@@ -128,12 +135,12 @@ class LoxoneWebSocketIT extends Specification {
         lws.sendCommand(voidWsCommand('afterRestart'))
 
         then:
-        server.verifyExpectations(100)
+        server.verifyExpectations()
     }
 
-    @Timeout(10)
     def "should retry on bad credentials"() {
         given:
+        def condition = new PollingConditions(initialDelay: 0.1, delay: 0.05, timeout: 10)
         server.expect(equalTo('baf'))
         lws.retries = 5
         server.badCredentials = 4
@@ -142,6 +149,8 @@ class LoxoneWebSocketIT extends Specification {
         lws.sendCommand(voidWsCommand('baf'))
 
         then:
-        server.verifyExpectations(100)
+        condition.eventually {
+            server.verifyExpectations()
+        }
     }
 }

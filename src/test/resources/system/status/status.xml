@@ -57,6 +57,9 @@
         <Extension Type="Modbus Extension" Code="131081" Name="Modbus Extension" Serial="09d8688d"
                    Mac="Modbus Extension" Version="10.3.11.7" Online="true" DummyDev="false" Occupied="false"
                    Interfered="false" IntDev="false"/>
+        <Extension Type="Dimmer Extension" Code="6" Name="Dimmer Extension" Serial="02d867d0" Mac="Dimmer Extension"
+                   Version="9.2.12.14" HwVersion="2" Online="true" DummyDev="false" Occupied="false" Interfered="false"
+                   IntDev="false"/>
         <UnknownExtension Serial="01d97830"/>
     </Miniserver>
 </Status>

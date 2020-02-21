@@ -27,7 +27,7 @@ class MiniserverStatusTest extends Specification implements SerializationSupport
         ms.lanErrorsPercent == 0.0
         ms.linkErrorsCount == 0
 
-        ms.extensions?.size() == 8
+        ms.extensions?.size() == 9
         ms.extensions[1] instanceof BasicExtension
         ms.extensions[1].name == 'Extension'
         ms.extensions[2] instanceof RS485Extension
@@ -42,6 +42,8 @@ class MiniserverStatusTest extends Specification implements SerializationSupport
         ms.extensions[6].online
         ms.extensions[7].name == 'Modbus Extension'
         ms.extensions[7].online
+        ms.extensions[8].name == 'Dimmer Extension'
+        ms.extensions[8].online
 
 
         def airBaseExtensions = ms.getExtensions(AirBaseExtension)

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
  * Common predecessor to all miniserver's extensions.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "Type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "Type", defaultImpl = UnrecognizedExtension.class)
 @JsonSubTypes({
         @JsonSubTypes.Type(name = "Extension", value = BasicExtension.class),
         @JsonSubTypes.Type(name = "Relay Extension", value = RelayExtension.class),

@@ -20,7 +20,8 @@ import org.jetbrains.annotations.Nullable;
         @JsonSubTypes.Type(name = "1-Wire Extension", value = OneWireExtension.class),
         @JsonSubTypes.Type(name = "DMX Extension", value = DmxExtension.class),
         @JsonSubTypes.Type(name = "DI Extension", value = DiExtension.class),
-        @JsonSubTypes.Type(name = "Modbus Extension", value = ModbusExtension.class)
+        @JsonSubTypes.Type(name = "Modbus Extension", value = ModbusExtension.class),
+        @JsonSubTypes.Type(name = "Dimmer Extension", value = DimmerExtension.class)
 })
 public abstract class Extension {
 

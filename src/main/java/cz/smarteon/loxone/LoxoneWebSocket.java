@@ -50,7 +50,7 @@ public class LoxoneWebSocket {
     private final BiFunction<LoxoneWebSocket, URI, WebSocketClient> webSocketClientProvider;
     private WebSocketClient webSocketClient;
     private final LoxoneEndpoint endpoint;
-    final LoxoneAuth loxoneAuth;
+    private final LoxoneAuth loxoneAuth;
 
     private LoxoneWebSocketListener webSocketListener;
     private final List<CommandResponseListener> commandResponseListeners;
@@ -393,6 +393,11 @@ public class LoxoneWebSocket {
         } catch (InterruptedException e) {
             throw new LoxoneException("Interrupted while closing websocket", e);
         }
+    }
+
+    void wsClosed() {
+        commands.clear();
+        loxoneAuth.wsClosed();
     }
 
     private boolean checkLoxoneMessage(final Command command, final LoxoneMessage loxoneMessage) {

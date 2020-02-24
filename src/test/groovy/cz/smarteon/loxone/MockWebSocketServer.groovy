@@ -33,12 +33,14 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
 
     private final MockWebSocketServerListener listener
     private final Stubbing stubbing
+    private final int processingDelayMs
 
 
-    MockWebSocketServer(MockWebSocketServerListener listener) {
+    MockWebSocketServer(MockWebSocketServerListener listener, int processingDelayMs) {
         super(new InetSocketAddress(0))
         this.listener = listener
         stubbing = new Stubbing()
+        this.processingDelayMs = processingDelayMs
     }
 
     MockWebSocketServer(MockWebSocketServer toCopy) {
@@ -59,6 +61,7 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
 
     @Override
     void onMessage(final WebSocket conn, final String message) {
+        sleep(processingDelayMs) // simulates the real miniserver processing delay
         def exchange = message =~ /jdev\/sys\/keyexchange\/(.*)/
         if (exchange.find()) {
             def sharedKeyEnc = exchange.group(1).decodeBase64()
@@ -167,8 +170,7 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
         return stubbing.expect(req)
     }
 
-    void verifyExpectations(int sleep) {
-        Thread.sleep(sleep)
+    void verifyExpectations() {
         stubbing.messages.each {
             def desc = new StringDescription()
             it.request.describeTo(desc)

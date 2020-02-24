@@ -305,6 +305,8 @@ public class LoxoneWebSocket {
     }
 
 
+    // TODO Contains potential race condition when response to the sent command is received faster than command is added to queue
+    // however, the probability it happens with real miniserver is very low
     void sendInternal(final Command command) {
         log.debug("Sending websocket message: " + command.getCommand());
         webSocketClient.send(command.getCommand());

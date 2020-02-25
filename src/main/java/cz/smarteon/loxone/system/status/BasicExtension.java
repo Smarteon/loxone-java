@@ -3,6 +3,9 @@ package cz.smarteon.loxone.system.status;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Represents miniserver extension status having only basic set of attributes.
+ */
 public class BasicExtension extends Extension {
 
     @JsonCreator

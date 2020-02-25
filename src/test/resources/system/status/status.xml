@@ -60,6 +60,9 @@
         <Extension Type="Dimmer Extension" Code="6" Name="Dimmer Extension" Serial="02d867d0" Mac="Dimmer Extension"
                    Version="9.2.12.14" HwVersion="2" Online="true" DummyDev="false" Occupied="false" Interfered="false"
                    IntDev="false"/>
+        <Extension Type="Some Future Extension" Code="777" Name="Some Future Extension" Serial="02d867e0"
+                   Mac="Some Future Extension" Version="9.2.12.14" HwVersion="2" Online="true" DummyDev="false"
+                   Occupied="false" Interfered="false" IntDev="false"/>
         <UnknownExtension Serial="01d97830"/>
     </Miniserver>
 </Status>

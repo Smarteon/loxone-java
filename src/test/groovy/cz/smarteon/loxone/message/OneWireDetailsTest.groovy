@@ -19,6 +19,18 @@ class OneWireDetailsTest extends Specification implements SerializationSupport {
         }
     }
 
+    def "should deserialize error"() {
+        when:
+        OneWireDetails oneWireDetails = readValue("\"$errorValue\"", OneWireDetails)
+
+        then:
+        oneWireDetails.isInvalid()
+        oneWireDetails.invalid == errorValue
+
+        where:
+        errorValue << [ '', 'timeout' ]
+    }
+
     def "should verify equals"() {
         expect:
         EqualsVerifier.forClass(OneWireDetails).usingGetClass().verify()

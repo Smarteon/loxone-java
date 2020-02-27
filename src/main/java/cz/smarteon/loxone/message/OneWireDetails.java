@@ -7,8 +7,10 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -27,13 +29,21 @@ import static java.util.Objects.requireNonNull;
 public class OneWireDetails implements LoxoneValue {
 
     private final Map<String, OneWireDetail> details;
+    private final String invalid;
+
 
     private OneWireDetails(final Map<String, OneWireDetail> details) {
         this.details = requireNonNull(details, "details can't be null");
+        this.invalid = null;
+    }
+
+    private OneWireDetails(final String invalid) {
+        this.details = Collections.emptyMap();
+        this.invalid = invalid;
     }
 
     /**
-     * Map of 1-ire details, where key is the serial number and value represents single device detail.
+     * Map of 1-wire details, where key is the serial number and value represents single device detail.
      * @return map of 1-wire details
      */
     @NotNull
@@ -41,17 +51,35 @@ public class OneWireDetails implements LoxoneValue {
         return details;
     }
 
+    /**
+     * The original string received from miniserver but not representing valid OneWireDetails.
+     * @return original invalid string
+     */
+    @Nullable
+    public String getInvalid() {
+        return invalid;
+    }
+
+    /**
+     * Signals the invalid representation has been received from miniserver.
+     * @return true if invalid false otherwise
+     */
+    public boolean isInvalid() {
+        return invalid != null;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OneWireDetails that = (OneWireDetails) o;
-        return Objects.equals(details, that.details);
+        return Objects.equals(details, that.details) &&
+                Objects.equals(invalid, that.invalid);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(details);
+        return Objects.hash(details, invalid);
     }
 
     public static class OneWireDetail {
@@ -123,21 +151,23 @@ public class OneWireDetails implements LoxoneValue {
                 "^1-Wire\\s+Serial\\s+([0-9A-F.]+):\\s+(\\d+)\\s+Packet Requests,\\s+(\\d+)\\s+CRC Errors,\\s+(\\d+)\\s+85 Degree Problems$");
         @Override
         public OneWireDetails deserialize(final JsonParser p, final DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            final String[] devices = p.getValueAsString().trim().split("\\s*;\\s*");
-            final OneWireDetails oneWireDetails = new OneWireDetails(
-                    stream(devices)
-                            .map(String::trim)
-                            .map(ONE_WIRE_DETAIL_PATTERN::matcher)
-                            .filter(Matcher::find)
-                            .map(matcher -> new OneWireDetail(matcher.group(1),
-                                    Long.parseLong(matcher.group(2)), Long.parseLong(matcher.group(3)),
-                                    Integer.parseInt(matcher.group(4)))
-                            )
-                            .collect(Collectors.toMap(OneWireDetail::getSerial, Function.identity())));
-            if (devices.length != oneWireDetails.asMap().size()) {
-                throw JsonMappingException.from(p, "Error while parsing one-wire detail using regex");
+            final String textValue = p.getValueAsString();
+            final String[] devices = textValue.trim().split("\\s*;\\s*");
+            final Map<String, OneWireDetail> detailsMap = stream(devices)
+                    .map(String::trim)
+                    .map(ONE_WIRE_DETAIL_PATTERN::matcher)
+                    .filter(Matcher::find)
+                    .map(matcher -> new OneWireDetail(matcher.group(1),
+                            Long.parseLong(matcher.group(2)), Long.parseLong(matcher.group(3)),
+                            Integer.parseInt(matcher.group(4)))
+                    )
+                    .collect(Collectors.toMap(OneWireDetail::getSerial, Function.identity()));
+
+            if (devices.length == detailsMap.size()) {
+                return new OneWireDetails(detailsMap);
+            } else {
+                return new OneWireDetails(textValue);
             }
-            return oneWireDetails;
         }
     }
 }

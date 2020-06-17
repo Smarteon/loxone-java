@@ -128,6 +128,7 @@ class LoxoneWebsocketClient extends WebSocketClient {
             keepAliveFuture.cancel(true);
         }
         if (remote) {
+            ws.connectionClosed(code);
             ws.autoRestart();
         }
     }

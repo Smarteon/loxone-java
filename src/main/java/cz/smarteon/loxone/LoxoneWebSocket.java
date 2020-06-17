@@ -379,6 +379,12 @@ public class LoxoneWebSocket {
 
     }
 
+    void connectionClosed(int code) {
+        if (webSocketListener != null) {
+            webSocketListener.webSocketRemoteClosed(code);
+        }
+    }
+
     void autoRestart() {
         if (autoRestart) {
             final int rateSeconds = (retries + 1) * authTimeoutSeconds + 1;

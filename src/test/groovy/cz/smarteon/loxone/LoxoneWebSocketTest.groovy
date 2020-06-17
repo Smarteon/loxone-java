@@ -68,7 +68,7 @@ class LoxoneWebSocketTest extends Specification {
         1 * authMock.isInitialized() >> true
     }
 
-    def "should call websocket listener"() {
+    def "should call websocket listener opened"() {
         given:
         def listener = Mock(LoxoneWebSocketListener)
 
@@ -80,6 +80,20 @@ class LoxoneWebSocketTest extends Specification {
         then:
         loxoneWebSocket.getWebSocketListener() == listener
         1 * listener.webSocketOpened()
+    }
+
+    def "should call websocket listener closed"() {
+        given:
+        def listener = Mock(LoxoneWebSocketListener)
+
+        when:
+        loxoneWebSocket.setWebSocketListener(listener)
+        loxoneWebSocket.connectionClosed(1000)
+        sleep(10) // wait for another thread execution
+
+        then:
+        loxoneWebSocket.getWebSocketListener() == listener
+        1 * listener.webSocketRemoteClosed(1000)
     }
 
     def "should close properly"() {

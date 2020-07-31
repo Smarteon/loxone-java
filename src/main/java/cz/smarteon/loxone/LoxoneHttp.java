@@ -70,7 +70,8 @@ public class LoxoneHttp {
                 }
             } else if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
                     || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
-                    || responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
+                    || responseCode == HttpURLConnection.HTTP_SEE_OTHER 
+                    || responseCode == 307) {
                 if (redirects == null) {
                     redirects = new ThreadLocal<>();
                     redirects.set(0);

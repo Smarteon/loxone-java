@@ -38,26 +38,36 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
 
     /**
      * Number of system interruptions.
+     *
+     * BEWARE: Miniserver Gen2 returns unparseable (empty) value.
      */
     public static final LoxoneMessageCommand<LongValue> DEV_SYS_INTS = jsonHttpCommand("jdev/sys/ints", LongValue.class);
 
     /**
      * Number of system communication interruptions.
+     *
+     * BEWARE: Miniserver Gen2 returns unparseable (empty) value.
      */
     public static final LoxoneMessageCommand<LongValue> DEV_SYS_COMINTS = jsonHttpCommand("jdev/sys/comints", LongValue.class);
 
     /**
      * Number of system LAN interruptions.
+     *
+     * BEWARE: Miniserver Gen2 returns unparseable (empty) value.
      */
     public static final LoxoneMessageCommand<LongValue> DEV_SYS_LANINTS = jsonHttpCommand("jdev/sys/lanints", LongValue.class);
 
     /**
      * Number of system context switches.
+     *
+     * BEWARE: Miniserver Gen2 returns unparseable (empty) value.
      */
     public static final LoxoneMessageCommand<LongValue> DEV_SYS_CONTEXTSWITCHES = jsonHttpCommand("jdev/sys/contextswitches", LongValue.class);
 
     /**
      * Number of system context switches of interrupted tasks.
+     *
+     * BEWARE: Miniserver Gen2 returns unparseable (empty) value.
      */
     public static final LoxoneMessageCommand<LongValue> DEV_SYS_CONTEXTSWITCHESI = jsonHttpCommand("jdev/sys/contextswitchesi", LongValue.class);
 
@@ -73,11 +83,15 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
 
     /**
      * Cumulative count of LAN transmitted packets.
+     *
+     * BEWARE: Miniserver Gen2 returns unparseable (empty) value.
      */
     public static final LoxoneMessageCommand<LongValue> DEV_LAN_TXP = jsonHttpCommand("jdev/lan/txp", LongValue.class);
 
     /**
      * Cumulative count of LAN transmitted error packets.
+     *
+     * BEWARE: Miniserver Gen2 returns unparseable (empty) value.
      */
     public static final LoxoneMessageCommand<LongValue> DEV_LAN_TXE = jsonHttpCommand("jdev/lan/txe", LongValue.class);
 
@@ -88,31 +102,43 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
 
     /**
      * Cumulative count of LAN buffer failures.
+     *
+     * BEWARE: Miniserver Gen2 returns unparseable (empty) value.
      */
     public static final LoxoneMessageCommand<LongValue> DEV_LAN_EXH = jsonHttpCommand("jdev/lan/exh", LongValue.class);
 
     /**
      * Cumulative count of LAN underrun failures.
+     *
+     * BEWARE: Miniserver Gen2 returns unparseable (empty) value.
      */
     public static final LoxoneMessageCommand<LongValue> DEV_LAN_TXU = jsonHttpCommand("jdev/lan/txu", LongValue.class);
 
     /**
      * Cumulative count of LAN received packets.
+     *
+     * BEWARE: Miniserver Gen2 returns unparseable (empty) value.
      */
     public static final LoxoneMessageCommand<LongValue> DEV_LAN_RXP = jsonHttpCommand("jdev/lan/rxp", LongValue.class);
 
     /**
      * Cumulative count of LAN EOF failures.
+     *
+     * BEWARE: Miniserver Gen2 returns unparseable (empty) value.
      */
     public static final LoxoneMessageCommand<LongValue> DEV_LAN_EOF = jsonHttpCommand("jdev/lan/eof", LongValue.class);
 
     /**
      * Cumulative count of LAN receive overrun failures.
+     *
+     * BEWARE: Miniserver Gen2 returns unparseable (empty) value.
      */
     public static final LoxoneMessageCommand<LongValue> DEV_LAN_RXO = jsonHttpCommand("jdev/lan/rxo", LongValue.class);
 
     /**
      * Cumulative count of LAN no receive buffer failures.
+     *
+     * BEWARE: Miniserver Gen2 returns unparseable (empty) value.
      */
     public static final LoxoneMessageCommand<LongValue> DEV_LAN_NOB = jsonHttpCommand("jdev/lan/nob", LongValue.class);
 

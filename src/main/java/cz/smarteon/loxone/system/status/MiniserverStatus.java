@@ -137,6 +137,10 @@ public class MiniserverStatus {
 
     /**
      * Percentage of LAN errors.
+     * <ul>
+     *     <li>Miniserver Gen1 and Go always return 0 - it's not measured at all</li>
+     *     <li>Miniserver Gen2 always returns 100 - it's reported BUG to be fixed by Loxone</li>
+     * </ul>
      * @return LAN errors
      */
     @Nullable

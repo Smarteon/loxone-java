@@ -126,6 +126,10 @@ tasks {
                                     "name"("Vojtěch Zavřel")
                                     "email"("vojtech.zavrel@smarteon.cz")
                                 }
+                                "developer" {
+                                    "name"("Petr Žufan")
+                                    "email"("petr.zufan@smarteon.cz")
+                                }
                             }
                             "scm" {
                                 "url"("git@github.com:Smarteon/loxone-java.git")

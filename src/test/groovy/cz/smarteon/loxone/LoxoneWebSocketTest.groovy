@@ -88,12 +88,18 @@ class LoxoneWebSocketTest extends Specification {
 
         when:
         loxoneWebSocket.setWebSocketListener(listener)
-        loxoneWebSocket.connectionClosed(1000)
+        loxoneWebSocket.connectionClosed(1000, remote)
         sleep(10) // wait for another thread execution
 
         then:
         loxoneWebSocket.getWebSocketListener() == listener
-        1 * listener.webSocketRemoteClosed(1000)
+        if (remote)
+            1 * listener.webSocketRemoteClosed(1000)
+        else
+            1 * listener.webSocketLocalClosed(1000)
+
+        where:
+        remote << [true, false]
     }
 
     def "should close properly"() {

@@ -379,9 +379,13 @@ public class LoxoneWebSocket {
 
     }
 
-    void connectionClosed(int code) {
+    void connectionClosed(int code, boolean remote) {
         if (webSocketListener != null) {
-            webSocketListener.webSocketRemoteClosed(code);
+            if (remote) {
+                webSocketListener.webSocketRemoteClosed(code);
+            } else {
+                webSocketListener.webSocketLocalClosed(code);
+            }
         }
     }
 

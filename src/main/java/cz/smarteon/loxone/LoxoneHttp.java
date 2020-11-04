@@ -22,7 +22,7 @@ public class LoxoneHttp {
     private final LoxoneEndpoint endpoint;
     private int connectionTimeout = 5000;
 
-    private ThreadLocal<Integer> redirects;
+    private final ThreadLocal<RequestContext> requestContext = new ThreadLocal<>();
 
     public LoxoneHttp(@NotNull final LoxoneEndpoint endpoint) {
         this.endpoint = requireNonNull(endpoint, "endpoint can't be null");
@@ -42,8 +42,18 @@ public class LoxoneHttp {
         this.connectionTimeout = connectionTimeout;
     }
 
+    /**
+     * Get the last URL called within this thread.
+     * @return last called URL within this thread.
+     */
+    public URL getLastUrl() {
+        return requestContext.get().lastUrl;
+    }
+
     <T> T get(Command<T> command, Map<String, String> properties) {
-        return get(urlFromCommand(command.getCommand()), command.getType(), properties, command.getResponseType());
+        final URL url = urlFromCommand(command.getCommand());
+        requestContext.set(new RequestContext(url));
+        return get(url, command.getType(), properties, command.getResponseType());
     }
 
     <T> T get(URL url, Command.Type type, Map<String, String> properties, Class<T> responseType) {
@@ -57,7 +67,7 @@ public class LoxoneHttp {
             }
             final int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                redirects = null;
+                requestContext.get().lastUrl = connection.getURL();
                 try (InputStream is = connection.getInputStream()) {
                     switch (type) {
                         case JSON:
@@ -72,14 +82,12 @@ public class LoxoneHttp {
                     || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
                     || responseCode == HttpURLConnection.HTTP_SEE_OTHER 
                     || responseCode == 307) {
-                if (redirects == null) {
-                    redirects = new ThreadLocal<>();
-                    redirects.set(0);
-                } else if (redirects.get() > MAX_REDIRECTS){
+                if (requestContext.get().redirects > MAX_REDIRECTS){
                     throw new IllegalStateException("Too many redirects!");
                 }
-                redirects.set(redirects.get() + 1);
-                return get(new URL(connection.getHeaderField("Location")), type, properties, responseType);
+                final URL location = new URL(connection.getHeaderField("Location"));
+                requestContext.get().redirect(location);
+                return get(location, type, properties, responseType);
             } else {
                 throw new LoxoneException("Loxone command responded by status " + responseCode);
             }
@@ -101,5 +109,17 @@ public class LoxoneHttp {
         }
     }
 
+    private static class RequestContext {
+        int redirects = 0;
+        URL lastUrl;
 
+        RequestContext(final URL lastUrl) {
+            this.lastUrl = lastUrl;
+        }
+
+        public void redirect(final URL location) {
+            redirects++;
+            this.lastUrl = location;
+        }
+    }
 }

@@ -20,6 +20,7 @@ repositories {
 }
 
 val jacksonVersion = "2.9.9"
+val jadlerVersion = "1.3.0"
 
 dependencies {
     implementation("org.java-websocket:Java-WebSocket:1.4.0")
@@ -39,6 +40,8 @@ dependencies {
     testImplementation("net.javacrumbs.json-unit:json-unit-core:1.23.0")
     testRuntimeOnly("org.slf4j:slf4j-simple:1.7.25")
     testImplementation("org.bouncycastle:bcprov-jdk15on:1.59")
+    testImplementation("net.jadler:jadler-core:$jadlerVersion")
+    testImplementation("net.jadler:jadler-jdk:$jadlerVersion")
 }
 
 val sourcesJar by tasks.creating(Jar::class) {

@@ -42,7 +42,7 @@ dependencies {
 
     testImplementation("nl.jqno.equalsverifier:equalsverifier:3.5")
     testRuntimeOnly("org.slf4j:slf4j-simple:1.7.25")
-    testImplementation("org.bouncycastle:bcprov-jdk15on:1.59")
+    testImplementation("org.bouncycastle:bcprov-jdk15on:1.67")
 
     val jadlerVersion = "1.3.0"
     testImplementation("net.jadler:jadler-core:$jadlerVersion")

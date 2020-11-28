@@ -19,15 +19,15 @@ repositories {
     mavenCentral()
 }
 
-val jacksonVersion = "2.9.9"
-val jadlerVersion = "1.3.0"
-
 dependencies {
     implementation("org.java-websocket:Java-WebSocket:1.4.0")
+
+    val jacksonVersion = "2.9.9"
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
+
     implementation("org.slf4j:slf4j-api:1.7.25")
     compileOnly("org.jetbrains:annotations:17.0.0")
 
@@ -43,6 +43,8 @@ dependencies {
     testImplementation("nl.jqno.equalsverifier:equalsverifier:3.1.9")
     testRuntimeOnly("org.slf4j:slf4j-simple:1.7.25")
     testImplementation("org.bouncycastle:bcprov-jdk15on:1.59")
+
+    val jadlerVersion = "1.3.0"
     testImplementation("net.jadler:jadler-core:$jadlerVersion")
     testImplementation("net.jadler:jadler-jdk:$jadlerVersion")
 }

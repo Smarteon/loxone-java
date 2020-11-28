@@ -31,6 +31,7 @@ dependencies {
     implementation("org.slf4j:slf4j-api:1.7.25")
     compileOnly("org.jetbrains:annotations:17.0.0")
 
+    // spock and dependencies - 1.3 is probably latest version ever, do not upgrade the deps versions to ensure compatibility
     testImplementation("org.spockframework:spock-core:1.3-groovy-2.5")
     testImplementation("org.codehaus.groovy:groovy-all:2.5.7")
     testRuntimeOnly("cglib:cglib-nodep:3.2.5")

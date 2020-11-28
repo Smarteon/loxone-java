@@ -28,7 +28,8 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
 
-    implementation("org.slf4j:slf4j-api:1.7.25")
+    val slf4jVersion = "1.7.30"
+    implementation("org.slf4j:slf4j-api:$slf4jVersion")
     compileOnly("org.jetbrains:annotations:17.0.0")
 
     // spock and dependencies - 1.3 is probably latest version ever, do not upgrade the deps versions to ensure compatibility
@@ -42,7 +43,7 @@ dependencies {
     testImplementation("net.javacrumbs.json-unit:json-unit-core:$jsonUnitVersion")
 
     testImplementation("nl.jqno.equalsverifier:equalsverifier:3.5")
-    testRuntimeOnly("org.slf4j:slf4j-simple:1.7.25")
+    testRuntimeOnly("org.slf4j:slf4j-simple:$slf4jVersion")
     testImplementation("org.bouncycastle:bcprov-jdk15on:1.67")
 
     val jadlerVersion = "1.3.0"

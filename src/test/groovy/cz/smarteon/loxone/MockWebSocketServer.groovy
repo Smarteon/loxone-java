@@ -38,6 +38,7 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
 
     MockWebSocketServer(MockWebSocketServerListener listener, int processingDelayMs) {
         super(new InetSocketAddress(0))
+        setReuseAddr(true)
         this.listener = listener
         stubbing = new Stubbing()
         this.processingDelayMs = processingDelayMs
@@ -45,6 +46,7 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
 
     MockWebSocketServer(MockWebSocketServer toCopy) {
         super(new InetSocketAddress(toCopy.port))
+        setReuseAddr(true)
         stubbing = toCopy.stubbing
         listener = toCopy.listener
     }

@@ -35,9 +35,12 @@ dependencies {
     testImplementation("org.codehaus.groovy:groovy-all:2.5.7")
     testRuntimeOnly("cglib:cglib-nodep:3.2.5")
     testRuntimeOnly("org.objenesis:objenesis:2.5.1")
+
+    val jsonUnitVersion = "2.21.0"
+    testImplementation("net.javacrumbs.json-unit:json-unit:$jsonUnitVersion")
+    testImplementation("net.javacrumbs.json-unit:json-unit-core:$jsonUnitVersion")
+
     testImplementation("nl.jqno.equalsverifier:equalsverifier:3.1.9")
-    testImplementation("net.javacrumbs.json-unit:json-unit:1.23.0")
-    testImplementation("net.javacrumbs.json-unit:json-unit-core:1.23.0")
     testRuntimeOnly("org.slf4j:slf4j-simple:1.7.25")
     testImplementation("org.bouncycastle:bcprov-jdk15on:1.59")
     testImplementation("net.jadler:jadler-core:$jadlerVersion")

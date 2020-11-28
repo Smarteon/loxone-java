@@ -40,7 +40,7 @@ dependencies {
     testImplementation("net.javacrumbs.json-unit:json-unit:$jsonUnitVersion")
     testImplementation("net.javacrumbs.json-unit:json-unit-core:$jsonUnitVersion")
 
-    testImplementation("nl.jqno.equalsverifier:equalsverifier:3.1.9")
+    testImplementation("nl.jqno.equalsverifier:equalsverifier:3.5")
     testRuntimeOnly("org.slf4j:slf4j-simple:1.7.25")
     testImplementation("org.bouncycastle:bcprov-jdk15on:1.59")
 

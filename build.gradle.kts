@@ -19,27 +19,34 @@ repositories {
     mavenCentral()
 }
 
-val jacksonVersion = "2.9.9"
-val jadlerVersion = "1.3.0"
-
 dependencies {
     implementation("org.java-websocket:Java-WebSocket:1.5.1")
+
+    val jacksonVersion = "2.11.3"
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
-    implementation("org.slf4j:slf4j-api:1.7.25")
+
+    val slf4jVersion = "1.7.30"
+    implementation("org.slf4j:slf4j-api:$slf4jVersion")
     compileOnly("org.jetbrains:annotations:17.0.0")
 
+    // spock and dependencies - 1.3 is probably latest version ever, do not upgrade the deps versions to ensure compatibility
     testImplementation("org.spockframework:spock-core:1.3-groovy-2.5")
     testImplementation("org.codehaus.groovy:groovy-all:2.5.7")
     testRuntimeOnly("cglib:cglib-nodep:3.2.5")
     testRuntimeOnly("org.objenesis:objenesis:2.5.1")
-    testImplementation("nl.jqno.equalsverifier:equalsverifier:3.1.9")
-    testImplementation("net.javacrumbs.json-unit:json-unit:1.23.0")
-    testImplementation("net.javacrumbs.json-unit:json-unit-core:1.23.0")
-    testRuntimeOnly("org.slf4j:slf4j-simple:1.7.25")
-    testImplementation("org.bouncycastle:bcprov-jdk15on:1.59")
+
+    val jsonUnitVersion = "2.21.0"
+    testImplementation("net.javacrumbs.json-unit:json-unit:$jsonUnitVersion")
+    testImplementation("net.javacrumbs.json-unit:json-unit-core:$jsonUnitVersion")
+
+    testImplementation("nl.jqno.equalsverifier:equalsverifier:3.5")
+    testRuntimeOnly("org.slf4j:slf4j-simple:$slf4jVersion")
+    testImplementation("org.bouncycastle:bcprov-jdk15on:1.67")
+
+    val jadlerVersion = "1.3.0"
     testImplementation("net.jadler:jadler-core:$jadlerVersion")
     testImplementation("net.jadler:jadler-jdk:$jadlerVersion")
 }

@@ -5,7 +5,6 @@ import cz.smarteon.loxone.message.ApiInfo
 import cz.smarteon.loxone.message.LoxoneMessage
 import cz.smarteon.loxone.message.PubKeyInfo
 import org.bouncycastle.jce.provider.BouncyCastleProvider
-import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Timeout
@@ -118,16 +117,20 @@ class LoxoneWebSocketIT extends Specification {
         thrown(LoxoneException)
     }
 
-    @Ignore("Unreliable test since it's impossible to detect when the same port is again free to bind")
+//    @Ignore("Unreliable test since it's impossible to detect when the same port is again free to bind")
     def "should handle server restart"() {
         when:
+        def beforeRestartCondition = new PollingConditions(initialDelay: 0.1, delay: 0.02)
         server.expect(equalTo('beforeRestart'))
         lws.sendCommand(voidWsCommand('beforeRestart'))
 
         then:
-        server.verifyExpectations()
+        beforeRestartCondition.eventually {
+            server.verifyExpectations()
+        }
 
         when:
+        def afterRestartCondition = new PollingConditions(initialDelay: 0.1, delay: 0.02)
         stopServer()
         server = new MockWebSocketServer(server)
         server.expect(equalTo('afterRestart'))
@@ -135,7 +138,9 @@ class LoxoneWebSocketIT extends Specification {
         lws.sendCommand(voidWsCommand('afterRestart'))
 
         then:
-        server.verifyExpectations()
+        afterRestartCondition.eventually {
+            server.verifyExpectations()
+        }
     }
 
     def "should retry on bad credentials"() {

@@ -2,7 +2,7 @@ package cz.smarteon.loxone;
 
 /**
  * Allows to listen for loxone web socket events.
- * @see LoxoneWebSocket#setWebSocketListener(LoxoneWebSocketListener)
+ * @see LoxoneWebSocket#registerWebSocketListener(LoxoneWebSocketListener)
  */
 public interface LoxoneWebSocketListener {
     /**

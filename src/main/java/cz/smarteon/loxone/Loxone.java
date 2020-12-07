@@ -40,6 +40,7 @@ public class Loxone {
     private final LoxoneAuth loxoneAuth;
 
     private final List<LoxoneAppListener> loxoneAppListeners = new LinkedList<>();
+    private final LoxoneWebSocketListener webSocketListener = this::start;
 
     private CountDownLatch appLatch;
     private LoxoneApp loxoneApp;
@@ -108,9 +109,7 @@ public class Loxone {
         }
 
         // let's listen to next websocket open event ie when websocket was restarted
-        if (webSocket().getWebSocketListener() == null) {
-            webSocket().setWebSocketListener(this::start);
-        }
+        webSocket().registerWebSocketListener(webSocketListener);
     }
 
     /**

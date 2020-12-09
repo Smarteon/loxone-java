@@ -7,6 +7,7 @@ import spock.lang.Specification
 import spock.lang.Subject
 
 import java.security.Security
+import java.util.function.Function
 
 class LoxoneWebSocketTest extends Specification {
 
@@ -73,12 +74,11 @@ class LoxoneWebSocketTest extends Specification {
         def listener = Mock(LoxoneWebSocketListener)
 
         when:
-        loxoneWebSocket.setWebSocketListener(listener)
+        loxoneWebSocket.registerWebSocketListener(listener)
         loxoneWebSocket.connectionOpened()
         sleep(10) // wait for another thread execution
 
         then:
-        loxoneWebSocket.getWebSocketListener() == listener
         1 * listener.webSocketOpened()
     }
 
@@ -87,12 +87,11 @@ class LoxoneWebSocketTest extends Specification {
         def listener = Mock(LoxoneWebSocketListener)
 
         when:
-        loxoneWebSocket.setWebSocketListener(listener)
+        loxoneWebSocket.registerWebSocketListener(listener)
         loxoneWebSocket.connectionClosed(1000, remote)
         sleep(10) // wait for another thread execution
 
         then:
-        loxoneWebSocket.getWebSocketListener() == listener
         if (remote)
             1 * listener.webSocketRemoteClosed(1000)
         else

@@ -56,8 +56,7 @@ class LoxoneTest extends Specification {
             appCmdListener.onCommand(Command.LOX_APP, app)
         }
         1 * webSocket.sendCommand(Command.ENABLE_STATUS_UPDATE)
-        1 * webSocket.getWebSocketListener() >> null
-        1 * webSocket.setWebSocketListener(*_)
+        1 * webSocket.registerWebSocketListener(*_)
 
         when:
         loxone.registerLoxoneAppListener(appListener)

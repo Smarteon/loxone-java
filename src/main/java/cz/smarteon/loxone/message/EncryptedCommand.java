@@ -1,5 +1,6 @@
 package cz.smarteon.loxone.message;
 
+import cz.smarteon.loxone.app.MiniserverType;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.UnsupportedEncodingException;
@@ -25,7 +26,7 @@ public class EncryptedCommand<V extends LoxoneValue> extends LoxoneMessageComman
      * @param encryptor function to be used for encryption
      */
     protected EncryptedCommand(final String command, final Class<V> valueType, final Function<String, String> encryptor) {
-        super(command, Type.JSON, valueType, false, true);
+        super(command, Type.JSON, valueType, false, true, MiniserverType.KNOWN);
         this.encryptor = requireNonNull(encryptor, "encryptor can't be null");
     }
 

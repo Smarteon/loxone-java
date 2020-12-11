@@ -12,7 +12,8 @@ class SecuredCommand<V extends LoxoneValue> extends LoxoneMessageCommand<V> {
     private final String visuHash;
 
     SecuredCommand(final ControlCommand<V> command, final String visuHash) {
-        super(command.getControlCommand(), command.getType(), command.getValueType(), command.isHttpSupported(), command.isWsSupported());
+        super(command.getControlCommand(), command.getType(), command.getValueType(), command.isHttpSupported(),
+                command.isWsSupported(), command.getSupportedMiniservers());
         this.visuHash = requireNonNull(visuHash, "visuHash can't be null");
     }
 

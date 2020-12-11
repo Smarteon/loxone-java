@@ -40,4 +40,19 @@ public enum MiniserverType {
 
         return result;
     }
+
+    /**
+     * All miniserver types (including unknown).
+     */
+    public static final MiniserverType[] ALL = MiniserverType.values();
+
+    /**
+     * All known (supported) miniserver types.
+     */
+    public static final MiniserverType[] KNOWN = new MiniserverType[] { REGULAR, GO, REGULAR_V2 };
+
+    /**
+     * Miniserver types of so called first generation (Go and regular first generation).
+     */
+    public static final MiniserverType[] FIRST_GEN = new MiniserverType[] { REGULAR, GO };
 }

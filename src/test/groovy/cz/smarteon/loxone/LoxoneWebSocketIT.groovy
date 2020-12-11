@@ -19,6 +19,7 @@ import static cz.smarteon.loxone.CryptoSupport.PASS
 import static cz.smarteon.loxone.CryptoSupport.PUBLIC_KEY
 import static cz.smarteon.loxone.CryptoSupport.USER
 import static cz.smarteon.loxone.CryptoSupport.VISU_PASS
+import static cz.smarteon.loxone.app.MiniserverType.KNOWN
 import static cz.smarteon.loxone.message.ControlCommand.genericControlCommand
 import static cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_CFG_API
 import static cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_SYS_GETPUBLICKEY
@@ -82,7 +83,7 @@ class LoxoneWebSocketIT extends Specification {
         server.expect(equalTo('testCmd'))
 
         when:
-        lws.sendCommand(voidWsCommand('testCmd'))
+        lws.sendCommand(voidWsCommand(KNOWN, 'testCmd'))
 
         then:
         condition.eventually {
@@ -111,7 +112,7 @@ class LoxoneWebSocketIT extends Specification {
         server.badCredentials = 1
 
         when:
-        lws.sendCommand(voidWsCommand('baf'))
+        lws.sendCommand(voidWsCommand(KNOWN, 'baf'))
 
         then:
         thrown(LoxoneException)
@@ -122,7 +123,7 @@ class LoxoneWebSocketIT extends Specification {
         when:
         def beforeRestartCondition = new PollingConditions(initialDelay: 0.1, delay: 0.02)
         server.expect(equalTo('beforeRestart'))
-        lws.sendCommand(voidWsCommand('beforeRestart'))
+        lws.sendCommand(voidWsCommand(KNOWN, 'beforeRestart'))
 
         then:
         beforeRestartCondition.eventually {
@@ -135,7 +136,7 @@ class LoxoneWebSocketIT extends Specification {
         server = new MockWebSocketServer(server)
         server.expect(equalTo('afterRestart'))
         startServer()
-        lws.sendCommand(voidWsCommand('afterRestart'))
+        lws.sendCommand(voidWsCommand(KNOWN, 'afterRestart'))
 
         then:
         afterRestartCondition.eventually {
@@ -151,7 +152,7 @@ class LoxoneWebSocketIT extends Specification {
         server.badCredentials = 4
 
         when:
-        lws.sendCommand(voidWsCommand('baf'))
+        lws.sendCommand(voidWsCommand(KNOWN, 'baf'))
 
         then:
         condition.eventually {

@@ -1,6 +1,6 @@
 package cz.smarteon.loxone
 
-
+import cz.smarteon.loxone.app.MiniserverType
 import nl.jqno.equalsverifier.EqualsVerifier
 import spock.lang.Specification
 
@@ -10,7 +10,7 @@ class CommandTest extends Specification {
 
     def "test voidWsCommand"() {
         when:
-        def cmd = voidWsCommand('CMD/%s%s', 'aa', 'bb')
+        def cmd = voidWsCommand(MiniserverType.KNOWN, 'CMD/%s%s', 'aa', 'bb')
 
         then:
         cmd.command == 'CMD/aabb'
@@ -19,18 +19,20 @@ class CommandTest extends Specification {
 
     def "test json command"() {
         when:
-        def cmd = new Command('jdev/test', Command.Type.JSON, String.class, false, true)
+        def cmd = new Command('jdev/test', Command.Type.JSON, String.class, false, true, MiniserverType.FIRST_GEN)
 
         then:
         cmd.command == 'jdev/test'
         cmd.shouldContain == 'dev/test'
+        cmd.supportedMiniservers == MiniserverType.FIRST_GEN
+        !cmd.supportsMiniserver(MiniserverType.REGULAR_V2)
         cmd.is('dev/test/something')
         !cmd.is('something')
     }
 
     def "should ensure response"() {
         when:
-        def cmd = new Command('jdev/test', Command.Type.JSON, String.class, false, true)
+        def cmd = new Command('jdev/test', Command.Type.JSON, String.class, false, true, MiniserverType.KNOWN)
 
         then:
         cmd.ensureResponse('aa') == 'aa'

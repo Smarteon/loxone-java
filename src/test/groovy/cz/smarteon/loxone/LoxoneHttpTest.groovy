@@ -1,6 +1,6 @@
 package cz.smarteon.loxone
 
-
+import cz.smarteon.loxone.app.MiniserverType
 import cz.smarteon.loxone.message.IntValue
 import cz.smarteon.loxone.message.LoxoneMessage
 import cz.smarteon.loxone.message.LoxoneMessageCommand
@@ -59,7 +59,7 @@ class LoxoneHttpTest extends Specification {
             .withBody('"testString"')
 
         when:
-        def result = loxoneHttp.get(new Command<>('/test', JSON, String.class, true, false))
+        def result = loxoneHttp.get(new Command<>('/test', JSON, String.class, true, false, MiniserverType.KNOWN))
 
         then:
         result == 'testString'

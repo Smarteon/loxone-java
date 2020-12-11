@@ -1,10 +1,12 @@
 package cz.smarteon.loxone;
 
 import cz.smarteon.loxone.app.LoxoneApp;
+import cz.smarteon.loxone.app.MiniserverType;
 import cz.smarteon.loxone.system.status.MiniserverStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
@@ -18,38 +20,43 @@ public class Command<T> {
     /**
      * Miniserver Application
      */
-    public static final Command<LoxoneApp> LOX_APP = new Command<>("data/LoxAPP3.json", Type.JSON, LoxoneApp.class, true, true);
+    public static final Command<LoxoneApp> LOX_APP = new Command<>("data/LoxAPP3.json", Type.JSON,
+            LoxoneApp.class, true, true, MiniserverType.KNOWN);
 
     /**
      * Miniserver status API.
      */
-    public static final Command<MiniserverStatus> DATA_STATUS = xmlHttpCommand("data/status", MiniserverStatus.class);
+    public static final Command<MiniserverStatus> DATA_STATUS = new Command<>("data/status", Type.XML,
+            MiniserverStatus.class, true, false, MiniserverType.ALL);
 
     /**
      * Allow keep-alive WS guard.
      */
-    public static final Command<Void> KEEP_ALIVE = voidWsCommand("keepalive");
+    public static final Command<Void> KEEP_ALIVE = voidWsCommand(MiniserverType.KNOWN, "keepalive");
 
     /**
      * Enable sending miniserver status updates through WS.
      */
-    public static final Command<Void> ENABLE_STATUS_UPDATE = voidWsCommand("jdev/sps/enablebinstatusupdate");
+    public static final Command<Void> ENABLE_STATUS_UPDATE =
+            voidWsCommand(MiniserverType.KNOWN, "jdev/sps/enablebinstatusupdate");
 
     private final String command;
     private final Type type;
     private final Class<T> responseType;
     private final boolean httpSupported;
     private final boolean wsSupported;
+    private final MiniserverType[] supportedMiniservers;
 
     private final String shouldContain;
 
     protected Command(final String command, final Type type, final Class<T> responseType, final boolean httpSupported,
-                    final boolean wsSupported) {
+                      final boolean wsSupported, final @NotNull MiniserverType[] supportedMiniservers) {
         this.command = command;
         this.type = type;
         this.responseType = responseType;
         this.httpSupported = httpSupported;
         this.wsSupported = wsSupported;
+        this.supportedMiniservers = requireNonNull(supportedMiniservers, "supportedMiniservers can't be null");
 
         if (Type.JSON.equals(type)) {
             this.shouldContain = command.substring(1);
@@ -58,19 +65,18 @@ public class Command<T> {
         }
     }
 
-    private static <T> Command<T> xmlHttpCommand(final String command, final Class<T> responseType) {
-        return new Command<>(command, Type.XML, responseType, true, false);
-    }
-
     /**
      * The response is expected to come, however it's empty or we don't want to process it.
      *
+     * @param supportedMiniservers miniservers supported by the command
      * @param template command template
      * @param params command params
      * @return void websocket command
      */
-    static Command<Void> voidWsCommand(final String template, final String... params) {
-        return new Command<>(String.format(requireNonNull(template), (Object[]) params), null, Void.class, false, true);
+    static Command<Void> voidWsCommand(final MiniserverType[] supportedMiniservers, final String template,
+                                       final String... params) {
+        return new Command<>(String.format(requireNonNull(template), (Object[]) params), null, Void.class, false, true,
+                supportedMiniservers);
     }
 
     /**
@@ -79,7 +85,7 @@ public class Command<T> {
      * @return new key exchange command
      */
     static Command<Void> keyExchange(final String sessionKey) {
-        return voidWsCommand("jdev/sys/keyexchange/%s", sessionKey);
+        return voidWsCommand(MiniserverType.KNOWN, "jdev/sys/keyexchange/%s", sessionKey);
     }
 
     /**
@@ -89,6 +95,15 @@ public class Command<T> {
      */
     public boolean is(final String toCompare) {
         return toCompare != null && toCompare.contains(this.shouldContain);
+    }
+
+    /**
+     * Check whether this command is supported by given miniserver type.
+     * @param miniserver miniserver to check the compatibility
+     * @return true when this command is supported by given miniserver, false otherwise
+     */
+    public boolean supportsMiniserver(final @Nullable MiniserverType miniserver) {
+        return Arrays.asList(supportedMiniservers).contains(miniserver);
     }
 
     /**
@@ -140,6 +155,15 @@ public class Command<T> {
     }
 
     /**
+     * Miniserver types supporting this command.
+     * @return miniservers which support this command
+     */
+    @NotNull
+    public MiniserverType[] getSupportedMiniservers() {
+        return supportedMiniservers;
+    }
+
+    /**
      * Ensures the given response being the type of this command's compatible response.
      * Returns the ensured response or throws the exception.
      *
@@ -173,11 +197,14 @@ public class Command<T> {
                 Objects.equals(command, command1.command) &&
                 type == command1.type &&
                 Objects.equals(responseType, command1.responseType) &&
-                Objects.equals(shouldContain, command1.shouldContain);
+                Objects.equals(shouldContain, command1.shouldContain) &&
+                Arrays.equals(supportedMiniservers, command1.supportedMiniservers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(command, type, responseType, httpSupported, wsSupported, shouldContain);
+        return Arrays.deepHashCode(new Object[] {
+                command, type, responseType, httpSupported, wsSupported, shouldContain, supportedMiniservers
+        });
     }
 }

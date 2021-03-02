@@ -10,6 +10,14 @@ public class AlarmControl extends Control {
 
     public static final String NAME = "Alarm";
 
+    @NotNull
+    public boolean detailAlert() {
+        return (boolean)getCompulsoryDetail("alert");
+    }
+    @NotNull
+    public boolean detailPresenceConnected() {
+        return (boolean)getCompulsoryDetail("presenceConnected");
+    }
     /**
      * @return state referring whether alarm is armed
      */

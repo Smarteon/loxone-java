@@ -172,7 +172,7 @@ public class Loxone {
         sendControlCommand(control, "Off");
     }
 
-    private void sendControlCommand(final Control control, final String command) {
+    public void sendControlCommand(final Control control, final String command) {
         requireNonNull(control, "control can't be null");
         final ControlCommand<JsonValue> controlCommand = genericControlCommand(control.getUuid().toString(), command);
         if (control.isSecured()) {

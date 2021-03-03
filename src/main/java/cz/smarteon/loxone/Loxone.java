@@ -86,7 +86,10 @@ public class Loxone {
     /**
      * Start the service -  initiates the connection, authenticates, request the {@link LoxoneApp} and ask for event
      * updates (in case {@link #setEventsEnabled(boolean)} set to true).
-     * @throws LoxoneException in case something went wrong
+     * The method is blocking - waiting for {@link LoxoneApp} first fetch for timeout derived from underlying
+     * {@link LoxoneWebSocket}. It means that after successful completion of this method {@link #app()} should return
+     * fetched {@link LoxoneApp}.
+     * @throws LoxoneException in case something went wrong - the app request couldn't be send or the fetch took too long.
      */
     public void start() {
         appLatch = new CountDownLatch(1);

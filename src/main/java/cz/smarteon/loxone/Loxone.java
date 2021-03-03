@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import static cz.smarteon.loxone.message.ControlCommand.genericControlCommand;
 import static java.util.Objects.requireNonNull;
@@ -231,10 +232,27 @@ public class Loxone {
         sendControlCommand(control, "Off");
     }
 
+    /**
+     * Send command built by given commandBuilder applied on given control. Use static factory methods at
+     * {@link ControlCommand} or extend it with more specific classes in complex scenarios.
+     * Use {@link CommandResponseListener} added to {@link #webSocket()} to process the response.
+     * @param control control to build command from
+     * @param commandBuilder function returning the command of given control
+     * @param <C> type of the control
+     */
+    public <C extends Control> void sendControlCommand(
+            final @NotNull C control, final @NotNull Function<C, ControlCommand<?>> commandBuilder) {
+        sendCommand(commandBuilder.apply(control), control.isSecured());
+    }
+
     private void sendControlCommand(final Control control, final String command) {
         requireNonNull(control, "control can't be null");
         final ControlCommand<JsonValue> controlCommand = genericControlCommand(control.getUuid().toString(), command);
-        if (control.isSecured()) {
+        sendCommand(controlCommand, control.isSecured());
+    }
+
+    private void sendCommand(final ControlCommand<?> controlCommand, final boolean secured) {
+        if (secured) {
             webSocket().sendSecureCommand(controlCommand);
         } else {
             webSocket().sendCommand(controlCommand);

@@ -24,12 +24,23 @@ implementation("cz.smarteon", "loxone-java", "desired version")
 ```
 
 ### Quick start
+The main entry point of the library is the [Loxone](src/main/java/cz/smarteon/loxone/Loxone.java) class.
 ```java
-LoxoneHttp loxoneHttp = new LoxoneHttp(address);
-LoxoneWebSocket loxoneWebSocket = new LoxoneWebSocket(address, new LoxoneAuth(loxoneHttp, user, password, uiPassword));
+// obtain loxone instance
+final Loxone loxone = new Loxone(new LoxoneEndpoint(address), user, password, uiPassword);
 
-loxoneWebSocket.sendCommand(...);
-...
+// start interaction and wait for LoxoneApp fetched
+loxone.start();
+
+// do the job
+loxone.sendControlOn(loxone.app().getControl(SwitchControl.class));
+
+// obtain http or websocket classes for more low-level work
+final LoxoneHttp loxoneHttp = loxone.http();
+final LoxoneWebSocket loxoneWebSocket = loxone.webSocket();
+
+// stop the session correctly
+loxone.stop();
 ```
 Study [examples](examples) for detailed usage information.
 

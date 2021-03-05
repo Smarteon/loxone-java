@@ -1,11 +1,11 @@
 package cz.smarteon.loxone.message;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import org.jetbrains.annotations.NotNull;
@@ -16,66 +16,102 @@ import static java.util.Objects.requireNonNull;
  * Represents single message of loxone API.
  * @param <V> type of value.
  */
-@JsonTypeName("LL")
-@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 public class LoxoneMessage<V extends LoxoneValue> {
-    protected final String control;
-    protected final Integer code;
-    protected final V value;
+
+    @JsonProperty("LL")
+    protected final Content<V> content;
+
+    public LoxoneMessage(final @NotNull String control, final @NotNull Integer code, final @NotNull V value) {
+        this.content = new Content<>(control, code, value);
+    }
 
     @JsonCreator
-    public LoxoneMessage(@JsonProperty("control") final String control,
-                            @JsonProperty("code") @JsonDeserialize(using = LoxoneIntDeserializer.class) final Integer code,
-                            @JsonProperty("value")
-                            @JsonTypeInfo(
-                                    include = JsonTypeInfo.As.EXTERNAL_PROPERTY,
-                                    property = "control",
-                                    use = JsonTypeInfo.Id.CUSTOM,
-                                    defaultImpl = JsonValue.class)
-                            @JsonTypeIdResolver(LoxoneValueTypeResolver.class) final V value) {
-        this.control = requireNonNull(control, "control can't be null");
-        this.code = requireNonNull(code, "code can't be null");
-        this.value = requireNonNull(value, "value can't be null");
+    LoxoneMessage(@JsonProperty("LL") final Content<V> content) {
+        this.content = requireNonNull(content, "content can't be null");
     }
 
     /**
      * Control identifier, the message is about / from
      * @return identifier of the control
      */
-    @NotNull
+    @NotNull @JsonIgnore
     public String getControl() {
-        return control;
+        return content.getControl();
     }
 
     /**
      * Return code
      * @return return code
      */
-    @NotNull
+    @NotNull @JsonIgnore
     public int getCode() {
-        return code;
+        return content.getCode();
     }
 
     /**
      * Value of the message.
      * @return message value
      */
-    @NotNull
+    @NotNull @JsonIgnore
     public V getValue() {
-        return value;
-    }
-
-    @JsonAnySetter
-    public void add(final String key, final JsonNode value) {
-        // hack causing to ignore unknown fields since @JsonIgnoreProperties(ignoreUnknown = true) doesn't work together custom type resolver
+        return content.getValue();
     }
 
     @Override
     public String toString() {
         return "LoxoneMessage{" +
-                "control='" + control + '\'' +
-                ", code=" + code +
-                ", value=" + value +
+                "control='" + getControl() + '\'' +
+                ", code=" + getCode() +
+                ", value=" + getValue() +
                 '}';
+    }
+
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY,
+            property = "code", defaultImpl = ErrorContent.class, visible = true)
+    @JsonSubTypes({@JsonSubTypes.Type(name = "200", value = Content.class)})
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    protected static class Content<V extends LoxoneValue> {
+
+        protected final String control;
+        protected final Integer code;
+        protected final V value;
+
+        @JsonCreator
+        Content(
+                @JsonProperty("control") final String control,
+                @JsonProperty("code") @JsonDeserialize(using = LoxoneIntDeserializer.class) final Integer code,
+                @JsonProperty("value")
+                @JsonTypeInfo(
+                        include = JsonTypeInfo.As.EXTERNAL_PROPERTY,
+                        property = "control",
+                        use = JsonTypeInfo.Id.CUSTOM,
+                        defaultImpl = JsonValue.class)
+                @JsonTypeIdResolver(LoxoneValueTypeResolver.class) final V value) {
+            this.control = requireNonNull(control, "control can't be null");
+            this.code = requireNonNull(code, "code can't be null");
+            this.value = requireNonNull(value, "value can't be null");
+        }
+
+        public String getControl() {
+            return control;
+        }
+
+        public Integer getCode() {
+            return code;
+        }
+
+        public V getValue() {
+            return value;
+        }
+    }
+
+    protected static class ErrorContent extends Content<JsonValue> {
+        @JsonCreator
+        ErrorContent(
+                @JsonProperty("control") final String control,
+                @JsonProperty("code") @JsonDeserialize(using = LoxoneIntDeserializer.class) final Integer code,
+                @JsonProperty("value") final JsonValue value) {
+            super(control, code, value);
+        }
     }
 }

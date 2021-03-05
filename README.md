@@ -1,5 +1,10 @@
 # loxone-java [![Maven Central](https://maven-badges.herokuapp.com/maven-central/cz.smarteon/loxone-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/cz-smarteon/loxone-java) [![codecov](https://codecov.io/gh/Smarteon/loxone-java/branch/master/graph/badge.svg)](https://codecov.io/gh/Smarteon/loxone-java)
-Java implementation of the Loxone™ communication protocol (Web Socket)
+Java implementation of the Loxone™ communication protocol (Web Socket).
+
+Most of the library is trying to behave according to 
+[Loxone API documentation](https://www.loxone.com/enen/kb/api/) 
+and [Loxone webservices](https://www.loxone.com/enen/kb/web-services/). 
+However, there are also some reverse engineered parts, marked with `@LoxoneNotDocumented` annotation.  
 
 *Disclaimer:*
 This library is in early stage of development - public APIs are subject to change. Any feedback or help is welcomed.

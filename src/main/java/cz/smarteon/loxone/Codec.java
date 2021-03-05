@@ -2,6 +2,7 @@ package cz.smarteon.loxone;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import cz.smarteon.loxone.message.LoxoneMessage;
 import cz.smarteon.loxone.message.MessageHeader;
@@ -25,7 +26,7 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
 
-import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS;
+import static com.fasterxml.jackson.core.json.JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS;
 import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES;
 import static cz.smarteon.loxone.message.MessageHeader.FIRST_BYTE;
 import static cz.smarteon.loxone.message.MessageHeader.PAYLOAD_LENGTH;
@@ -36,13 +37,14 @@ public abstract class Codec {
 
     public static DateFormat DATE_FORMAT = new SimpleDateFormat(DATE_PATTERN);
 
-    private static ObjectMapper MAPPER = new ObjectMapper()
+    private static final ObjectMapper MAPPER = JsonMapper.builder()
             .configure(ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-            .configure(ALLOW_UNQUOTED_CONTROL_CHARS, true)
-            .setDateFormat(DATE_FORMAT)
-            .setLocale(Locale.getDefault());
+            .enable(ALLOW_UNESCAPED_CONTROL_CHARS)
+            .defaultDateFormat(DATE_FORMAT)
+            .defaultLocale(Locale.getDefault())
+            .build();
 
-    private static XmlMapper XML = new XmlMapper().setDefaultUseWrapper(false);
+    private static final XmlMapper XML = XmlMapper.builder().defaultUseWrapper(false).build();
 
     private static final char SEPARATOR = ':';
 

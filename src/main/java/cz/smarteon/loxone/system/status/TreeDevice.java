@@ -2,8 +2,13 @@ package cz.smarteon.loxone.system.status;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.jetbrains.annotations.Nullable;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "Code", defaultImpl = TreeDevice.class)
+@JsonSubTypes({@JsonSubTypes.Type(name = "-2145582934", value = TreeToAirBridge.class)})
 public class TreeDevice extends Device {
 
     private final String place;

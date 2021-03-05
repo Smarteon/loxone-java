@@ -42,6 +42,15 @@
                 <TreeDevice Code="-2146697035" Name="Linka" Place="Kuchyně" Inst="BarPult" Serial="C0101D3E"
                             Version="10.2.2.20" Online="true" LastReceived="2019-09-04 12:59:22" TimeDiff="196"
                             DummyDev="false"/>
+                <TreeDevice Code="-2145582934" Name="Tree to Air Bridge" Inst="v rozvaděči" Serial="0CD91EAA"
+                            Version="11.1.9.8" HwVersion="100" Online="true" LastReceived="2021-03-04 15:45:07"
+                            TimeDiff="0" DummyDev="false" Mac="50:4F:94:FF:FE:C0:07:95" Occupied="false"
+                            Interfered="false">
+                    <AirDevice Type="Touch Pure Air" Code="3801259" Name="Touch Pure Air" Place="Centrální funkce"
+                               Inst="U vchodu" Serial="50:4F:94:FF:FE:90:7E:FC" LastReceived="2021-03-04 15:45:07"
+                               TimeDiff="0" Version="11.1.8.25" MinVersion="11021112" HwVersion="1" Hops="1"
+                               QualityExt="3" QualityDev="3" Online="true" Battery="97" DummyDev="false"/>
+                </TreeDevice>
             </TreeBranch>
         </Extension>
         <Extension Type="DMX Extension" Code="11" Name="DMX Extension" Serial="04d82ee5" Version="9.0.9.15"

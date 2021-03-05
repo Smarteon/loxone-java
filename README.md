@@ -15,7 +15,7 @@ This library is in early stage of development - public APIs are subject to chang
 <dependency>
     <groupId>cz.smarteon</groupId>
     <artifactId>loxone-java</artifactId>
-    <version><!-- desired version -->></version>
+    <version><!-- desired version --></version>
 </dependency>
 ```
 

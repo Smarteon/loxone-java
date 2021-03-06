@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.jetbrains.annotations.Nullable;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "Code", defaultImpl = TreeDevice.class)
+        property = "Code", defaultImpl = TreeDevice.class, visible = true)
 @JsonSubTypes({@JsonSubTypes.Type(name = "-2145582934", value = TreeToAirBridge.class)})
 public class TreeDevice extends Device {
 

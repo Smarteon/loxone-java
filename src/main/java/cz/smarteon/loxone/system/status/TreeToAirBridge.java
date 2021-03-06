@@ -30,8 +30,8 @@ public class TreeToAirBridge extends TreeDevice implements DevicesProvider<AirDe
                     @JsonProperty("HwVersion") final String hwVersion,
                     @JsonProperty("Mac") final String mac,
                     @JsonProperty("Occupied") final Boolean occupied,
-                    @JsonProperty("Interfered") final Boolean interfered,
-                    @JsonProperty("AirDevice") final List<AirDevice> devices) {
+                    @JsonProperty("AirDevice") final List<AirDevice> devices,
+                    @JsonProperty("Interfered") final Boolean interfered) {
         super(code, name, serialNumber, place, installation, version, online, lastReceived, timeDiff, dummy);
         this.hwVersion = hwVersion;
         this.mac = mac;

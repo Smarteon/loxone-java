@@ -57,6 +57,7 @@ class MiniserverStatusTest extends Specification implements SerializationSupport
         treeExtensions[0].rightBranch.devices[1].name == 'Tree to Air Bridge'
 
         def tree2airBridge = treeExtensions[0].rightBranch.devices[1] as TreeToAirBridge
+        tree2airBridge.code == "-2145582934"
         tree2airBridge.devices.size() == 1
         tree2airBridge.hwVersion == '100'
         tree2airBridge.mac == '50:4F:94:FF:FE:C0:07:95'

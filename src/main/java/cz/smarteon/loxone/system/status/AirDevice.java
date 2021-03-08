@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AirDevice extends Device {
+public class AirDevice extends UpdatableDevice {
 
     private final String type;
     private final String place;
@@ -43,8 +43,10 @@ public class AirDevice extends Device {
               @JsonProperty("QualityDev") final String qualityDev,
               @JsonProperty("Online") final Boolean online,
               @JsonProperty("Battery") final Integer battery,
-              @JsonProperty("DummyDev") final Boolean dummy) {
-        super(code, name, serialNumber);
+              @JsonProperty("DummyDev") final Boolean dummy,
+              @JsonProperty("Updating") final Boolean updating,
+              @JsonProperty("UpdateProgress") final Integer updateProgress) {
+        super(code, name, serialNumber, updating, updateProgress);
         this.type = type;
         this.place = place;
         this.installation = installation;

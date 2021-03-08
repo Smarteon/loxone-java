@@ -59,6 +59,9 @@ class MiniserverStatusTest extends Specification implements SerializationSupport
         treeExtensions[0].leftBranch.devices.size() == 2
         treeExtensions[0].rightBranch.devices[0].name == 'Linka'
         treeExtensions[0].rightBranch.devices[1].name == 'Tree to Air Bridge'
+        def tree2ndLeft = treeExtensions[0].leftBranch.devices[1]
+        tree2ndLeft.updating
+        tree2ndLeft.updateProgress == 73
 
         def tree2airBridge = treeExtensions[0].rightBranch.devices[1] as TreeToAirBridge
         tree2airBridge.devices.size() == 1
@@ -66,6 +69,9 @@ class MiniserverStatusTest extends Specification implements SerializationSupport
         tree2airBridge.mac == '50:4F:94:FF:FE:C0:07:95'
         !tree2airBridge.occupied
         !tree2airBridge.interfered
+        def airUnderTree = tree2airBridge.devices[0]
+        airUnderTree.updating
+        airUnderTree.updateProgress == 57
 
         def daliExtensions = ms.getExtensions(DaliExtension)
         daliExtensions?.size() == 1

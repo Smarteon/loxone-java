@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "Code", defaultImpl = TreeDevice.class)
 @JsonSubTypes({@JsonSubTypes.Type(name = "-2145582934", value = TreeToAirBridge.class)})
-public class TreeDevice extends Device {
+public class TreeDevice extends UpdatableDevice {
 
     private final String place;
     private final String installation;
@@ -29,8 +29,10 @@ public class TreeDevice extends Device {
                @JsonProperty("Online") final Boolean online,
                @JsonProperty("LastReceived") final String lastReceived,
                @JsonProperty("TimeDiff") final Integer timeDiff,
-               @JsonProperty("DummyDev") final Boolean dummy) {
-        super(code, name, serialNumber);
+               @JsonProperty("DummyDev") final Boolean dummy,
+               @JsonProperty("Updating") final Boolean updating,
+               @JsonProperty("UpdateProgress") final Integer updateProgress) {
+        super(code, name, serialNumber, updating, updateProgress);
         this.place = place;
         this.installation = installation;
         this.version = version;

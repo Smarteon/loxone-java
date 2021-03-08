@@ -47,8 +47,12 @@ class MiniserverStatusTest extends Specification implements SerializationSupport
 
         def airBaseExtensions = ms.getExtensions(AirBaseExtension)
         airBaseExtensions?.size() == 1
-        airBaseExtensions[0].devices.size() == 2
-        airBaseExtensions[0].devices[0].name == 'VentilLeft'
+
+        def airBase = airBaseExtensions[0]
+        airBase.devices.size() == 2
+        airBase.devices[0].name == 'VentilLeft'
+        airBase.updating
+        airBase.updateProgress == 89
 
         def treeExtensions = ms.getExtensions(TreeExtension)
         treeExtensions?.size() == 1

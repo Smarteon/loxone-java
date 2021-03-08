@@ -13,7 +13,9 @@ public class BasicExtension extends Extension {
                    @JsonProperty("Serial") final String serialNumber, @JsonProperty("Version") final String version,
                    @JsonProperty("Online") final Boolean online, @JsonProperty("DummyDev") final Boolean dummy,
                    @JsonProperty("Occupied") final Boolean occupied, @JsonProperty("Interfered") final Boolean interfered,
-                   @JsonProperty("IntDev") final Boolean intDev) {
-        super(code, name, serialNumber, version, online, dummy, occupied, interfered, intDev);
+                   @JsonProperty("IntDev") final Boolean intDev,
+                   @JsonProperty("Updating") final Boolean updating,
+                   @JsonProperty("ExtUpdateProgress") final Integer updateProgress) {
+        super(code, name, serialNumber, version, online, dummy, occupied, interfered, intDev, updating, updateProgress);
     }
 }

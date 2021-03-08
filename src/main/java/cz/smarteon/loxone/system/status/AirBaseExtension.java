@@ -17,8 +17,10 @@ public class AirBaseExtension extends Extension implements DevicesProvider<AirDe
                      @JsonProperty("Online") final Boolean online, @JsonProperty("DummyDev") final Boolean dummy,
                      @JsonProperty("Occupied") final Boolean occupied, @JsonProperty("Interfered") final Boolean interfered,
                      @JsonProperty("IntDev") final Boolean intDev,
-                     @JsonProperty("AirDevice") final List<AirDevice> devices) {
-        super(code, name, serialNumber, version, online, dummy, occupied, interfered, intDev);
+                     @JsonProperty("AirDevice") final List<AirDevice> devices,
+                     @JsonProperty("Updating") final Boolean updating,
+                     @JsonProperty("ExtUpdateProgress") final Integer updateProgress) {
+        super(code, name, serialNumber, version, online, dummy, occupied, interfered, intDev, updating, updateProgress);
         this.devices = devices;
     }
 

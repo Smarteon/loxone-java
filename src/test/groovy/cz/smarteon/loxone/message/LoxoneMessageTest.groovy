@@ -41,4 +41,12 @@ class LoxoneMessageTest extends Specification implements SerializationSupport {
         expect:
         readResource('message/alarmAll.json', LoxoneMessage)
     }
+
+    def "should deserialize getToken failure"() {
+        when:
+        LoxoneMessage message = readResource('message/getToken401.json', LoxoneMessage)
+
+        then:
+        message.code == 401
+    }
 }

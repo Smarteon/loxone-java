@@ -2,6 +2,7 @@ package cz.smarteon.loxone;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import cz.smarteon.loxone.message.LoxoneMessage;
 import cz.smarteon.loxone.message.MessageHeader;
@@ -17,7 +18,6 @@ import java.nio.ByteOrder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.BitSet;
 import java.util.Collection;
@@ -25,24 +25,25 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
 
-import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS;
+import static com.fasterxml.jackson.core.json.JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS;
 import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES;
 import static cz.smarteon.loxone.message.MessageHeader.FIRST_BYTE;
 import static cz.smarteon.loxone.message.MessageHeader.PAYLOAD_LENGTH;
 
 public abstract class Codec {
 
-    private static String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    private static final String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
     public static DateFormat DATE_FORMAT = new SimpleDateFormat(DATE_PATTERN);
 
-    private static ObjectMapper MAPPER = new ObjectMapper()
+    private static final ObjectMapper MAPPER = JsonMapper.builder()
             .configure(ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-            .configure(ALLOW_UNQUOTED_CONTROL_CHARS, true)
-            .setDateFormat(DATE_FORMAT)
-            .setLocale(Locale.getDefault());
+            .enable(ALLOW_UNESCAPED_CONTROL_CHARS)
+            .defaultDateFormat(DATE_FORMAT)
+            .defaultLocale(Locale.getDefault())
+            .build();
 
-    private static XmlMapper XML = new XmlMapper().setDefaultUseWrapper(false);
+    private static final XmlMapper XML = XmlMapper.builder().defaultUseWrapper(false).build();
 
     private static final char SEPARATOR = ':';
 
@@ -52,16 +53,6 @@ public abstract class Codec {
 
     static byte[] concatToBytes(String first, String second) {
         return concat(first, second).getBytes();
-    }
-
-    static byte[] concat(byte[] a, byte[] b) {
-        byte[] result = Arrays.copyOf(a, a.length + 1 + b.length);
-        result[a.length] = SEPARATOR;
-
-        for (int i = 0; i < b.length; i++) {
-            result[a.length + i + 1] = b[i];
-        }
-        return result;
     }
 
     /**
@@ -94,7 +85,7 @@ public abstract class Codec {
      * @return encoded bytes
      */
     @NotNull
-    public static String bytesToBase64(final @NotNull byte[] bytes) {
+    public static String bytesToBase64(final byte[] bytes) {
         return Base64.getEncoder().encodeToString(bytes);
     }
 
@@ -104,7 +95,6 @@ public abstract class Codec {
      * @return decoded String
      * @throws IllegalArgumentException in case the input is not correct Base64
      */
-    @NotNull
     public static byte[] base64ToBytes(final @NotNull String base64) {
         return Base64.getDecoder().decode(base64);
     }
@@ -113,11 +103,11 @@ public abstract class Codec {
         return MAPPER.writeValueAsString(message);
     }
 
-    public static LoxoneMessage readMessage(final String message) throws IOException {
+    public static LoxoneMessage<?> readMessage(final String message) throws IOException {
         return readMessage(message, LoxoneMessage.class);
     }
 
-    public static LoxoneMessage readMessage(final InputStream message) throws IOException {
+    public static LoxoneMessage<?> readMessage(final InputStream message) throws IOException {
         return readMessage(message, LoxoneMessage.class);
     }
 
@@ -214,13 +204,9 @@ public abstract class Codec {
 
     }
 
-    static byte[] readBytes(final ByteBuffer buffer) {
-        return readBytes(buffer, buffer.remaining());
-    }
-
     private static byte[] readBytes(final ByteBuffer buffer, final int length) {
         // sanitize when less than declared length actually received
-        int l = length >= buffer.remaining() ? buffer.remaining() : length;
+        int l = Math.min(length, buffer.remaining());
         final byte[] bytes = new byte[l];
         buffer.get(bytes, 0, l);
         return bytes;

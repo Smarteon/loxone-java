@@ -1,6 +1,7 @@
 package cz.smarteon.loxone.system.status;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
         @JsonSubTypes.Type(name = "Modbus Extension", value = BasicExtension.class),
         @JsonSubTypes.Type(name = "Dimmer Extension", value = BasicExtension.class)
 })
-public abstract class Extension {
+public abstract class Extension implements Updatable {
 
     protected final String code;
     protected final String name;
@@ -34,10 +35,12 @@ public abstract class Extension {
     protected final Boolean occupied;
     protected final Boolean interfered;
     protected final Boolean intDev;
+    protected final Boolean updating;
+    protected final Integer updateProgress;
 
     protected Extension(final String code, final String name, final String serialNumber, final String version,
                         final Boolean online, final Boolean dummy, final Boolean occupied, final Boolean interfered,
-                        final Boolean intDev) {
+                        final Boolean intDev, final Boolean updating, final Integer updateProgress) {
         this.code = code;
         this.name = name;
         this.serialNumber = serialNumber;
@@ -47,6 +50,8 @@ public abstract class Extension {
         this.occupied = occupied;
         this.interfered = interfered;
         this.intDev = intDev;
+        this.updating = updating;
+        this.updateProgress = updateProgress;
     }
 
     /**
@@ -123,5 +128,16 @@ public abstract class Extension {
      */
     public boolean isIntDev() {
         return Boolean.TRUE.equals(intDev);
+    }
+
+    @Override
+    public boolean isUpdating() {
+        return Boolean.TRUE.equals(updating);
+    }
+
+    @JsonProperty("ExtUpdateProgress")
+    @Override
+    public Integer getUpdateProgress() {
+        return updateProgress;
     }
 }

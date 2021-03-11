@@ -9,6 +9,7 @@ import cz.smarteon.loxone.message.PubKeyInfo;
 import cz.smarteon.loxone.message.Token;
 import cz.smarteon.loxone.message.TokenPermissionType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import static cz.smarteon.loxone.Codec.bytesToBase64;
 import static cz.smarteon.loxone.Codec.concatToBytes;
@@ -89,13 +91,14 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
      * @param loxoneHttp loxone http interface used to perform some necessary http calls to loxone
      * @param loxoneUser loxone user
      * @param loxonePass loxone password
-     * @param loxoneVisPass loxone visualization password
+     * @param loxoneVisPass loxone visualization password, can be null
      */
-    public LoxoneAuth(LoxoneHttp loxoneHttp, String loxoneUser, String loxonePass, String loxoneVisPass) {
+    public LoxoneAuth(@NotNull LoxoneHttp loxoneHttp, @NotNull String loxoneUser, @NotNull String loxonePass,
+                      @Nullable String loxoneVisPass) {
         this.loxoneHttp = requireNonNull(loxoneHttp, "loxoneHttp shouldn't be null");
         this.loxoneUser = requireNonNull(loxoneUser, "loxoneUser shouldn't be null");
         this.loxonePass = requireNonNull(loxonePass, "loxonePass shouldn't be null");
-        this.loxoneVisPass = requireNonNull(loxoneVisPass, "loxoneVisPass shouldn't be null");
+        this.loxoneVisPass = loxoneVisPass;
 
         this.getKeyCommand = getKey(loxoneUser);
         this.getVisuHashCommand = LoxoneMessageCommand.getVisuHash(loxoneUser);
@@ -238,7 +241,8 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
      *
      */
     public String getVisuHash() {
-        return LoxoneCrypto.loxoneHashing(loxoneVisPass, null, visuHashing, "secured command");
+        return onVisuPassSet("compute visu hash",
+                () ->  LoxoneCrypto.loxoneHashing(loxoneVisPass, null, visuHashing, "secured command") );
     }
 
     /**
@@ -259,7 +263,10 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
     }
 
     void startVisuAuthentication() {
-        sendCommand(getVisuHashCommand);
+        onVisuPassSet("start visual authentication", () -> {
+            sendCommand(getVisuHashCommand);
+            return null;
+        });
     }
 
     /**
@@ -426,5 +433,13 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
             return true;
         }
         return false;
+    }
+
+    private <T> T onVisuPassSet(String actionDescription, Supplier<T> action) {
+        if (loxoneVisPass != null) {
+            return action.get();
+        } else {
+            throw new IllegalStateException("Can't " + actionDescription + " when visualization password not set.");
+        }
     }
 }

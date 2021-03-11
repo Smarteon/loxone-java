@@ -1,6 +1,6 @@
 package cz.smarteon.loxone
 
-
+import cz.smarteon.loxone.message.ControlCommand
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.java_websocket.client.WebSocketClient
 import spock.lang.Specification
@@ -131,6 +131,21 @@ class LoxoneWebSocketTest extends Specification {
         1 * wsClientMock.closeBlocking() >> { throw new InterruptedException('Testing interrupt') }
 
         loxoneWebSocket.scheduler.shutdown
+
+        thrown(LoxoneException)
+    }
+
+    def "should not send secure command when visuPass not set"() {
+        given:
+        loxoneWebSocket.setRetries(0)
+
+        when:
+        loxoneWebSocket.sendSecureCommand(ControlCommand.genericControlCommand('uuid', 'operation'))
+
+        then:
+        1 * wsClientMock.connect() >> { loxoneWebSocket.connectionOpened() }
+        1 * authMock.startAuthentication() >> { authListener.authCompleted() }
+        1 * authMock.startVisuAuthentication() >> { throw new IllegalStateException("Can't compute visuHash") }
 
         thrown(LoxoneException)
     }

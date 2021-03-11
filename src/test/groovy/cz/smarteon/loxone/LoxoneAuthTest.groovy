@@ -11,6 +11,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Timeout
+import spock.lang.Unroll
 
 import java.security.Security
 import java.util.concurrent.CountDownLatch
@@ -98,6 +99,23 @@ class LoxoneAuthTest extends Specification {
         1 * senderMock.send({ it.command ==~ /.*keyexchange.*/ })
         1 * senderMock.send({ it.command ==~ /^jdev\/sys\/enc\/.*/ && it.valueType == Token })
         0 * senderMock._
+    }
+
+    @Unroll
+    def "should fail #action with visuPass not set"() {
+        given:
+        def noVisuAuth = new LoxoneAuth(http, USER, PASS, null)
+
+        when:
+        noVisuAuth."$function"()
+
+        then:
+        thrown(IllegalStateException)
+
+        where:
+        action                          | function
+        'compute visuHash'              | 'getVisuHash'
+        'start visuHash authentication' | 'startVisuAuthentication'
     }
 
     private static int needsRefreshIn2Secs() {

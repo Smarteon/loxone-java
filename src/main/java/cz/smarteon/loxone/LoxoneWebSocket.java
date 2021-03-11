@@ -288,6 +288,9 @@ public class LoxoneWebSocket {
                 log.info("Connection or authentication failed too many times, give up");
                 throw new LoxoneException("Unable to authenticate within timeout with retry", e);
             }
+        } catch (IllegalStateException e) {
+            log.info("Unable to send secured command - authentication not set properly, give up");
+            throw new LoxoneException("Unable to send secured command", e);
         }
     }
 

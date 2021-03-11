@@ -81,4 +81,15 @@ class LoxoneTest extends Specification {
         then:
         1 * webSocket.close()
     }
+
+    def "should create without visuPass"() {
+        given:
+        def loxone = new Loxone(new LoxoneEndpoint('localhost'), 'user', 'pass')
+
+        when:
+        loxone.auth().startVisuAuthentication()
+
+        then:
+        thrown(IllegalStateException)
+    }
 }

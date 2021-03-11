@@ -47,14 +47,24 @@ public class Loxone {
     private boolean eventsEnabled = false;
 
     /**
+     * Creates new instance of given endpoint, user and password.
+     * @param endpoint endpoint, can't be null
+     * @param user user name, can't be null
+     * @param pass password, can't be null
+     */
+    public Loxone(final @NotNull LoxoneEndpoint endpoint, final @NotNull String user, final @NotNull String pass) {
+       this(endpoint, user, pass, null);
+    }
+
+    /**
      * Creates new instance of given endpoint, user, password and visualization password.
      * @param endpoint endpoint, can't be null
      * @param user user name, can't be null
      * @param pass password, can't be null
-     * @param visuPass visualization password, can't be null
+     * @param visuPass visualization password, can be null
      */
     public Loxone(final @NotNull LoxoneEndpoint endpoint,
-                  final @NotNull String user, final @NotNull String pass, final @NotNull String visuPass) {
+                  final @NotNull String user, final @NotNull String pass, final @Nullable String visuPass) {
         // parameters checked in the constructors below
         this.loxoneHttp = new LoxoneHttp(endpoint);
         this.loxoneAuth = new LoxoneAuth(loxoneHttp, user, pass, visuPass);

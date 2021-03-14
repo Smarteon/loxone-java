@@ -1,45 +1,15 @@
 package cz.smarteon.loxone.system.status;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.jetbrains.annotations.Nullable;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "Code", defaultImpl = TreeDevice.class)
-@JsonSubTypes({@JsonSubTypes.Type(name = "-2145582934", value = TreeToAirBridge.class)})
-public class TreeDevice extends UpdatableDevice {
+@JsonDeserialize(using = TreeDeviceDeserializer.class)
+public class TreeDevice extends TreeDeviceBase {
 
-    private final String place;
-    private final String installation;
-    private final String version;
-    private final Boolean online;
-    private final String lastReceived; // TODO time
-    private final Integer timeDiff; // TODO semantics??
-    private final Boolean dummy;
-
-    @JsonCreator
-    TreeDevice(@JsonProperty("Code") final String code,
-               @JsonProperty("Name") final String name,
-               @JsonProperty("Serial") final String serialNumber,
-               @JsonProperty("Place") final String place,
-               @JsonProperty("Inst") final String installation,
-               @JsonProperty("Version") final String version,
-               @JsonProperty("Online") final Boolean online,
-               @JsonProperty("LastReceived") final String lastReceived,
-               @JsonProperty("TimeDiff") final Integer timeDiff,
-               @JsonProperty("DummyDev") final Boolean dummy,
-               @JsonProperty("Updating") final Boolean updating,
-               @JsonProperty("UpdateProgress") final Integer updateProgress) {
-        super(code, name, serialNumber, updating, updateProgress);
-        this.place = place;
-        this.installation = installation;
-        this.version = version;
-        this.online = online;
-        this.lastReceived = lastReceived;
-        this.timeDiff = timeDiff;
-        this.dummy = dummy;
+    TreeDevice(final TreeDeviceBase td) {
+        super(td.getCode(), td.getName(), td.getSerialNumber(), td.place, td.installation, td.version, td.online,
+                td.lastReceived, td.timeDiff, td.dummy, td.updating, td.updateProgress, td.hwVersion, td.mac,
+                td.occupied, td.interfered, td.airDevices);
     }
 
     @Nullable

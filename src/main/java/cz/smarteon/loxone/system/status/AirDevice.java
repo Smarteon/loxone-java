@@ -1,67 +1,16 @@
 package cz.smarteon.loxone.system.status;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.jetbrains.annotations.NotNull;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.jetbrains.annotations.Nullable;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class AirDevice extends UpdatableDevice {
+@JsonDeserialize(using = AirDeviceDeserializer.class)
+public class AirDevice extends AirDeviceBase {
 
-    private final String type;
-    private final String place;
-    private final String installation;
-    private final String lastReceived; // TODO time
-    private final Integer timeDiff; // TODO semantics??
-    private final String version;
-    private final String minVersion; // TODO semantics??
-    private final String hwVersion;
-    private final Integer hops;
-    private final Integer roundTripTime;
-    private final String qualityExt; // TODO semantics??
-    private final String qualityDev; // TODO semantics??
-    private final Boolean online;
-    private final Integer battery;
-    private final Boolean dummy;
-
-    @JsonCreator
-    AirDevice(@JsonProperty("Type") final String type,
-              @JsonProperty("Code") final String code,
-              @JsonProperty("Name") final String name,
-              @JsonProperty("Place") final String place,
-              @JsonProperty("Inst") final String installation,
-              @JsonProperty("Serial") final String serialNumber,
-              @JsonProperty("LastReceived") final String lastReceived,
-              @JsonProperty("TimeDiff") final Integer timeDiff,
-              @JsonProperty("Version") final String version,
-              @JsonProperty("MinVersion") final String minVersion,
-              @JsonProperty("HwVersion") final String hwVersion,
-              @JsonProperty("Hops") final Integer hops,
-              @JsonProperty("RoundTripTime") final Integer roundTripTime,
-              @JsonProperty("QualityExt") final String qualityExt,
-              @JsonProperty("QualityDev") final String qualityDev,
-              @JsonProperty("Online") final Boolean online,
-              @JsonProperty("Battery") final Integer battery,
-              @JsonProperty("DummyDev") final Boolean dummy,
-              @JsonProperty("Updating") final Boolean updating,
-              @JsonProperty("UpdateProgress") final Integer updateProgress) {
-        super(code, name, serialNumber, updating, updateProgress);
-        this.type = type;
-        this.place = place;
-        this.installation = installation;
-        this.lastReceived = lastReceived;
-        this.timeDiff = timeDiff;
-        this.version = version;
-        this.minVersion = minVersion;
-        this.hwVersion = hwVersion;
-        this.hops = hops;
-        this.roundTripTime = roundTripTime;
-        this.qualityExt = qualityExt;
-        this.qualityDev = qualityDev;
-        this.online = online;
-        this.battery = battery;
-        this.dummy = dummy;
+    AirDevice(final AirDeviceBase ad) {
+        super(ad.type, ad.getCode(), ad.getName(), ad.place, ad.installation, ad.getSerialNumber(),
+                ad.lastReceived, ad.timeDiff, ad.version, ad.minVersion, ad.hwVersion, ad.hops, ad.roundTripTime,
+                ad.qualityExt, ad.qualityDev, ad.online, ad.battery, ad.dummy, ad.updating, ad.updateProgress,
+                ad.oneWireDevices);
     }
 
     @Nullable

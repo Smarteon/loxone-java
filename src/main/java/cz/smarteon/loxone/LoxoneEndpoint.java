@@ -5,13 +5,14 @@ import org.jetbrains.annotations.NotNull;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
 
 /**
  * Represents loxone endpoint.
  */
-public class LoxoneEndpoint {
+public final class LoxoneEndpoint {
 
     private final String address;
     private final int port;
@@ -70,5 +71,23 @@ public class LoxoneEndpoint {
     URL httpUrl(@NotNull final String path) throws MalformedURLException {
         final String pathPart = requireNonNull(path, "path can't be null");
         return new URL(useSsl ? "https" : "http", address, port, pathPart.startsWith("/") ? pathPart : "/" + pathPart);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LoxoneEndpoint that = (LoxoneEndpoint) o;
+        return port == that.port && useSsl == that.useSsl && Objects.equals(address, that.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(address, port, useSsl);
+    }
+
+    @Override
+    public String toString() {
+        return address + ":" + port + " " + (useSsl ? "(secured)" : "(unsecured)");
     }
 }

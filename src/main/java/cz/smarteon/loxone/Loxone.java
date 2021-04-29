@@ -10,8 +10,11 @@ import org.jetbrains.annotations.TestOnly;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -41,6 +44,7 @@ public class Loxone {
 
     private final List<LoxoneAppListener> loxoneAppListeners = new LinkedList<>();
     private final LoxoneWebSocketListener webSocketListener = this::start;
+    private final Map<LoxoneEndpoint, LoxoneHttp> clientMiniserversHttp = new HashMap<>();
 
     private CountDownLatch appLatch;
     private LoxoneApp loxoneApp;
@@ -126,6 +130,15 @@ public class Loxone {
     }
 
     /**
+     * Configures additional client miniserver based on given endpoint.
+     *
+     * @param clientEndpoint endpoint for client miniserver
+     */
+    public void addClientMiniserver(final @NotNull LoxoneEndpoint clientEndpoint) {
+        clientMiniserverHttp(requireNonNull(clientEndpoint));
+    }
+
+    /**
      * Provides enclosed instance of {@link LoxoneAuth}.
      * @return loxone auth
      */
@@ -141,6 +154,39 @@ public class Loxone {
     @NotNull
     public LoxoneHttp http() {
         return loxoneHttp;
+    }
+
+    /**
+     * Returns configured {@link LoxoneHttp} for client miniserver of given endpoint. Adds the endpoint to clients,
+     * in case it's not there yet.
+     *
+     * @param clientEndpoint endpoint for client miniserver
+     * @return configured {@link LoxoneHttp} for client miniserver
+     */
+    @NotNull
+    public LoxoneHttp clientMiniserverHttp(final @NotNull LoxoneEndpoint clientEndpoint) {
+        return clientMiniserversHttp.computeIfAbsent(requireNonNull(clientEndpoint), LoxoneHttp::new);
+    }
+
+    /**
+     * Iterable of configured client miniservers.
+     * @return client miniservers {@link LoxoneHttp}
+     */
+    @NotNull
+    public Iterable<LoxoneHttp> clientMiniserversHttp() {
+        return clientMiniserversHttp.values();
+    }
+
+    /**
+     * Iterable of all configured miniservers - first is the main miniserver and then the clients.
+     * @return all miniservers' {@link LoxoneHttp}
+     */
+    @NotNull
+    public Iterable<LoxoneHttp> allMiniserversHttp() {
+        final List<LoxoneHttp> all = new ArrayList<>();
+        all.add(http());
+        all.addAll(clientMiniserversHttp.values());
+        return all;
     }
 
     /**

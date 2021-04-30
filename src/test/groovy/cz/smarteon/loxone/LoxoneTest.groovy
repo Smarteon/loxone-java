@@ -29,6 +29,8 @@ class LoxoneTest extends Specification {
         loxone.auth() == auth
         loxone.webSocket() == webSocket
         loxone.http() == http
+        loxone.allMiniserversHttp().size() == 1
+        loxone.clientMiniserversHttp().isEmpty()
         appCmdListener != null
     }
 
@@ -91,5 +93,27 @@ class LoxoneTest extends Specification {
 
         then:
         thrown(IllegalStateException)
+    }
+
+    def "should work with client miniservers"() {
+        given:
+        def loxone = new Loxone(new LoxoneEndpoint('localhost'), 'user', 'pass')
+        def clientEndpoint = new LoxoneEndpoint('192.168.1.78')
+
+        when:
+        loxone.addClientMiniserver(clientEndpoint)
+
+        then:
+        loxone.allMiniserversHttp().size() == 2
+        loxone.clientMiniserversHttp().size() == 1
+
+        when:
+        def clientHttp = loxone.clientMiniserverHttp(clientEndpoint)
+        def clientHttp2 = loxone.clientMiniserverHttp(new LoxoneEndpoint('192.168.1.79'))
+
+        then:
+        loxone.clientMiniserversHttp().size() == 2
+        clientHttp
+        clientHttp2
     }
 }

@@ -54,6 +54,7 @@ class MiniserverStatusTest extends Specification implements SerializationSupport
         airBase.devices[2].name == 'Multi Extension Air'
         airBase.updating
         airBase.updateProgress == 89
+        airBase.hwVersion == '2'
 
         def multiExtAir = airBase.devices[2] as MultiExtensionAir
         multiExtAir.devices.size() == 3

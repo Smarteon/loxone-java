@@ -22,7 +22,9 @@ import org.jetbrains.annotations.Nullable;
         @JsonSubTypes.Type(name = "DMX Extension", value = BasicExtension.class),
         @JsonSubTypes.Type(name = "DI Extension", value = BasicExtension.class),
         @JsonSubTypes.Type(name = "Modbus Extension", value = BasicExtension.class),
-        @JsonSubTypes.Type(name = "Dimmer Extension", value = BasicExtension.class)
+        @JsonSubTypes.Type(name = "Dimmer Extension", value = BasicExtension.class),
+        @JsonSubTypes.Type(name = "AO Extension", value = BasicExtension.class),
+        @JsonSubTypes.Type(name = "AI Extension", value = BasicExtension.class)
 })
 public abstract class Extension implements Updatable {
 

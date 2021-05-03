@@ -81,6 +81,10 @@
         <Extension Type="Dimmer Extension" Code="6" Name="Dimmer Extension" Serial="02d867d0" Mac="Dimmer Extension"
                    Version="9.2.12.14" HwVersion="2" Online="true" DummyDev="false" Occupied="false" Interfered="false"
                    IntDev="false"/>
+        <Extension Type="AO Extension" Code="200" Name="AO2.2" Serial="17d8060c" Version="10.5.1.15" Online="true"
+                   DummyDev="false" IntDev="false"/>
+        <Extension Type="AI Extension" Code="199" Name="AI Extension" Serial="16d80173" Version="10.5.1.15"
+                   HwVersion="1" Online="true" DummyDev="false" IntDev="false"/>
         <Extension Type="Some Future Extension" Code="777" Name="Some Future Extension" Serial="02d867e0"
                    Mac="Some Future Extension" Version="9.2.12.14" HwVersion="2" Online="true" DummyDev="false"
                    Occupied="false" Interfered="false" IntDev="false"/>

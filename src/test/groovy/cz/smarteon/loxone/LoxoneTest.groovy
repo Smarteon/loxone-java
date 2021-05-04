@@ -2,8 +2,11 @@ package cz.smarteon.loxone
 
 import cz.smarteon.loxone.app.Control
 import cz.smarteon.loxone.app.LoxoneApp
+import cz.smarteon.loxone.message.ControlCommand
 import spock.lang.Specification
 import spock.lang.Subject
+
+import static cz.smarteon.loxone.message.ControlCommand.genericControlCommand
 
 class LoxoneTest extends Specification {
 
@@ -115,5 +118,19 @@ class LoxoneTest extends Specification {
         loxone.clientMiniserversHttp().size() == 2
         clientHttp
         clientHttp2
+    }
+
+    def "should send custom built command"() {
+        given:
+        def control  = Stub(Control) {
+            getUuid() >> new LoxoneUuid('1177b172-020b-0b06-ffffc0f606ef595c')
+            isSecured() >> false
+        }
+
+        when:
+        loxone.sendControlCommand(control) { genericControlCommand(it.uuid.toString(), 'customOp')}
+
+        then:
+        1 * webSocket.sendCommand({ it.command =~ /customOp/ })
     }
 }

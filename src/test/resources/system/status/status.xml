@@ -14,7 +14,7 @@
         </NetworkDevices>
         <Extension Type="Air Base Extension" Code="170" Name="Air Base Extension" Serial="0cd85364" Version="10.2.2.17"
                    Online="true" DummyDev="false" Occupied="false" Interfered="false" IntDev="false"
-                   ExtUpdateProgress="89" Updating="true">
+                   ExtUpdateProgress="89" Updating="true" HwVersion="2">
             <AirDevice Type="Air hlavice" Code="589995" Name="VentilLeft" Place="Obývací pokoj" Inst="VentilLeft"
                        Serial="50:4F:94:FF:FE:82:93:D7" LastReceived="2019-09-04 12:53:34" TimeDiff="544"
                        Version="10.1.12.17" MinVersion="10011217" HwVersion="1" Hops="3" RoundTripTime="0"
@@ -81,6 +81,10 @@
         <Extension Type="Dimmer Extension" Code="6" Name="Dimmer Extension" Serial="02d867d0" Mac="Dimmer Extension"
                    Version="9.2.12.14" HwVersion="2" Online="true" DummyDev="false" Occupied="false" Interfered="false"
                    IntDev="false"/>
+        <Extension Type="AO Extension" Code="200" Name="AO2.2" Serial="17d8060c" Version="10.5.1.15" Online="true"
+                   DummyDev="false" IntDev="false"/>
+        <Extension Type="AI Extension" Code="199" Name="AI Extension" Serial="16d80173" Version="10.5.1.15"
+                   HwVersion="1" Online="true" DummyDev="false" IntDev="false"/>
         <Extension Type="Some Future Extension" Code="777" Name="Some Future Extension" Serial="02d867e0"
                    Mac="Some Future Extension" Version="9.2.12.14" HwVersion="2" Online="true" DummyDev="false"
                    Occupied="false" Interfered="false" IntDev="false"/>

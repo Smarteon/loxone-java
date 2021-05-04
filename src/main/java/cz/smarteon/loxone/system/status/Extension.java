@@ -22,7 +22,9 @@ import org.jetbrains.annotations.Nullable;
         @JsonSubTypes.Type(name = "DMX Extension", value = BasicExtension.class),
         @JsonSubTypes.Type(name = "DI Extension", value = BasicExtension.class),
         @JsonSubTypes.Type(name = "Modbus Extension", value = BasicExtension.class),
-        @JsonSubTypes.Type(name = "Dimmer Extension", value = BasicExtension.class)
+        @JsonSubTypes.Type(name = "Dimmer Extension", value = BasicExtension.class),
+        @JsonSubTypes.Type(name = "AO Extension", value = BasicExtension.class),
+        @JsonSubTypes.Type(name = "AI Extension", value = BasicExtension.class)
 })
 public abstract class Extension implements Updatable {
 
@@ -30,6 +32,7 @@ public abstract class Extension implements Updatable {
     protected final String name;
     protected final String serialNumber;
     protected final String version;
+    protected final String hwVersion;
     protected final Boolean online;
     protected final Boolean dummy;
     protected final Boolean occupied;
@@ -38,13 +41,14 @@ public abstract class Extension implements Updatable {
     protected final Boolean updating;
     protected final Integer updateProgress;
 
-    protected Extension(final String code, final String name, final String serialNumber, final String version,
+    protected Extension(final String code, final String name, final String serialNumber, final String version, final String hwVersion,
                         final Boolean online, final Boolean dummy, final Boolean occupied, final Boolean interfered,
                         final Boolean intDev, final Boolean updating, final Integer updateProgress) {
         this.code = code;
         this.name = name;
         this.serialNumber = serialNumber;
         this.version = version;
+        this.hwVersion = hwVersion;
         this.online = online;
         this.dummy = dummy;
         this.occupied = occupied;
@@ -88,6 +92,15 @@ public abstract class Extension implements Updatable {
     @Nullable
     public String getVersion() {
         return version;
+    }
+
+    /**
+     * Extension hwVersion
+     * @return hwVersion
+     */
+    @Nullable
+    public String getHwVersion() {
+        return hwVersion;
     }
 
     /**

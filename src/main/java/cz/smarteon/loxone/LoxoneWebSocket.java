@@ -7,7 +7,6 @@ import cz.smarteon.loxone.message.TextEvent;
 import cz.smarteon.loxone.message.ValueEvent;
 import org.java_websocket.client.WebSocketClient;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -210,6 +209,8 @@ public class LoxoneWebSocket {
             log.trace("(Re)opening websocket connection");
             if (connectRwLock.writeLock().tryLock()) {
                 try {
+                    // in most cases the latch is set in AuthListener, but in this case, startAuthentication
+                    // (and AuthListener) is called on websocket open, which is too late to set the latch
                     authSeqLatch = new CountDownLatch(1);
                     webSocketClient = webSocketClientProvider.apply(this, endpoint.webSocketUri());
                     webSocketClient.connect();
@@ -219,7 +220,6 @@ public class LoxoneWebSocket {
             }
         } else if (!loxoneAuth.isUsable()) {
             log.info("Authentication is not usable => starting the authentication");
-            authSeqLatch = new CountDownLatch(1);
             loxoneAuth.startAuthentication();
         }
     }
@@ -270,7 +270,6 @@ public class LoxoneWebSocket {
             try {
                 waitForAuth(authSeqLatch, authTimeoutSeconds, true);
                 if (visuLatch == null || visuLatch.getCount() == 0) {
-                    visuLatch = new CountDownLatch(1);
                     loxoneAuth.startVisuAuthentication();
                 }
                 waitForAuth(visuLatch, visuTimeoutSeconds, false);
@@ -462,6 +461,13 @@ public class LoxoneWebSocket {
     private class LoxoneAuthListener implements AuthListener {
 
         @Override
+        public void beforeAuth() {
+            if (authSeqLatch == null || authSeqLatch.getCount() == 0) {
+                authSeqLatch = new CountDownLatch(1);
+            }
+        }
+
+        @Override
         public void authCompleted() {
             log.info("Authentication completed");
             if (authSeqLatch != null) {
@@ -469,6 +475,11 @@ public class LoxoneWebSocket {
             } else {
                 throw new IllegalStateException("Authentication not guarded");
             }
+        }
+
+        @Override
+        public void beforeVisuAuth() {
+            visuLatch = new CountDownLatch(1);
         }
 
         @Override

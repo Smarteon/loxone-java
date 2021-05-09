@@ -258,11 +258,13 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
      * Starts the authentication mechanism.
      */
     void startAuthentication() {
+        authListeners.forEach(AuthListener::beforeAuth);
         sendCommand(keyExchange(getSessionKey())); // TODO is necessary to recreate the session key everytime?
         sendCommand(getKeyCommand);
     }
 
     void startVisuAuthentication() {
+        authListeners.forEach(AuthListener::beforeVisuAuth);
         onVisuPassSet("start visual authentication", () -> {
             sendCommand(getVisuHashCommand);
             return null;

@@ -84,7 +84,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
 
     private boolean autoRefreshToken = false;
     private ScheduledExecutorService autoRefreshScheduler;
-    private ScheduledFuture autoRefreshFuture;
+    private ScheduledFuture<?> autoRefreshFuture;
 
     /**
      * Creates new instance
@@ -352,7 +352,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
         }
     }
 
-    private void sendCommand(final Command command) {
+    private void sendCommand(final Command<?> command) {
         if (commandSender != null) {
             commandSender.send(command);
         } else {

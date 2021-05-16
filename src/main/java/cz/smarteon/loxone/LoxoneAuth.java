@@ -74,6 +74,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
     // Communication stuff
     private Hashing visuHashing;
     private Token token;
+    private TokenStateEvaluator tokenStateEvaluator = new TokenStateEvaluator() {};
 
     private String clientInfo = DEFAULT_CLIENT_INFO;
     private TokenPermissionType tokenPermissionType = TokenPermissionType.WEB;
@@ -193,6 +194,10 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
         this.autoRefreshScheduler = requireNonNull(autoRefreshScheduler, "autoRefreshScheduler can't be null");
     }
 
+    void setTokenStateEvaluator(final TokenStateEvaluator tokenStateEvaluator) {
+        this.tokenStateEvaluator = tokenStateEvaluator;
+    }
+
     /**
      * Initialize the loxone authentication. Fetches the API info (address and version) and prepare the cryptography.
      */
@@ -251,7 +256,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
      * @return true if the connection is authenticated, false otherwise
      */
     boolean isUsable() {
-        return new TokenState(token).isUsable();
+        return tokenStateEvaluator.evaluate(token).isUsable();
     }
 
     /**
@@ -281,7 +286,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
     public State onCommand(@NotNull final Command<? extends LoxoneMessage<?>> command, @NotNull final LoxoneMessage<?> message) {
         if (getKeyCommand.equals(command)) {
             final Hashing hashing = getKeyCommand.ensureValue(message.getValue());
-            final TokenState tokenState = new TokenState(token);
+            final TokenState tokenState = tokenStateEvaluator.evaluate(token);
             if (tokenState.isExpired()) {
                 lastTokenCommand = EncryptedCommand.getToken(
                         LoxoneCrypto.loxoneHashing(loxonePass, loxoneUser, hashing, "gettoken"),
@@ -289,7 +294,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
                 );
             } else if (tokenState.needsRefresh()) {
                 lastTokenCommand = EncryptedCommand.refreshToken(
-                        LoxoneCrypto.loxoneHashing(token.getToken(), loxoneUser, hashing, "refreshtoken"),
+                        LoxoneCrypto.loxoneHashing(token.getToken(), hashing, "refreshtoken"),
                         loxoneUser, this::encryptCommand
                 );
             } else {
@@ -309,7 +314,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
             log.info("Got loxone token, valid until: " + token.getValidUntilDateTime() + ", seconds to expire: " + token.getSecondsToExpire());
 
             if (autoRefreshToken) {
-                final long secondsToRefresh = new TokenState(token).secondsToRefresh();
+                final long secondsToRefresh = tokenStateEvaluator.evaluate(token).secondsToRefresh();
                 if (secondsToRefresh > 0) {
                     if (autoRefreshScheduler != null) {
                         log.info("Scheduling token auto refresh in " + secondsToRefresh + " seconds");

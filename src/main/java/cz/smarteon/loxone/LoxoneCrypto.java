@@ -23,6 +23,7 @@ import java.security.SecureRandom;
 import static cz.smarteon.loxone.Codec.base64ToBytes;
 import static cz.smarteon.loxone.Codec.bytesToBase64;
 import static cz.smarteon.loxone.Codec.bytesToHex;
+import static cz.smarteon.loxone.Codec.concat;
 import static cz.smarteon.loxone.Codec.concatToBytes;
 
 /**
@@ -94,6 +95,7 @@ abstract class LoxoneCrypto {
 
     /**
      * Performs hashing algorithm as required by loxone specification.
+     * Use this function when the secret is plain text (i.e. password or visualization password).
      *
      * @param secret to be hashed
      * @param loxoneUser to be hashed, can be null
@@ -108,11 +110,28 @@ abstract class LoxoneCrypto {
             final String secretHash = bytesToHex(md.digest(toSha1)).toUpperCase();
             log.trace("{} hash: {}", operation, secretHash);
 
+            final String toFinalHash = loxoneUser != null ? concat(loxoneUser, secretHash) : secretHash;
+            return loxoneHashing(toFinalHash, hashing, operation);
+        } catch (NoSuchAlgorithmException e) {
+            throw new LoxoneException("Can't perform hashing to prepare " + operation, e);
+        }
+    }
+
+    /**
+     * Performs hashing algorithm as required by loxone specification.
+     * Use this function when only the given secret is already HEX encoded SHA-1 hash (i.e. token).
+     *
+     * @param secret to be hashed
+     * @param hashing hashing specification
+     * @param operation description of the operation the hashing is needed for - just for logging purposes
+     * @return loxone hash of given parameters
+     */
+    static String loxoneHashing(final String secret, final Hashing hashing, final String operation) {
+        try {
             final Mac mac = Mac.getInstance("HmacSHA1");
             final SecretKeySpec secretKeySpec = new SecretKeySpec(hashing.getKey(), "HmacSHA1");
             mac.init(secretKeySpec);
-            final byte[] toFinalHash = loxoneUser != null ? concatToBytes(loxoneUser, secretHash) : secretHash.getBytes();
-            final byte[] hash = mac.doFinal(toFinalHash);
+            final byte[] hash = mac.doFinal(secret.getBytes());
             final String finalHash = bytesToHex(hash);
             log.trace("{} final hash: {}", operation, finalHash);
 

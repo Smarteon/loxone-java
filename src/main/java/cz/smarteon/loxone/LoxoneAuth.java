@@ -390,11 +390,8 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
         log.trace("Fetching ApiInfo start");
         try {
             final LoxoneMessage<ApiInfo> msg = loxoneHttp.get(LoxoneMessageCommand.DEV_CFG_API);
-            if (msg.getValue() != null) {
-                apiInfo = msg.getValue();
-            } else {
-                throw new LoxoneException("Got empty apiInfo");
-            }
+            msg.getValue();
+            apiInfo = msg.getValue();
         } finally {
             log.trace("Fetching ApiInfo finish");
         }
@@ -404,11 +401,8 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
         log.trace("Fetching PublicKey start");
         try {
             final LoxoneMessage<PubKeyInfo> msg = loxoneHttp.get(LoxoneMessageCommand.DEV_SYS_GETPUBLICKEY);
-            if (msg.getValue() != null) {
-                publicKey = msg.getValue().asPublicKey();
-            } else {
-                throw new LoxoneException("Got empty pubKeyInfo");
-            }
+            msg.getValue();
+            publicKey = msg.getValue().asPublicKey();
         } finally {
             log.trace("Fetching PublicKey finish");
         }

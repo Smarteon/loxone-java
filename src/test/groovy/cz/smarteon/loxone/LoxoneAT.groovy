@@ -3,12 +3,14 @@ package cz.smarteon.loxone
 import cz.smarteon.loxone.app.SwitchControl
 import cz.smarteon.loxone.message.JsonValue
 import cz.smarteon.loxone.message.LoxoneMessage
+import cz.smarteon.loxone.message.Token
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import spock.lang.Requires
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
 import spock.lang.Subject
+import spock.util.concurrent.PollingConditions
 
 import java.security.Security
 import java.util.concurrent.CountDownLatch
@@ -107,6 +109,28 @@ class LoxoneAT extends Specification {
         commands.matched.size() == 1
         commands.matched.values()[0] instanceof LoxoneMessage
         ((commands.matched.values()[0] as LoxoneMessage).value as JsonValue).jsonNode.textValue() == '1'
+    }
+
+    def "should refresh token"() {
+        given:
+        def evaluator = Stub(TokenStateEvaluator) {
+            evaluate(_) >> Stub(TokenState) {
+                needsRefresh() >> true
+            }
+        }
+        loxone.auth().setTokenStateEvaluator(evaluator)
+
+        when:
+        def latch = new CountDownLatch(1)
+        loxone.auth().startAuthentication()
+        loxone.auth().registerAuthListener(Mock(AuthListener) {
+            authCompleted() >> {
+                latch.countDown()
+            }
+        })
+
+        then:
+        latch.await(1, TimeUnit.SECONDS)
     }
 
     private static class CommandResponseMemory implements CommandResponseListener {

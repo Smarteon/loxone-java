@@ -181,7 +181,7 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
     }
 
     @TupleConstructor
-    static class ResponseStubbing {
+    private class ResponseStubbing {
         Matcher<String> request
         LoxoneValue response
         boolean called = false
@@ -196,7 +196,7 @@ class MockWebSocketServer extends WebSocketServer implements SerializationSuppor
         }
     }
 
-    static class Stubbing {
+    private class Stubbing {
         private List<ResponseStubbing> messages = []
 
         ResponseStubbing expect(Matcher<String> req) {

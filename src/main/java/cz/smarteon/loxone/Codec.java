@@ -36,14 +36,18 @@ public abstract class Codec {
 
     public static DateFormat DATE_FORMAT = new SimpleDateFormat(DATE_PATTERN);
 
-    private static final ObjectMapper MAPPER = JsonMapper.builder()
-            .configure(ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-            .enable(ALLOW_UNESCAPED_CONTROL_CHARS)
-            .defaultDateFormat(DATE_FORMAT)
-            .defaultLocale(Locale.getDefault())
-            .build();
+    private static class JsonMapperHolder {
+        static final ObjectMapper mapper = JsonMapper.builder()
+                .configure(ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+                .enable(ALLOW_UNESCAPED_CONTROL_CHARS)
+                .defaultDateFormat(DATE_FORMAT)
+                .defaultLocale(Locale.getDefault())
+                .build();
+    }
 
-    private static final XmlMapper XML = XmlMapper.builder().defaultUseWrapper(false).build();
+    private static class XmlMapperHolder {
+        static final XmlMapper mapper = XmlMapper.builder().defaultUseWrapper(false).build();
+    }
 
     private static final char SEPARATOR = ':';
 
@@ -100,7 +104,7 @@ public abstract class Codec {
     }
 
     public static String writeMessage(final Object message) throws IOException {
-        return MAPPER.writeValueAsString(message);
+        return JsonMapperHolder.mapper.writeValueAsString(message);
     }
 
     public static LoxoneMessage<?> readMessage(final String message) throws IOException {
@@ -112,15 +116,15 @@ public abstract class Codec {
     }
 
     public static <T> T readMessage(final String message, final Class<T> clazz) throws IOException {
-        return MAPPER.readValue(message, clazz);
+        return JsonMapperHolder.mapper.readValue(message, clazz);
     }
 
     public static <T> T readMessage(final InputStream message, final Class<T> clazz) throws IOException {
-        return MAPPER.readValue(message, clazz);
+        return JsonMapperHolder.mapper.readValue(message, clazz);
     }
 
     public static <T> T readXml(final InputStream xml, final Class<T> clazz) throws IOException {
-        return XML.readValue(xml, clazz);
+        return XmlMapperHolder.mapper.readValue(xml, clazz);
     }
 
     /**
@@ -132,7 +136,7 @@ public abstract class Codec {
      * @return converted object
      */
     public static <T> T convertValue(final @NotNull JsonNode jsonNode, final @NotNull Class<T> clazz) {
-        return MAPPER.convertValue(jsonNode, clazz);
+        return JsonMapperHolder.mapper.convertValue(jsonNode, clazz);
     }
 
     public static MessageHeader readHeader(final ByteBuffer bytes) {

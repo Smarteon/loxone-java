@@ -53,6 +53,14 @@ loxone.stop();
 ```
 Study [examples](examples) for detailed usage information.
 
+#### Miniserver discovery
+The library supports Loxone miniserver discovery, 
+see [MiniserverDiscoverer](src/main/java/cz/smarteon/loxone/discovery/MiniserverDiscoverer.java).
+```java
+// find at least one miniserver, waiting for maximum 500 millis
+Set<MiniserverDiscovery> discovered = new MiniserverDiscoverer().discover(1, 500);
+```
+
 ## Development & Contributions
 Start by generating gradle wrapper binaries (using local gradle installation)
 ```bash

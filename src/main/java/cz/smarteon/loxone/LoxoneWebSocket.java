@@ -418,22 +418,22 @@ public class LoxoneWebSocket {
                     return false;
                 }
             case HTTP_AUTH_TOO_LONG:
-                log.debug("Not authenticated after connection. Authentication took too long.");
+                log.warn("Not authenticated after connection. Authentication took too long.");
                 return false;
             case HTTP_NOT_AUTHENTICATED:
-                log.debug("Not authenticated. You must send auth request at the first.");
+                log.warn("Not authenticated. You must send auth request at first.");
                 return false;
             case HTTP_AUTH_FAIL:
-                log.debug("Not authenticated. Bad credentials.");
+                log.warn("Not authenticated. Bad credentials.");
                 return false;
             case HTTP_UNAUTHORIZED:
-                log.debug("Not authenticated for secured action.");
+                log.warn("Not authenticated for secured action.");
                 return false;
             case HTTP_NOT_FOUND:
-                log.debug("Can't find deviceId.");
+                log.info("Can't find deviceId.");
                 return false;
             default:
-                log.debug("Unknown response code: " + loxoneMessage.getCode() + " for message");
+                log.warn("Unknown response code: " + loxoneMessage.getCode() + " for message");
                 return false;
         }
     }

@@ -12,14 +12,14 @@ public class MiniserverUser {
     private final LoxoneUuid uuid;
     private final boolean admin;
     private final boolean changePassword;
-    private final Long rights;
+    private final byte[] rights;
 
     @JsonCreator
     public MiniserverUser(@JsonProperty("name") String name,
                           @JsonProperty("uuid") LoxoneUuid uuid,
                           @JsonProperty("isAdmin") boolean admin,
                           @JsonProperty("changePassword") boolean changePassword,
-                          @JsonProperty("userRights") Long rights) {
+                          @JsonProperty("userRights") byte[] rights) {
         this.name = name;
         this.uuid = uuid;
         this.admin = admin;
@@ -43,7 +43,7 @@ public class MiniserverUser {
         return changePassword;
     }
 
-    public Long getRights() {
+    public byte[] getRights() {
         return rights;
     }
 }

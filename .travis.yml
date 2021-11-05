@@ -2,10 +2,6 @@ language: java
 
 jobs:
   include:
-    - name: jdk8
-      jdk: openjdk8
-      script: ./gradlew check -i
-
     - name: jdk11
       jdk: openjdk11
       script: ./gradlew check -i

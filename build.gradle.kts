@@ -1,19 +1,20 @@
 group = "cz.smarteon"
 
 plugins {
-    java
+    `java-library`
     groovy
     signing
-    maven
+    `maven-publish`
     jacoco
     id("net.researchgate.release") version "2.6.0"
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+    withJavadocJar()
+    withSourcesJar()
 }
-
 
 repositories {
     mavenCentral()
@@ -47,105 +48,83 @@ dependencies {
     testImplementation("net.jadler:jadler-jdk:$jadlerVersion")
 }
 
-val sourcesJar by tasks.creating(Jar::class) {
-    archiveClassifier.set("sources")
-    from(sourceSets["main"].allSource)
-}
+val ossUser: String? by project
+val ossPass: String? by project
 
-val javadocJar by tasks.creating(Jar::class) {
-    dependsOn("javadoc")
-    archiveClassifier.set("javadoc")
-    from(tasks["javadoc"])
-}
+publishing {
+    publications {
+        create<MavenPublication>("library") {
+            from(components["java"])
 
-artifacts {
-    add("archives", sourcesJar)
-    add("archives", javadocJar)
+            pom {
+                name.set(project.name)
+                description.set("Java implementation of the Loxone&trade; communication protocol (Web Socket)")
+                organization {
+                    name.set("Smarteon Systems s.r.o")
+                    url.set("https://smarteon.cz")
+                }
+                licenses {
+                    license {
+                        name.set("3-Clause BSD License")
+                        url.set("http://opensource.org/licenses/BSD-3-Clause")
+                        distribution.set("repo")
+                    }
+                }
+                developers {
+                    developer {
+                        name.set("Jiří Mikulášek")
+                        email.set("jiri.mikulasek@smarteon.cz")
+                    }
+                    developer {
+                        name.set("Vojtěch Zavřel")
+                        email.set("vojtech.zavrel@smarteon.cz")
+                    }
+                    developer {
+                        name.set("Petr Žufan")
+                        email.set("petr.zufan@smarteon.cz")
+                    }
+                }
+                scm {
+                    url.set("git@github.com:Smarteon/loxone-java.git")
+                    connection.set("scm:git:git@github.com:Smarteon/loxone-java.git")
+                    tag.set(project.version.toString())
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "oss"
+            url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+            authentication {
+                credentials {
+                    username = ossUser
+                    password = ossPass
+                }
+            }
+        }
+    }
 }
 
 if (hasProperty("signing.keyId")) {
     signing {
         setRequired({
             !project.version.toString().endsWith("-SNAPSHOT")
-                    && gradle.taskGraph.hasTask("uploadArchives")
         })
-        sign(configurations.archives.get())
+        sign(publishing.publications["library"])
     }
 }
 
-val ossUser: String? by project
-val ossPass: String? by project
-
 tasks {
-    jacocoTestReport {
+    withType<JacocoReport> {
         reports {
-            xml.isEnabled = true
-            html.isEnabled = true
+            xml.required.set(true)
+            html.required.set(true)
         }
     }
 
     check {
         dependsOn(jacocoTestReport)
-    }
-
-    "afterReleaseBuild" {
-        dependsOn("uploadArchives")
-    }
-
-    "uploadArchives"(Upload::class) {
-        repositories {
-            withConvention(MavenRepositoryHandlerConvention::class) {
-                mavenDeployer {
-                    beforeDeployment { let(signing::signPom) }
-                    withGroovyBuilder {
-                        "repository"("url" to uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")) {
-                            "authentication"("userName" to ossUser, "password" to ossPass)
-                        }
-                        "snapshotRepository"("url" to uri("https://oss.sonatype.org/content/repositories/snapshots/")) {
-                            "authentication"("userName" to ossUser, "password" to ossPass)
-                        }
-                    }
-
-                    pom.project {
-                        withGroovyBuilder {
-                            "packaging"("jar")
-                            "name"(name)
-                            "url"("https://github.com/Smarteon/loxone-java")
-                            "description"("Java implementation of the Loxone&trade; communication protocol (Web Socket)")
-                            "organization" {
-                                "name"("Smarteon Systems s.r.o")
-                                "url"("https://smarteon.cz")
-                            }
-                            "licenses" {
-                                "license" {
-                                    "name"("3-Clause BSD License")
-                                    "url"("http://opensource.org/licenses/BSD-3-Clause")
-                                    "distribution"("repo")
-                                }
-                            }
-                            "developers" {
-                                "developer" {
-                                    "name"("Jiří Mikulášek")
-                                    "email"("jiri.mikulasek@smarteon.cz")
-                                }
-                                "developer" {
-                                    "name"("Vojtěch Zavřel")
-                                    "email"("vojtech.zavrel@smarteon.cz")
-                                }
-                                "developer" {
-                                    "name"("Petr Žufan")
-                                    "email"("petr.zufan@smarteon.cz")
-                                }
-                            }
-                            "scm" {
-                                "url"("git@github.com:Smarteon/loxone-java.git")
-                                "connection"("scm:git:git@github.com:Smarteon/loxone-java.git")
-                                "tag"("HEAD")
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 }

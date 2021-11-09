@@ -124,6 +124,10 @@ tasks {
         }
     }
 
+    withType<Test> {
+        useJUnitPlatform()
+    }
+
     check {
         dependsOn(jacocoTestReport)
     }

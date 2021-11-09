@@ -3,7 +3,11 @@ package cz.smarteon.loxone.app;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import cz.smarteon.loxone.LoxoneNotDocumented;
 import cz.smarteon.loxone.LoxoneUuid;
+import org.jetbrains.annotations.Nullable;
+
+import java.math.BigInteger;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MiniserverUser {
@@ -12,14 +16,16 @@ public class MiniserverUser {
     private final LoxoneUuid uuid;
     private final boolean admin;
     private final boolean changePassword;
-    private final byte[] rights;
+
+    @LoxoneNotDocumented
+    private final BigInteger rights;
 
     @JsonCreator
     public MiniserverUser(@JsonProperty("name") String name,
                           @JsonProperty("uuid") LoxoneUuid uuid,
                           @JsonProperty("isAdmin") boolean admin,
                           @JsonProperty("changePassword") boolean changePassword,
-                          @JsonProperty("userRights") byte[] rights) {
+                          @JsonProperty("userRights") @LoxoneNotDocumented BigInteger rights) {
         this.name = name;
         this.uuid = uuid;
         this.admin = admin;
@@ -43,7 +49,9 @@ public class MiniserverUser {
         return changePassword;
     }
 
-    public byte[] getRights() {
+    @LoxoneNotDocumented
+    @Nullable
+    public BigInteger getRights() {
         return rights;
     }
 }

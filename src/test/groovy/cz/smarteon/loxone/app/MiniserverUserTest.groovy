@@ -15,6 +15,6 @@ class MiniserverUserTest extends Specification implements SerializationSupport {
         user.uuid == new LoxoneUuid('0f86a25d-026f-1c1e-ffffd4c75dbaf53c')
         user.admin
         user.canChangePassword()
-        Arrays.equals(user.rights, [0xFF, 0xFF, 0xFF, 0xFF] as byte[])
+        user.rights == 4294967295
     }
 }

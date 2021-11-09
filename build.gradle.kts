@@ -21,7 +21,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.java-websocket:Java-WebSocket:1.5.1")
+    implementation("org.java-websocket:Java-WebSocket:1.5.2")
 
     val jacksonVersion = "2.12.2"
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
@@ -29,19 +29,19 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
 
-    val slf4jVersion = "1.7.30"
+    val slf4jVersion = "1.7.32"
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
-    compileOnly("org.jetbrains:annotations:17.0.0")
+    compileOnly("org.jetbrains:annotations:22.0.0")
 
-    testImplementation("org.spockframework:spock-core:2.0-M5-groovy-3.0")
+    testImplementation("org.spockframework:spock-core:2.0-groovy-3.0")
 
-    val jsonUnitVersion = "2.21.0"
+    val jsonUnitVersion = "2.28.0"
     testImplementation("net.javacrumbs.json-unit:json-unit:$jsonUnitVersion")
     testImplementation("net.javacrumbs.json-unit:json-unit-core:$jsonUnitVersion")
 
-    testImplementation("nl.jqno.equalsverifier:equalsverifier:3.5")
+    testImplementation("nl.jqno.equalsverifier:equalsverifier:3.7.2")
     testRuntimeOnly("org.slf4j:slf4j-simple:$slf4jVersion")
-    testImplementation("org.bouncycastle:bcprov-jdk15on:1.67")
+    testImplementation("org.bouncycastle:bcprov-jdk15on:1.69")
 
     val jadlerVersion = "1.3.0"
     testImplementation("net.jadler:jadler-core:$jadlerVersion")

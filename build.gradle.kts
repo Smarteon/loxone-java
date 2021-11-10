@@ -58,6 +58,7 @@ publishing {
 
             pom {
                 name.set(project.name)
+                url.set("https://github.com/Smarteon/loxone-java")
                 description.set("Java implementation of the Loxone&trade; communication protocol (Web Socket)")
                 organization {
                     name.set("Smarteon Systems s.r.o")
@@ -130,5 +131,9 @@ tasks {
 
     check {
         dependsOn(jacocoTestReport)
+    }
+
+    afterReleaseBuild {
+        dependsOn(getByName("publishLibraryPublicationToOssRepository"))
     }
 }

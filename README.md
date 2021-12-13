@@ -67,4 +67,4 @@ Start by generating gradle wrapper binaries (using local gradle installation)
 gradle wrapper
 ```
 
-_Note:_ Build currently requires JDK 8
+_Note:_ Build currently requires at least JDK 11

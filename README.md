@@ -1,6 +1,9 @@
 # loxone-java [![Maven Central](https://maven-badges.herokuapp.com/maven-central/cz.smarteon/loxone-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/cz-smarteon/loxone-java) [![codecov](https://codecov.io/gh/Smarteon/loxone-java/branch/master/graph/badge.svg)](https://codecov.io/gh/Smarteon/loxone-java)
 Java implementation of the Loxone™ communication protocol (Web Socket).
 
+* *Supported miniservers*: miniserver gen. 1, miniserver gen. 2, miniserver GO
+* *Supported firmware*: **10.4.0.0** and ongoing
+
 Most of the library is trying to behave according to 
 [Loxone API documentation](https://www.loxone.com/enen/kb/api/) 
 and [Loxone webservices](https://www.loxone.com/enen/kb/web-services/). 

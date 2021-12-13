@@ -105,7 +105,7 @@ abstract class LoxoneCrypto {
      */
     static String loxoneHashing(final String secret, final String loxoneUser, final Hashing hashing, final String operation) {
         try {
-            final MessageDigest md = MessageDigest.getInstance("SHA-1");
+            final MessageDigest md = MessageDigest.getInstance(getDigestAlg(hashing.getHashAlg()));
             final byte[] toSha1 = concatToBytes(secret, hashing.getSalt());
             final String secretHash = bytesToHex(md.digest(toSha1)).toUpperCase();
             log.trace("{} hash: {}", operation, secretHash);
@@ -128,8 +128,9 @@ abstract class LoxoneCrypto {
      */
     static String loxoneHashing(final String secret, final Hashing hashing, final String operation) {
         try {
-            final Mac mac = Mac.getInstance("HmacSHA1");
-            final SecretKeySpec secretKeySpec = new SecretKeySpec(hashing.getKey(), "HmacSHA1");
+            final String hmacAlg = "Hmac" + getHmacAlg(hashing.getHashAlg());
+            final Mac mac = Mac.getInstance(hmacAlg);
+            final SecretKeySpec secretKeySpec = new SecretKeySpec(hashing.getKey(), hmacAlg);
             mac.init(secretKeySpec);
             final byte[] hash = mac.doFinal(secret.getBytes());
             final String finalHash = bytesToHex(hash);
@@ -189,6 +190,25 @@ abstract class LoxoneCrypto {
                 | InvalidAlgorithmParameterException | InvalidKeyException | IllegalArgumentException e) {
             throw new LoxoneException("Can't perform AES decryption", e);
         }
+    }
+
+    private static final String SHA1 = "SHA1";
+    private static final String SHA_1 = "SHA-1";
+    private static final String SHA256 = "SHA256";
+    private static final String SHA_256 = "SHA-256";
+
+    private static String getDigestAlg(final String hashAlg) {
+        if (hashAlg == null || SHA1.equals(hashAlg)) {
+            return SHA_1;
+        } else if (SHA256.equals(hashAlg)) {
+            return SHA_256;
+        } else {
+            throw new LoxoneException("Unsupported hashing algorithm " + hashAlg);
+        }
+    }
+
+    private static String getHmacAlg(final String hashAlg) {
+        return hashAlg != null ? hashAlg : SHA1;
     }
 
 }

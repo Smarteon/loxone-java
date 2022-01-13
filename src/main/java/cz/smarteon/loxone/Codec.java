@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 
 import static com.fasterxml.jackson.core.json.JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS;
 import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES;
@@ -33,6 +34,11 @@ import static cz.smarteon.loxone.message.MessageHeader.PAYLOAD_LENGTH;
 public abstract class Codec {
 
     private static final String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    private static Function<byte[], String> DEFAULT_BASE64_ENCODER = bytes -> Base64.getEncoder().encodeToString(bytes);
+    private static Function<String, byte[]> DEFAULT_BASE64_DECODER = encoded -> Base64.getDecoder().decode(encoded);
+
+    private static Function<byte[], String> base64encoder = DEFAULT_BASE64_ENCODER;
+    private static Function<String, byte[]> base64decoder = DEFAULT_BASE64_DECODER;
 
     public static DateFormat DATE_FORMAT = new SimpleDateFormat(DATE_PATTERN);
 
@@ -90,7 +96,7 @@ public abstract class Codec {
      */
     @NotNull
     public static String bytesToBase64(final byte[] bytes) {
-        return Base64.getEncoder().encodeToString(bytes);
+        return base64encoder.apply(bytes);
     }
 
     /**
@@ -100,7 +106,29 @@ public abstract class Codec {
      * @throws IllegalArgumentException in case the input is not correct Base64
      */
     public static byte[] base64ToBytes(final @NotNull String base64) {
-        return Base64.getDecoder().decode(base64);
+        return base64decoder.apply(base64);
+    }
+
+    /**
+     * Allows setting different Base64 encoder and decoder than the default ({@link java.util.Base64}). The codec is
+     * then used in {@link #base64ToBytes(String)} and {@link #bytesToBase64(byte[])} functions.
+     * @param encoder encoder to use
+     * @param decoder decoder to use
+     * @see #resetBase64Codec()
+     */
+    public static void setBase64Codec(
+            final @NotNull Function<byte[], String> encoder,
+            final @NotNull Function<String, byte[]> decoder) {
+        base64encoder = encoder;
+        base64decoder = decoder;
+    }
+
+    /**
+     * Resets the Base64 encoder and decoder to default ({@link java.util.Base64}).
+     * @see #setBase64Codec(Function, Function)
+     */
+    public static void resetBase64Codec() {
+        setBase64Codec(DEFAULT_BASE64_ENCODER, DEFAULT_BASE64_DECODER);
     }
 
     public static String writeMessage(final Object message) throws IOException {

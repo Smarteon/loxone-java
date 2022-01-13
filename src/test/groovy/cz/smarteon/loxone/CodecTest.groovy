@@ -83,4 +83,22 @@ class CodecTest extends Specification {
         Codec.base64ToBytes(encoded) == encoded.decodeBase64()
         Codec.bytesToBase64(Codec.base64ToBytes(encoded)) == encoded
     }
+
+    def "should use different Base64 codec"() {
+        when:
+        Codec.setBase64Codec({ 'aa' }, {'aa'.bytes })
+
+        then:
+        Codec.bytesToBase64('xx'.bytes) == 'aa'
+        Codec.base64ToBytes('xx') == 'aa'.bytes
+
+        when:
+        Codec.resetBase64Codec()
+        def encoded = 'U29tZSBraW5kIG9mIGJhc2UgNjQ='
+
+        then:
+        Codec.bytesToBase64(encoded.decodeBase64()) == encoded
+        Codec.base64ToBytes(encoded) == encoded.decodeBase64()
+        Codec.bytesToBase64(Codec.base64ToBytes(encoded)) == encoded
+    }
 }

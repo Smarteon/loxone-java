@@ -64,6 +64,11 @@ see [MiniserverDiscoverer](src/main/java/cz/smarteon/loxone/discovery/Miniserver
 Set<MiniserverDiscovery> discovered = new MiniserverDiscoverer().discover(1, 500);
 ```
 
+#### Android specifics
+On Android 6 and older, the `java.util.Base64` is not available. Please use `setBase64Codec` to use different implementation. 
+```java
+Codec.setBase64Codec(..., ...);
+```
 ## Development & Contributions
 Start by generating gradle wrapper binaries (using local gradle installation)
 ```bash

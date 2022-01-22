@@ -35,8 +35,10 @@ import static cz.smarteon.loxone.message.MessageHeader.PAYLOAD_LENGTH;
 public abstract class Codec {
 
     private static final String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
-    private static Function<byte[], String> DEFAULT_BASE64_ENCODER = bytes -> Base64.getEncoder().encodeToString(bytes);
-    private static Function<String, byte[]> DEFAULT_BASE64_DECODER = encoded -> Base64.getDecoder().decode(encoded);
+    private static final Function<byte[], String> DEFAULT_BASE64_ENCODER =
+            bytes -> Base64.getEncoder().encodeToString(bytes);
+    private static final Function<String, byte[]> DEFAULT_BASE64_DECODER =
+            encoded -> Base64.getDecoder().decode(encoded);
 
     private static Function<byte[], String> base64encoder = DEFAULT_BASE64_ENCODER;
     private static Function<String, byte[]> base64decoder = DEFAULT_BASE64_DECODER;

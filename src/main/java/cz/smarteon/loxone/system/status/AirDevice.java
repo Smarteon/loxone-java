@@ -1,9 +1,7 @@
 package cz.smarteon.loxone.system.status;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.jetbrains.annotations.Nullable;
 
-@JsonDeserialize(using = AirDeviceDeserializer.class)
 public class AirDevice extends AirDeviceBase {
 
     AirDevice(final AirDeviceBase ad) {

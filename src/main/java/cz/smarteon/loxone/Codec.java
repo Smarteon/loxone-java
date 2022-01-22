@@ -3,12 +3,13 @@ package cz.smarteon.loxone;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import cz.smarteon.loxone.message.LoxoneMessage;
 import cz.smarteon.loxone.message.MessageHeader;
 import cz.smarteon.loxone.message.MessageKind;
 import cz.smarteon.loxone.message.TextEvent;
 import cz.smarteon.loxone.message.ValueEvent;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -49,10 +50,6 @@ public abstract class Codec {
                 .defaultDateFormat(DATE_FORMAT)
                 .defaultLocale(Locale.getDefault())
                 .build();
-    }
-
-    private static class XmlMapperHolder {
-        static final XmlMapper mapper = XmlMapper.builder().defaultUseWrapper(false).build();
     }
 
     private static final char SEPARATOR = ':';
@@ -152,7 +149,12 @@ public abstract class Codec {
     }
 
     public static <T> T readXml(final InputStream xml, final Class<T> clazz) throws IOException {
-        return XmlMapperHolder.mapper.readValue(xml, clazz);
+        try {
+            final JAXBContext ctx = JAXBContext.newInstance(clazz);
+            return clazz.cast(ctx.createUnmarshaller().unmarshal(xml));
+        } catch (JAXBException e) {
+            throw new IOException("Can't unmarshall XML", e);
+        }
     }
 
     /**

@@ -1,27 +1,15 @@
 package cz.smarteon.loxone.system.status;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.xml.bind.annotation.XmlAttribute;
 import org.jetbrains.annotations.Nullable;
 
 public class OneWireDevice extends Device {
 
-    private final String family; // TODO semantics??
-    private final String lastReceived; // TODO time
-    private final String timeDiff; // TODO semantics??
+    @XmlAttribute(name = "Family") private String family; // TODO semantics??
+    @XmlAttribute(name = "LastReceived") private String lastReceived; // TODO time
+    @XmlAttribute(name = "TimeDiff") private String timeDiff; // TODO semantics??
 
-    @JsonCreator
-    OneWireDevice(@JsonProperty("Code") final String code,
-                  @JsonProperty("Name") final String name,
-                  @JsonProperty("Serial") final String serialNumber,
-                  @JsonProperty("Family") final String family,
-                  @JsonProperty("LastReceived") final String lastReceived,
-                  @JsonProperty("TimeDiff") final String timeDiff) {
-        super(code, name, serialNumber);
-        this.family = family;
-        this.lastReceived = lastReceived;
-        this.timeDiff = timeDiff;
-    }
+    OneWireDevice() {}
 
     @Nullable
     public String getFamily() {

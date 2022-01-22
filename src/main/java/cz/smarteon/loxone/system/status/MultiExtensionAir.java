@@ -1,6 +1,5 @@
 package cz.smarteon.loxone.system.status;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -23,7 +22,6 @@ public class MultiExtensionAir extends AirDevice implements DevicesProvider<OneW
      * @return serial number for one wire details command.
      * @see cz.smarteon.loxone.message.LoxoneMessageCommand#oneWireDetails(String)
      */
-    @JsonIgnore
     @NotNull
     public String getSerialForOneWireDetails() {
         if (getSerialNumber() != null) {

@@ -1,9 +1,13 @@
 package cz.smarteon.loxone.system.status;
 
+import jakarta.xml.bind.annotation.XmlAttribute;
+
 public abstract class UpdatableDevice extends Device implements Updatable {
 
-    protected final Boolean updating;
-    protected final Integer updateProgress;
+    @XmlAttribute(name = "Updating") protected Boolean updating;
+    @XmlAttribute(name = "UpdateProgress") protected Integer updateProgress;
+
+    UpdatableDevice() {}
 
     protected UpdatableDevice(final String code, final String name, final String serialNumber,
                               final Boolean updating, final Integer updateProgress) {

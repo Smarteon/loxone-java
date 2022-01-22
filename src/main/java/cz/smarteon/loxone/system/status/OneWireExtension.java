@@ -1,7 +1,5 @@
 package cz.smarteon.loxone.system.status;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -11,18 +9,10 @@ public class OneWireExtension extends Extension implements DevicesProvider<OneWi
 
     private final List<OneWireDevice> devices;
 
-    @JsonCreator
-    OneWireExtension(@JsonProperty("Code") final String code, @JsonProperty("Name") final String name,
-                     @JsonProperty("Serial") final String serialNumber, @JsonProperty("Version") final String version,
-                     @JsonProperty("HwVersion") final String hwVersion,
-                     @JsonProperty("Online") final Boolean online, @JsonProperty("DummyDev") final Boolean dummy,
-                     @JsonProperty("Occupied") final Boolean occupied, @JsonProperty("Interfered") final Boolean interfered,
-                     @JsonProperty("IntDev") final Boolean intDev,
-                     @JsonProperty("OneWireDevice") final List<OneWireDevice> devices,
-                     @JsonProperty("Updating") final Boolean updating,
-                     @JsonProperty("ExtUpdateProgress") final Integer updateProgress) {
-        super(code, name, serialNumber, version, hwVersion, online, dummy, occupied, interfered, intDev, updating, updateProgress);
-        this.devices = devices;
+    OneWireExtension(final Extension e) {
+        super(e.code, e.name, e.serialNumber, e.version, e.hwVersion, e.online, e.dummy, e.occupied, e.interfered,
+                e.intDev, e.updating, e.updateProgress);
+        devices = e.oneWireDevices;
     }
 
     @NotNull

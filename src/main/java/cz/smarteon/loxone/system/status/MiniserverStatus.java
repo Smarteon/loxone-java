@@ -1,12 +1,13 @@
 package cz.smarteon.loxone.system.status;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import cz.smarteon.loxone.PercentDoubleDeserializer;
+import cz.smarteon.loxone.PercentDoubleAdapter;
 import cz.smarteon.loxone.app.MiniserverType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,23 +15,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.requireNonNull;
-
 /**
  * Represents {@link cz.smarteon.loxone.Command#DATA_STATUS} payload. Only intended for deserialization.
  */
-@JacksonXmlRootElement(localName = "Status")
+@XmlRootElement(name = "Status")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class MiniserverStatus {
 
-    private final String modified; // TODO migrate to datetime
-    private final Content content;
+    @XmlAttribute(name = "Modified")
+    private String modified; // TODO migrate to datetime
 
-    @JsonCreator
-    MiniserverStatus(@JsonProperty("Modified") final String modified,
-                     @JsonProperty("Miniserver") final Content content) {
-        this.modified = modified;
-        this.content = requireNonNull(content, "content can't be null");
-    }
+    @XmlElement(name = "Miniserver")
+    private Content content;
+
+    MiniserverStatus() {}
 
     @Nullable
     public String getModified() {
@@ -181,49 +179,38 @@ public class MiniserverStatus {
     }
 
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
+    @XmlAccessorType(XmlAccessType.FIELD)
     private static class Content {
 
-        private final Integer type;
-        private final String name;
-        private final String ip;
-        private final String mask;
-        private final String gateway;
-        private final Boolean dhcp;
-        private final String dns1;
-        private final String dns2;
-        private final String mac;
-        private final String device;
-        private final String version;
-        private final Double lanErrorsPercent;
-        private final Integer linkErrorsCount;
-        private final List<Extension> extensions;
+        @XmlAttribute(name = "Type")
+        private Integer type;
+        @XmlAttribute(name = "Name")
+        private String name;
+        @XmlAttribute(name = "IP")
+        private String ip;
+        @XmlAttribute(name = "Mask")
+        private String mask;
+        @XmlAttribute(name = "Gateway")
+        private String gateway;
+        @XmlAttribute(name = "DHCP")
+        private Boolean dhcp;
+        @XmlAttribute(name = "DNS1")
+        private String dns1;
+        @XmlAttribute(name = "DNS2")
+        private String dns2;
+        @XmlAttribute(name = "MAC")
+        private String mac;
+        @XmlAttribute(name = "Device")
+        private String device;
+        @XmlAttribute(name = "Version")
+        private String version;
+        @XmlAttribute(name = "LANErrors") @XmlJavaTypeAdapter(PercentDoubleAdapter.class)
+        private Double lanErrorsPercent;
+        @XmlAttribute(name = "LinkErrors")
+        private Integer linkErrorsCount;
+        @XmlElement(name = "Extension") @XmlJavaTypeAdapter(ExtensionAdapter.class)
+        private List<Extension> extensions;
 
-        @JsonCreator
-        Content(@JsonProperty("Type") final Integer type, @JsonProperty("Name") final String name,
-                @JsonProperty("IP") final String ip, @JsonProperty("Mask") final String mask,
-                @JsonProperty("Gateway") final String gateway, @JsonProperty("DHCP") final Boolean dhcp,
-                @JsonProperty("DNS1") final String dns1, @JsonProperty("DNS2") final String dns2,
-                @JsonProperty("MAC") final String mac, @JsonProperty("Device") final String device,
-                @JsonProperty("Version") final String version,
-                @JsonProperty("LANErrors") @JsonDeserialize(using = PercentDoubleDeserializer.class) final Double lanErrorsPercent,
-                @JsonProperty("LinkErrors") final Integer linkErrorsCount,
-                @JsonProperty("Extension") final List<Extension> extensions) {
-            this.type = type;
-            this.name = name;
-            this.ip = ip;
-            this.mask = mask;
-            this.gateway = gateway;
-            this.dhcp = dhcp;
-            this.dns1 = dns1;
-            this.dns2 = dns2;
-            this.mac = mac;
-            this.device = device;
-            this.version = version;
-            this.lanErrorsPercent = lanErrorsPercent;
-            this.linkErrorsCount = linkErrorsCount;
-            this.extensions = extensions;
-        }
+        Content() {}
     }
-
 }

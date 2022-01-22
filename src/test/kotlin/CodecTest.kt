@@ -2,15 +2,18 @@ package cz.smarteon.loxone
 
 import com.fasterxml.jackson.databind.node.TextNode
 import cz.smarteon.loxone.Codec.hexToBytes
+import cz.smarteon.loxone.message.ApiInfo
 import cz.smarteon.loxone.message.MessageKind
 import cz.smarteon.loxone.message.TextEvent
 import org.junit.jupiter.api.Test
 import strikt.api.expect
 import strikt.api.expectThat
+import strikt.api.expectThrows
 import strikt.assertions.contains
 import strikt.assertions.hasSize
 import strikt.assertions.isEqualTo
 import strikt.assertions.isTrue
+import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.Base64
@@ -95,6 +98,13 @@ class CodecTest {
         expect {
             that(Codec.bytesToBase64(decoded)).isEqualTo(encoded)
             that(Codec.base64ToBytes(encoded)).isEqualTo(decoded)
+        }
+    }
+
+    @Test
+    fun `should fail readXml`() {
+        expectThrows<IOException> {
+            Codec.readXml("test".byteInputStream(), ApiInfo::class.java)
         }
     }
 }

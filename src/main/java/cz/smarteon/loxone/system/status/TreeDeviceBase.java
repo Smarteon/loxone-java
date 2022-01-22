@@ -1,44 +1,46 @@
 package cz.smarteon.loxone.system.status;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import java.util.List;
 
 class TreeDeviceBase extends UpdatableDevice {
 
-    protected final String place;
-    protected final String installation;
-    protected final String version;
-    protected final Boolean online;
-    protected final String lastReceived; // TODO time
-    protected final Integer timeDiff; // TODO semantics??
-    protected final Boolean dummy;
+    @XmlAttribute(name = "Place") protected String place;
+    @XmlAttribute(name = "Inst") protected String installation;
+    @XmlAttribute(name = "Version") protected String version;
+    @XmlAttribute(name = "Online") protected Boolean online;
+    @XmlAttribute(name = "LastReceived") protected String lastReceived; // TODO time
+    @XmlAttribute(name = "TimeDiff") protected Integer timeDiff; // TODO semantics??
+    @XmlAttribute(name = "DummyDev") protected Boolean dummy;
 
-    protected final String hwVersion;
-    protected final String mac;
-    protected final Boolean occupied;
-    protected final Boolean interfered;
-    protected final List<AirDevice> airDevices;
+    @XmlAttribute(name = "HwVersion") protected String hwVersion;
+    @XmlAttribute(name = "Mac") protected String mac;
+    @XmlAttribute(name = "Occupied") protected Boolean occupied;
+    @XmlAttribute(name = "Interfered") protected Boolean interfered;
+    @XmlElement(name = "AirDevice") @XmlJavaTypeAdapter(AirDeviceAdapter.class) protected List<AirDevice> airDevices;
 
-    @JsonCreator
-    TreeDeviceBase(@JsonProperty("Code") final String code,
-                   @JsonProperty("Name") final String name,
-                   @JsonProperty("Serial") final String serialNumber,
-                   @JsonProperty("Place") final String place,
-                   @JsonProperty("Inst") final String installation,
-                   @JsonProperty("Version") final String version,
-                   @JsonProperty("Online") final Boolean online,
-                   @JsonProperty("LastReceived") final String lastReceived,
-                   @JsonProperty("TimeDiff") final Integer timeDiff,
-                   @JsonProperty("DummyDev") final Boolean dummy,
-                   @JsonProperty("Updating") final Boolean updating,
-                   @JsonProperty("UpdateProgress") final Integer updateProgress,
-                   @JsonProperty("HwVersion") final String hwVersion,
-                   @JsonProperty("Mac") final String mac,
-                   @JsonProperty("Occupied") final Boolean occupied,
-                   @JsonProperty("Interfered") final Boolean interfered,
-                   @JsonProperty("AirDevice") final List<AirDevice> airDevices) {
+    TreeDeviceBase() {}
+
+    TreeDeviceBase(final String code,
+                   final String name,
+                   final String serialNumber,
+                   final String place,
+                   final String installation,
+                   final String version,
+                   final Boolean online,
+                   final String lastReceived,
+                   final Integer timeDiff,
+                   final Boolean dummy,
+                   final Boolean updating,
+                   final Integer updateProgress,
+                   final String hwVersion,
+                   final String mac,
+                   final Boolean occupied,
+                   final Boolean interfered,
+                   final List<AirDevice> airDevices) {
         super(code, name, serialNumber, updating, updateProgress);
         this.place = place;
         this.installation = installation;

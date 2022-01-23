@@ -2,7 +2,7 @@ package cz.smarteon.loxone.message;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-import static cz.smarteon.loxone.PercentDoubleDeserializer.stripPercent;
+import static cz.smarteon.loxone.PercentDoubleAdapter.stripPercent;
 
 /**
  * {@link LoxoneValue} where the JSON string is expected to encode integer percentage.

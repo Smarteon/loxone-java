@@ -7,6 +7,7 @@ plugins {
     `maven-publish`
     jacoco
     id("net.researchgate.release") version "2.6.0"
+    kotlin("jvm") version "1.6.10"
 }
 
 java {
@@ -35,9 +36,18 @@ dependencies {
 
     testImplementation("org.spockframework:spock-core:2.0-groovy-3.0")
 
+    testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
+    val junitVersion = "5.8.2"
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
+    testImplementation("io.strikt:strikt-core:0.33.0")
+
     val jsonUnitVersion = "2.28.0"
     testImplementation("net.javacrumbs.json-unit:json-unit:$jsonUnitVersion")
     testImplementation("net.javacrumbs.json-unit:json-unit-core:$jsonUnitVersion")
+
 
     testImplementation("nl.jqno.equalsverifier:equalsverifier:3.7.2")
     testRuntimeOnly("org.slf4j:slf4j-simple:$slf4jVersion")

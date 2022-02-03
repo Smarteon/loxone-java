@@ -57,6 +57,15 @@ dependencies {
     val jadlerVersion = "1.3.0"
     testImplementation("net.jadler:jadler-core:$jadlerVersion")
     testImplementation("net.jadler:jadler-jdk:$jadlerVersion")
+
+    val ktorVersion = "2.0.0-beta-1"
+    testImplementation("io.ktor:ktor-server-core:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-netty:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-websockets:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+    testImplementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
+
+    testImplementation("org.awaitility:awaitility-kotlin:4.1.1")
 }
 
 val ossUser: String? by project
@@ -138,6 +147,11 @@ tasks {
 
     withType<Test> {
         useJUnitPlatform()
+        jvmArgs(
+            "--add-opens",
+            "java.base/jdk.internal.misc=ALL-UNNAMED",
+            "-Dio.netty.tryReflectionSetAccessible=true"
+        )
     }
 
     check {

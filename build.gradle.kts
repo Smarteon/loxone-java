@@ -7,6 +7,7 @@ plugins {
     `maven-publish`
     jacoco
     id("net.researchgate.release") version "2.6.0"
+    kotlin("jvm") version "1.6.10"
 }
 
 java {
@@ -23,11 +24,12 @@ repositories {
 dependencies {
     implementation("org.java-websocket:Java-WebSocket:1.5.2")
 
-    val jacksonVersion = "2.12.2"
+    val jacksonVersion = "2.13.0"
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
+
+    implementation("com.sun.xml.bind:jaxb-impl:3.0.2")
 
     val slf4jVersion = "1.7.32"
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
@@ -35,9 +37,18 @@ dependencies {
 
     testImplementation("org.spockframework:spock-core:2.0-groovy-3.0")
 
+    testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
+    val junitVersion = "5.8.2"
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
+    testImplementation("io.strikt:strikt-core:0.33.0")
+
     val jsonUnitVersion = "2.28.0"
     testImplementation("net.javacrumbs.json-unit:json-unit:$jsonUnitVersion")
     testImplementation("net.javacrumbs.json-unit:json-unit-core:$jsonUnitVersion")
+
 
     testImplementation("nl.jqno.equalsverifier:equalsverifier:3.7.2")
     testRuntimeOnly("org.slf4j:slf4j-simple:$slf4jVersion")

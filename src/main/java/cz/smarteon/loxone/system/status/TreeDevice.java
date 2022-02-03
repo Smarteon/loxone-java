@@ -1,9 +1,7 @@
 package cz.smarteon.loxone.system.status;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.jetbrains.annotations.Nullable;
 
-@JsonDeserialize(using = TreeDeviceDeserializer.class)
 public class TreeDevice extends TreeDeviceBase {
 
     TreeDevice(final TreeDeviceBase td) {

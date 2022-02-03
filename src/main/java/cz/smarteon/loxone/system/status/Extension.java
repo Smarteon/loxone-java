@@ -1,47 +1,42 @@
 package cz.smarteon.loxone.system.status;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * Common predecessor to all miniserver's extensions.
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "Type", defaultImpl = UnrecognizedExtension.class)
-@JsonSubTypes({
-        @JsonSubTypes.Type(name = "Extension", value = BasicExtension.class),
-        @JsonSubTypes.Type(name = "Relay Extension", value = BasicExtension.class),
-        @JsonSubTypes.Type(name = "Dali Extension", value = DaliExtension.class),
-        @JsonSubTypes.Type(name = "Tree Extension", value = TreeExtension.class),
-        @JsonSubTypes.Type(name = "Air Base Extension", value = AirBaseExtension.class),
-        @JsonSubTypes.Type(name = "RS485 Extension", value = BasicExtension.class),
-        @JsonSubTypes.Type(name = "1-Wire Extension", value = OneWireExtension.class),
-        @JsonSubTypes.Type(name = "DMX Extension", value = BasicExtension.class),
-        @JsonSubTypes.Type(name = "DI Extension", value = BasicExtension.class),
-        @JsonSubTypes.Type(name = "Modbus Extension", value = BasicExtension.class),
-        @JsonSubTypes.Type(name = "Dimmer Extension", value = BasicExtension.class),
-        @JsonSubTypes.Type(name = "AO Extension", value = BasicExtension.class),
-        @JsonSubTypes.Type(name = "AI Extension", value = BasicExtension.class)
-})
-public abstract class Extension implements Updatable {
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Extension implements Updatable {
 
-    protected final String code;
-    protected final String name;
-    protected final String serialNumber;
-    protected final String version;
-    protected final String hwVersion;
-    protected final Boolean online;
-    protected final Boolean dummy;
-    protected final Boolean occupied;
-    protected final Boolean interfered;
-    protected final Boolean intDev;
-    protected final Boolean updating;
-    protected final Integer updateProgress;
+    @XmlAttribute(name = "Code") protected String code;
+    @XmlAttribute(name = "Name") protected String name;
+    @XmlAttribute(name = "Serial") protected String serialNumber;
+    @XmlAttribute(name = "Version") protected String version;
+    @XmlAttribute(name = "HwVersion") protected String hwVersion;
+    @XmlAttribute(name = "Online") protected Boolean online;
+    @XmlAttribute(name = "DummyDev") protected Boolean dummy;
+    @XmlAttribute(name = "Occupied") protected Boolean occupied;
+    @XmlAttribute(name = "Interfered") protected Boolean interfered;
+    @XmlAttribute(name = "IntDev") protected Boolean intDev;
+    @XmlAttribute(name = "Updating") protected Boolean updating;
+    @XmlAttribute(name = "ExtUpdateProgress") protected Integer updateProgress;
 
-    protected Extension(final String code, final String name, final String serialNumber, final String version, final String hwVersion,
+    @XmlElement(name = "AirDevice") @XmlJavaTypeAdapter(AirDeviceAdapter.class) protected List<AirDevice> airDevices;
+    @XmlElement(name = "TreeBranch") protected List<TreeBranch> treeBranches;
+    @XmlElement(name = "DaliDevice") protected List<DaliDevice> daliDevices;
+    @XmlElement(name = "OneWireDevice") protected List<OneWireDevice> oneWireDevices;
+
+    Extension() {}
+
+    Extension(final String code, final String name, final String serialNumber, final String version, final String hwVersion,
                         final Boolean online, final Boolean dummy, final Boolean occupied, final Boolean interfered,
                         final Boolean intDev, final Boolean updating, final Integer updateProgress) {
         this.code = code;

@@ -1,30 +1,25 @@
 package cz.smarteon.loxone.system.status;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class TreeBranch implements DevicesProvider<TreeDevice> {
 
-    private final String branch;
-    private final Integer devicesCount;
-    private final Integer errors;
-    private final List<TreeDevice> devices;
+    @XmlAttribute(name = "Branch") private String branch;
+    @XmlAttribute(name = "Devices") private Integer devicesCount;
+    @XmlAttribute(name = "Errors") private Integer errors;
+    @XmlElement(name = "TreeDevice") @XmlJavaTypeAdapter(TreeDeviceAdapter.class) private List<TreeDevice> devices;
 
-    @JsonCreator
-    TreeBranch(@JsonProperty("Branch") final String branch,
-               @JsonProperty("Devices") final Integer devicesCount,
-               @JsonProperty("Errors") final Integer errors,
-               @JsonProperty("TreeDevice") final List<TreeDevice> devices) {
-        this.branch = branch;
-        this.devicesCount = devicesCount;
-        this.errors = errors;
-        this.devices = devices;
-    }
+    TreeBranch() {}
 
     @Nullable
     public String getBranch() {

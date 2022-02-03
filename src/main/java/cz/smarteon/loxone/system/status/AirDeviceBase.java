@@ -1,53 +1,52 @@
 package cz.smarteon.loxone.system.status;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
 
 import java.util.List;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 class AirDeviceBase extends UpdatableDevice {
 
-    protected final String type;
-    protected final String place;
-    protected final String installation;
-    protected final String lastReceived; // TODO time
-    protected final Integer timeDiff; // TODO semantics??
-    protected final String version;
-    protected final String minVersion; // TODO semantics??
-    protected final String hwVersion;
-    protected final Integer hops;
-    protected final Integer roundTripTime;
-    protected final String qualityExt; // TODO semantics??
-    protected final String qualityDev; // TODO semantics??
-    protected final Boolean online;
-    protected final Integer battery;
-    protected final Boolean dummy;
-    protected final List<OneWireDevice> oneWireDevices;
+    @XmlAttribute(name = "Type") protected String type;
+    @XmlAttribute(name = "Place") protected String place;
+    @XmlAttribute(name = "Inst") protected String installation;
+    @XmlAttribute(name = "LastReceived") protected String lastReceived; // TODO time
+    @XmlAttribute(name = "TimeDiff") protected Integer timeDiff; // TODO semantics??
+    @XmlAttribute(name = "Version") protected String version;
+    @XmlAttribute(name = "MinVersion") protected String minVersion; // TODO semantics??
+    @XmlAttribute(name = "HwVersion") protected String hwVersion;
+    @XmlAttribute(name = "Hops") protected Integer hops;
+    @XmlAttribute(name = "RoundTripTime") protected Integer roundTripTime;
+    @XmlAttribute(name = "QualityExt") protected String qualityExt; // TODO semantics??
+    @XmlAttribute(name = "QualityDev") protected String qualityDev; // TODO semantics??
+    @XmlAttribute(name = "Online") protected Boolean online;
+    @XmlAttribute(name = "Battery") protected Integer battery;
+    @XmlAttribute(name = "DummyDev") protected Boolean dummy;
+    @XmlElement(name = "OneWireDevice") protected List<OneWireDevice> oneWireDevices;
 
-    @JsonCreator
-    AirDeviceBase(@JsonProperty("Type") final String type,
-              @JsonProperty("Code") final String code,
-              @JsonProperty("Name") final String name,
-              @JsonProperty("Place") final String place,
-              @JsonProperty("Inst") final String installation,
-              @JsonProperty("Serial") final String serialNumber,
-              @JsonProperty("LastReceived") final String lastReceived,
-              @JsonProperty("TimeDiff") final Integer timeDiff,
-              @JsonProperty("Version") final String version,
-              @JsonProperty("MinVersion") final String minVersion,
-              @JsonProperty("HwVersion") final String hwVersion,
-              @JsonProperty("Hops") final Integer hops,
-              @JsonProperty("RoundTripTime") final Integer roundTripTime,
-              @JsonProperty("QualityExt") final String qualityExt,
-              @JsonProperty("QualityDev") final String qualityDev,
-              @JsonProperty("Online") final Boolean online,
-              @JsonProperty("Battery") final Integer battery,
-              @JsonProperty("DummyDev") final Boolean dummy,
-              @JsonProperty("Updating") final Boolean updating,
-              @JsonProperty("UpdateProgress") final Integer updateProgress,
-              @JsonProperty("OneWireDevice") final List<OneWireDevice> oneWireDevices) {
+    AirDeviceBase() {}
+
+    AirDeviceBase(final String type,
+              final String code,
+              final String name,
+              final String place,
+              final String installation,
+              final String serialNumber,
+              final String lastReceived,
+              final Integer timeDiff,
+              final String version,
+              final String minVersion,
+              final String hwVersion,
+              final Integer hops,
+              final Integer roundTripTime,
+              final String qualityExt,
+              final String qualityDev,
+              final Boolean online,
+              final Integer battery,
+              final Boolean dummy,
+              final Boolean updating,
+              final Integer updateProgress,
+              final List<OneWireDevice> oneWireDevices) {
         super(code, name, serialNumber, updating, updateProgress);
         this.type = type;
         this.place = place;

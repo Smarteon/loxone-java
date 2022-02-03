@@ -1,12 +1,18 @@
 package cz.smarteon.loxone.system.status;
 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
 import org.jetbrains.annotations.Nullable;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class Device {
 
-    private final String code;
-    private final String name;
-    private final String serialNumber;
+    @XmlAttribute(name = "Code") private String code;
+    @XmlAttribute(name = "Name") private String name;
+    @XmlAttribute(name = "Serial") private String serialNumber;
+
+    Device() {}
 
     protected Device(final String code, final String name, final String serialNumber) {
         this.code = code;

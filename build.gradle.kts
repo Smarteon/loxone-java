@@ -44,6 +44,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
     testImplementation("io.strikt:strikt-core:0.33.0")
+    testImplementation("io.mockk:mockk:1.12.2")
 
     val jsonUnitVersion = "2.28.0"
     testImplementation("net.javacrumbs.json-unit:json-unit:$jsonUnitVersion")

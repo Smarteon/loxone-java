@@ -44,6 +44,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
     testImplementation("io.strikt:strikt-core:0.33.0")
+    testImplementation("io.mockk:mockk:1.12.2")
 
     val jsonUnitVersion = "2.28.0"
     testImplementation("net.javacrumbs.json-unit:json-unit:$jsonUnitVersion")
@@ -57,6 +58,16 @@ dependencies {
     val jadlerVersion = "1.3.0"
     testImplementation("net.jadler:jadler-core:$jadlerVersion")
     testImplementation("net.jadler:jadler-jdk:$jadlerVersion")
+
+    val ktorVersion = "2.0.0-beta-1"
+    testImplementation("io.ktor:ktor-server-core:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-netty:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-websockets:$ktorVersion")
+    testImplementation("io.ktor:ktor-network:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+    testImplementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
+
+    testImplementation("org.awaitility:awaitility-kotlin:4.1.1")
 }
 
 val ossUser: String? by project
@@ -138,6 +149,11 @@ tasks {
 
     withType<Test> {
         useJUnitPlatform()
+        jvmArgs(
+            "--add-opens",
+            "java.base/jdk.internal.misc=ALL-UNNAMED",
+            "-Dio.netty.tryReflectionSetAccessible=true"
+        )
     }
 
     check {

@@ -10,7 +10,6 @@ import java.security.KeyFactory
 import java.security.MessageDigest
 import java.security.PrivateKey
 import java.security.spec.PKCS8EncodedKeySpec
-import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
@@ -62,14 +61,19 @@ object CryptoMock {
 
     val USER_HASH = computeUserHash(PASS, USER)
     val VISU_HASH = computeUserHash(VISU_PASS)
+    val TOKEN_HASH = computeHash(TOKEN.token)
 
 
-    fun computeUserHash(pass: String, user: String? = null): String {
+    private fun computeUserHash(pass: String, user: String? = null): String {
         val pwHash = bytesToHex(MessageDigest.getInstance("SHA-1")
                 .digest("$pass:${HASHING.salt}".toByteArray())).uppercase()
+        val toHash = user?.let { "$it:$pwHash" } ?: pwHash
+        return computeHash(toHash)
+    }
+
+    private fun computeHash(secret: String): String {
         val mac = Mac.getInstance("HmacSHA1")
         mac.init(SecretKeySpec(HASHING.key, "HmacSHA1"))
-        val toHash = user?.let { "$it:$pwHash" } ?: pwHash
-        return bytesToHex(mac.doFinal(toHash.toByteArray()))
+        return bytesToHex(mac.doFinal(secret.toByteArray()))
     }
 }

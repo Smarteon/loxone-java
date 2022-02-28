@@ -14,6 +14,7 @@ import cz.smarteon.loxone.message.PubKeyInfo
 import cz.smarteon.loxone.mock.CryptoMock.PUBLIC_KEY
 import cz.smarteon.loxone.mock.CryptoMock.SERVER_PRIVATE_KEY
 import cz.smarteon.loxone.mock.CryptoMock.TOKEN
+import cz.smarteon.loxone.mock.CryptoMock.TOKEN_HASH
 import cz.smarteon.loxone.mock.CryptoMock.USER
 import cz.smarteon.loxone.mock.CryptoMock.USER_HASH
 import cz.smarteon.loxone.mock.CryptoMock.USER_KEY
@@ -56,6 +57,7 @@ internal class MockMiniserver {
         ::processGetKey,
         ::processEncrypted,
         ::processGetToken,
+        ::processAuthWithToken,
         ::processGetUserSalt,
         ::processSecured,
         ::processEnableUpdates,
@@ -155,10 +157,10 @@ internal class MockMiniserver {
 
             Cipher.getInstance("AES/CBC/ZeroBytePadding").apply {
                 init(DECRYPT_MODE, sharedKey, IvParameterSpec(sharedKeyIv))
-                val decrypted = Regex("^(.+)/jdev/sys/(.*)\$").find(String(doFinal(encrypted)))
+                val decrypted = Regex("^salt/[^/]+/(.*)\$").find(String(doFinal(encrypted)))
 
                 if (decrypted != null) {
-                    session.processMsg(decrypted.groupValues[2])
+                    session.processMsg(decrypted.groupValues[1])
                 }
             }
             true
@@ -166,7 +168,7 @@ internal class MockMiniserver {
     }
 
     private suspend fun processGetToken(session: WebSocketServerSession, msg: String): Boolean {
-        return Regex("gettoken/(?<auth>[^/]+)/(?<user>[^/]+)/(?<tail>[24]/[^/]+/loxoneJava)").find(msg)?.let { gettoken ->
+        return Regex("jdev/sys/gettoken/(?<auth>[^/]+)/(?<user>[^/]+)/(?<tail>[24]/[^/]+/loxoneJava)").find(msg)?.let { gettoken ->
             val auth = gettoken.groups["auth"]!!.value
             val user = gettoken.groups["user"]!!.value
             val tail = gettoken.groups["tail"]!!.value
@@ -180,6 +182,20 @@ internal class MockMiniserver {
                 } else {
                     session.send(control, 400)
                 }
+            }
+            true
+        } ?: false
+    }
+
+    private suspend fun processAuthWithToken(session: WebSocketServerSession, msg: String): Boolean {
+        return Regex("authwithtoken/(?<auth>[^/]+)/(?<user>[^/]+)").find(msg)?.let { authtoken ->
+            val auth = authtoken.groups["auth"]!!.value
+            val user = authtoken.groups["user"]!!.value
+            val control = "authwithtoken/$auth/$user"
+            if (auth == TOKEN_HASH) {
+                session.send(control, 200, TOKEN)
+            } else {
+                session.send(control, 400)
             }
             true
         } ?: false
@@ -225,7 +241,8 @@ internal class MockMiniserver {
     private suspend fun WebSocketServerSession.send(control: String, code: Int) {
         val msgVal = when(code) {
             401 -> JsonValue(TextNode("Bad credentials"))
-            else -> JsonValue(NullNode.getInstance())
+            400 -> JsonValue(TextNode("Not authenticated"))
+            else -> JsonValue(TextNode("Unknown error"))
 
         }
         send(control, code, msgVal)

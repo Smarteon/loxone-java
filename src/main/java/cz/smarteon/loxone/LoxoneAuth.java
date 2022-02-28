@@ -298,9 +298,9 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
                         loxoneUser, this::encryptCommand
                 );
             } else {
-                lastTokenCommand = EncryptedCommand.getToken(
-                        LoxoneCrypto.loxoneHashing(loxonePass, loxoneUser, hashing, "gettoken"),
-                        loxoneUser, tokenPermissionType, CLIENT_UUID, clientInfo, this::encryptCommand
+                lastTokenCommand = EncryptedCommand.authWithToken(
+                        LoxoneCrypto.loxoneHashing(token.getToken(), hashing, "authwithtoken"),
+                        loxoneUser, this::encryptCommand
                 );
             }
             sendCommand(lastTokenCommand);

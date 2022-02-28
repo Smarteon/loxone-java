@@ -31,7 +31,7 @@ class LoxoneWebSocketIT {
     @BeforeEach
     fun setup() {
         val endpoint = LoxoneEndpoint("localhost", mockServer.port)
-        lws = LoxoneWebSocket(endpoint, LoxoneAuth(LoxoneHttp(endpoint), USER, PASS, VISU_PASS))
+        lws = LoxoneWebSocket(endpoint, LoxoneAuth(LoxoneHttp(endpoint), LoxoneProfile(endpoint, USER, PASS, VISU_PASS)))
         lws.authTimeoutSeconds = 1
     }
 

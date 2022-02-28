@@ -21,6 +21,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.mockk
 import io.mockk.verifyAll
 import org.awaitility.kotlin.await
 import org.bouncycastle.jce.provider.BouncyCastleProvider
@@ -69,7 +70,7 @@ class LoxoneAuthTest {
 
         scheduler = Executors.newSingleThreadScheduledExecutor()
 
-        loxoneAuth = LoxoneAuth(http, USER, PASS, VISU_PASS).apply {
+        loxoneAuth = LoxoneAuth(http, LoxoneProfile(mockk(), USER, PASS, VISU_PASS)).apply {
             setCommandSender(sender)
             setAutoRefreshScheduler(scheduler)
             init()
@@ -113,7 +114,7 @@ class LoxoneAuthTest {
 
     @Test
     fun `should fail without visuPass`() {
-        val noVisuAuth = LoxoneAuth(http, USER, PASS, null)
+        val noVisuAuth = LoxoneAuth(http, LoxoneProfile(mockk(), USER, PASS))
         expectThrows<IllegalStateException> { noVisuAuth.visuHash }
         expectThrows<IllegalStateException> { noVisuAuth.startVisuAuthentication() }
     }

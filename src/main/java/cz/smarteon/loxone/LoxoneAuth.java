@@ -19,6 +19,7 @@ import java.security.SecureRandom;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -73,6 +74,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
     private Hashing visuHashing;
     private Token token;
     private TokenStateEvaluator tokenStateEvaluator = new TokenStateEvaluator() {};
+    private TokenRepository tokenRepository = new InMemoryTokenRepository();
 
     private String clientInfo = DEFAULT_CLIENT_INFO;
     private TokenPermissionType tokenPermissionType = TokenPermissionType.WEB;
@@ -198,6 +200,14 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
     }
 
     /**
+     * Allows setting {@link TokenRepository} in order to make tokens persistent.
+     * @param tokenRepository repository to use
+     */
+    public void setTokenRepository(final @NotNull TokenRepository tokenRepository) {
+        this.tokenRepository = tokenRepository;
+    }
+
+    /**
      * Initialize the loxone authentication. Fetches the API info (address and version) and prepare the cryptography.
      */
     public void init() {
@@ -263,6 +273,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
      */
     void startAuthentication() {
         authListeners.forEach(AuthListener::beforeAuth);
+        token = tokenRepository.getToken(profile);
         sendCommand(keyExchange(getSessionKey())); // TODO is necessary to recreate the session key everytime?
         sendCommand(getKeyCommand);
     }
@@ -311,6 +322,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
         } else if (lastTokenCommand != null && lastTokenCommand.equals(command)) {
             token = lastTokenCommand.ensureValue(message.getValue());
             log.info("Got loxone token, valid until: " + token.getValidUntilDateTime() + ", seconds to expire: " + token.getSecondsToExpire());
+            tokenRepository.putToken(profile, token);
 
             if (autoRefreshToken) {
                 final long secondsToRefresh = tokenStateEvaluator.evaluate(token).secondsToRefresh();
@@ -440,6 +452,21 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
             return action.get();
         } else {
             throw new IllegalStateException("Can't " + actionDescription + " when visualization password not set.");
+        }
+    }
+
+    private static class InMemoryTokenRepository implements TokenRepository {
+
+        private final Map<LoxoneProfile, Token> tokens = new ConcurrentHashMap<>(1);
+
+        @Override
+        public @Nullable Token getToken(final @NotNull LoxoneProfile profile) {
+            return tokens.get(profile);
+        }
+
+        @Override
+        public void putToken(final @NotNull LoxoneProfile profile, final @NotNull Token token) {
+            tokens.put(profile, token);
         }
     }
 }

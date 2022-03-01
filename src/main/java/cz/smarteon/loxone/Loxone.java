@@ -70,10 +70,18 @@ public class Loxone {
      */
     public Loxone(final @NotNull LoxoneEndpoint endpoint,
                   final @NotNull String user, final @NotNull String pass, final @Nullable String visuPass) {
-        // parameters checked in the constructors below
-        this.loxoneHttp = new LoxoneHttp(endpoint);
-        this.loxoneAuth = new LoxoneAuth(loxoneHttp, user, pass, visuPass);
-        this.loxoneWebSocket = new LoxoneWebSocket(endpoint, loxoneAuth);
+        this(new LoxoneProfile(endpoint, user, pass, visuPass));
+    }
+
+    /**
+     * Creates new instance of given profile.
+     * @param profile profile, can't be null
+     */
+    public Loxone(final @NotNull LoxoneProfile profile) {
+        requireNonNull(profile, "profile shouldn't be null");
+        this.loxoneHttp = new LoxoneHttp(profile.getEndpoint());
+        this.loxoneAuth = new LoxoneAuth(loxoneHttp, profile);
+        this.loxoneWebSocket = new LoxoneWebSocket(profile.getEndpoint(), loxoneAuth);
         init();
     }
 

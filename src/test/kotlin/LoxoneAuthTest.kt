@@ -21,6 +21,8 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.mockk
+import io.mockk.verify
 import io.mockk.verifyAll
 import org.awaitility.kotlin.await
 import org.bouncycastle.jce.provider.BouncyCastleProvider
@@ -46,6 +48,15 @@ class LoxoneAuthTest {
     @RelaxedMockK
     private lateinit var sender: CommandSender
 
+    private val profile = LoxoneProfile(mockk(), USER, PASS, VISU_PASS)
+    private val keyCmd = LoxoneMessageCommand.getKey(USER)
+    private val tokenCmd: EncryptedCommand<Token> by lazy {
+        EncryptedCommand.getToken(
+            LoxoneCrypto.loxoneHashing(PASS, USER, HASHING, "gettoken"),
+            USER, WEB, LoxoneAuth.CLIENT_UUID, loxoneAuth.clientInfo
+        ) { it }
+    }
+
     private lateinit var scheduler: ScheduledExecutorService
 
     private lateinit var loxoneAuth: LoxoneAuth
@@ -69,7 +80,7 @@ class LoxoneAuthTest {
 
         scheduler = Executors.newSingleThreadScheduledExecutor()
 
-        loxoneAuth = LoxoneAuth(http, USER, PASS, VISU_PASS).apply {
+        loxoneAuth = LoxoneAuth(http, profile).apply {
             setCommandSender(sender)
             setAutoRefreshScheduler(scheduler)
             init()
@@ -78,11 +89,6 @@ class LoxoneAuthTest {
 
     @Test
     fun `test regular flow`() {
-        val keyCmd = LoxoneMessageCommand.getKey(USER)
-        val tokenCmd = EncryptedCommand.getToken(
-            LoxoneCrypto.loxoneHashing(PASS, USER, HASHING, "gettoken"),
-            USER, WEB, LoxoneAuth.CLIENT_UUID, loxoneAuth.clientInfo
-        ) { it }
         val token = Token(TOKEN.token, TOKEN.key, needsRefreshIn2Secs(), TOKEN.rights, TOKEN.isUnsecurePassword)
 
         loxoneAuth.isAutoRefreshToken = true
@@ -113,9 +119,26 @@ class LoxoneAuthTest {
 
     @Test
     fun `should fail without visuPass`() {
-        val noVisuAuth = LoxoneAuth(http, USER, PASS, null)
+        val noVisuAuth = LoxoneAuth(http, LoxoneProfile(mockk(), USER, PASS))
         expectThrows<IllegalStateException> { noVisuAuth.visuHash }
         expectThrows<IllegalStateException> { noVisuAuth.startVisuAuthentication() }
+    }
+
+    @Test
+    fun `should use tokenRepository`() {
+        val repository = mockk<TokenRepository>(relaxed = true)
+        loxoneAuth.setTokenRepository(repository)
+
+        loxoneAuth.startAuthentication()
+        verify {
+            repository.getToken(profile)
+        }
+
+        loxoneAuth.onCommand(keyCmd, LoxoneMessage(keyCmd.command, 200, HASHING))
+        loxoneAuth.onCommand(tokenCmd, LoxoneMessage(tokenCmd.decryptedCommand, 200, TOKEN))
+        verify {
+            repository.putToken(profile, TOKEN)
+        }
     }
 
     @AfterEach

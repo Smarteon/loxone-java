@@ -19,6 +19,7 @@ import java.security.SecureRandom;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -54,9 +55,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
     private static final int MAX_SALT_USAGE = 20;
 
     private final LoxoneHttp loxoneHttp;
-    private final String loxoneUser;
-    private final String loxonePass;
-    private final String loxoneVisPass;
+    private final LoxoneProfile profile;
 
     private final LoxoneMessageCommand<Hashing> getKeyCommand;
     private final LoxoneMessageCommand<Hashing> getVisuHashCommand;
@@ -75,6 +74,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
     private Hashing visuHashing;
     private Token token;
     private TokenStateEvaluator tokenStateEvaluator = new TokenStateEvaluator() {};
+    private TokenRepository tokenRepository = new InMemoryTokenRepository();
 
     private String clientInfo = DEFAULT_CLIENT_INFO;
     private TokenPermissionType tokenPermissionType = TokenPermissionType.WEB;
@@ -90,21 +90,22 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
     /**
      * Creates new instance
      * @param loxoneHttp loxone http interface used to perform some necessary http calls to loxone
-     * @param loxoneUser loxone user
-     * @param loxonePass loxone password
-     * @param loxoneVisPass loxone visualization password, can be null
+     * @param profile loxone profile
      */
-    public LoxoneAuth(@NotNull LoxoneHttp loxoneHttp, @NotNull String loxoneUser, @NotNull String loxonePass,
-                      @Nullable String loxoneVisPass) {
+    public LoxoneAuth(@NotNull LoxoneHttp loxoneHttp, @NotNull LoxoneProfile profile) {
         this.loxoneHttp = requireNonNull(loxoneHttp, "loxoneHttp shouldn't be null");
-        this.loxoneUser = requireNonNull(loxoneUser, "loxoneUser shouldn't be null");
-        this.loxonePass = requireNonNull(loxonePass, "loxonePass shouldn't be null");
-        this.loxoneVisPass = loxoneVisPass;
+        this.profile = requireNonNull(profile, "profile shouldn't be null");
 
-        this.getKeyCommand = getKey(loxoneUser);
-        this.getVisuHashCommand = LoxoneMessageCommand.getVisuHash(loxoneUser);
+        this.getKeyCommand = getKey(profile.getUsername());
+        this.getVisuHashCommand = LoxoneMessageCommand.getVisuHash(profile.getUsername());
 
         this.authListeners = new LinkedList<>();
+    }
+
+    @Deprecated
+    public LoxoneAuth(@NotNull LoxoneHttp loxoneHttp, @NotNull String loxoneUser, @NotNull String loxonePass,
+                      @Nullable String loxoneVisPass) {
+        this(loxoneHttp, new LoxoneProfile(loxoneHttp.endpoint, loxoneUser, loxonePass, loxoneVisPass));
     }
 
     /**
@@ -118,7 +119,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
      * @return loxone user
      */
     public String getUser() {
-        return loxoneUser;
+        return profile.getUsername();
     }
 
     /**
@@ -199,6 +200,14 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
     }
 
     /**
+     * Allows setting {@link TokenRepository} in order to make tokens persistent.
+     * @param tokenRepository repository to use
+     */
+    public void setTokenRepository(final @NotNull TokenRepository tokenRepository) {
+        this.tokenRepository = tokenRepository;
+    }
+
+    /**
      * Initialize the loxone authentication. Fetches the API info (address and version) and prepare the cryptography.
      */
     public void init() {
@@ -227,7 +236,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
      * @return headers necessary for authentication of HTTP connection
      */
     public Map<String, String> authHeaders() {
-        return singletonMap("Authorization", "Basic " + bytesToBase64(concatToBytes(loxoneUser, loxonePass)));
+        return singletonMap("Authorization", "Basic " + bytesToBase64(concatToBytes(profile.getUsername(), profile.getPassword())));
     }
 
     /**
@@ -247,7 +256,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
      */
     public String getVisuHash() {
         return onVisuPassSet("compute visu hash",
-                () ->  LoxoneCrypto.loxoneHashing(loxoneVisPass, null, visuHashing, "secured command") );
+                () ->  LoxoneCrypto.loxoneHashing(profile.getVisuPassword(), null, visuHashing, "secured command") );
     }
 
     /**
@@ -264,6 +273,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
      */
     void startAuthentication() {
         authListeners.forEach(AuthListener::beforeAuth);
+        token = tokenRepository.getToken(profile);
         sendCommand(keyExchange(getSessionKey())); // TODO is necessary to recreate the session key everytime?
         sendCommand(getKeyCommand);
     }
@@ -289,18 +299,18 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
             final TokenState tokenState = tokenStateEvaluator.evaluate(token);
             if (tokenState.isExpired()) {
                 lastTokenCommand = EncryptedCommand.getToken(
-                        LoxoneCrypto.loxoneHashing(loxonePass, loxoneUser, hashing, "gettoken"),
-                        loxoneUser, tokenPermissionType, CLIENT_UUID, clientInfo, this::encryptCommand
+                        LoxoneCrypto.loxoneHashing(profile.getPassword(), profile.getUsername(), hashing, "gettoken"),
+                        profile.getUsername(), tokenPermissionType, CLIENT_UUID, clientInfo, this::encryptCommand
                 );
             } else if (tokenState.needsRefresh()) {
                 lastTokenCommand = EncryptedCommand.refreshToken(
                         LoxoneCrypto.loxoneHashing(token.getToken(), hashing, "refreshtoken"),
-                        loxoneUser, this::encryptCommand
+                        profile.getUsername(), this::encryptCommand
                 );
             } else {
                 lastTokenCommand = EncryptedCommand.authWithToken(
                         LoxoneCrypto.loxoneHashing(token.getToken(), hashing, "authwithtoken"),
-                        loxoneUser, this::encryptCommand
+                        profile.getUsername(), this::encryptCommand
                 );
             }
             sendCommand(lastTokenCommand);
@@ -312,6 +322,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
         } else if (lastTokenCommand != null && lastTokenCommand.equals(command)) {
             token = lastTokenCommand.ensureValue(message.getValue());
             log.info("Got loxone token, valid until: " + token.getValidUntilDateTime() + ", seconds to expire: " + token.getSecondsToExpire());
+            tokenRepository.putToken(profile, token);
 
             if (autoRefreshToken) {
                 final long secondsToRefresh = tokenStateEvaluator.evaluate(token).secondsToRefresh();
@@ -437,10 +448,25 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
     }
 
     private <T> T onVisuPassSet(String actionDescription, Supplier<T> action) {
-        if (loxoneVisPass != null) {
+        if (profile.getVisuPassword() != null) {
             return action.get();
         } else {
             throw new IllegalStateException("Can't " + actionDescription + " when visualization password not set.");
+        }
+    }
+
+    private static class InMemoryTokenRepository implements TokenRepository {
+
+        private final Map<LoxoneProfile, Token> tokens = new ConcurrentHashMap<>(1);
+
+        @Override
+        public @Nullable Token getToken(final @NotNull LoxoneProfile profile) {
+            return tokens.get(profile);
+        }
+
+        @Override
+        public void putToken(final @NotNull LoxoneProfile profile, final @NotNull Token token) {
+            tokens.put(profile, token);
         }
     }
 }

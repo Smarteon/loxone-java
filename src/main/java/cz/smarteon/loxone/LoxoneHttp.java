@@ -19,7 +19,8 @@ public class LoxoneHttp {
     private static final Logger log = LoggerFactory.getLogger(LoxoneHttp.class);
     private static final int MAX_REDIRECTS = 5;
 
-    private final LoxoneEndpoint endpoint;
+    // temporarily relaxed visibility to allow deprecated LoxoneAuth constructor
+    final LoxoneEndpoint endpoint;
     private int connectionTimeout = 5000;
 
     private final ThreadLocal<RequestContext> requestContext = new ThreadLocal<>();

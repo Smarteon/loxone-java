@@ -17,7 +17,7 @@ import java.util.Objects;
  */
 public class Token implements LoxoneValue {
 
-    private static int LOXONE_EPOCH_BEGIN = 1230768000;
+    private static final int LOXONE_EPOCH_BEGIN = 1230768000;
 
     private final String token;
     private final byte[] key;

@@ -126,7 +126,9 @@ class LoxoneAuthTest {
 
     @Test
     fun `should use tokenRepository`() {
-        val repository = mockk<TokenRepository>(relaxed = true)
+        val repository = mockk<TokenRepository>(relaxed = true) {
+            every { getToken(profile) }.returns(null)
+        }
         loxoneAuth.setTokenRepository(repository)
 
         loxoneAuth.startAuthentication()

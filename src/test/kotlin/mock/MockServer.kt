@@ -11,6 +11,7 @@ import cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_CFG_API
 import cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_SYS_GETPUBLICKEY
 import cz.smarteon.loxone.message.LoxoneValue
 import cz.smarteon.loxone.message.PubKeyInfo
+import cz.smarteon.loxone.message.Token
 import cz.smarteon.loxone.mock.CryptoMock.PUBLIC_KEY
 import cz.smarteon.loxone.mock.CryptoMock.SERVER_PRIVATE_KEY
 import cz.smarteon.loxone.mock.CryptoMock.TOKEN
@@ -193,7 +194,15 @@ internal class MockMiniserver {
             val user = authtoken.groups["user"]!!.value
             val control = "authwithtoken/$auth/$user"
             if (auth == TOKEN_HASH) {
-                session.send(control, 200, TOKEN)
+                session.send(
+                    control, 200, Token(
+                        null,
+                        null,
+                        TOKEN.validUntil,
+                        TOKEN.rights,
+                        TOKEN.isUnsecurePassword
+                    )
+                )
             } else {
                 session.send(control, 400)
             }

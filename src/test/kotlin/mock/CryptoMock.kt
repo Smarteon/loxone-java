@@ -61,7 +61,7 @@ object CryptoMock {
 
     val USER_HASH = computeUserHash(PASS, USER)
     val VISU_HASH = computeUserHash(VISU_PASS)
-    val TOKEN_HASH = computeHash(TOKEN.token)
+    val TOKEN_HASH = computeHash(TOKEN.token!!)
 
 
     private fun computeUserHash(pass: String, user: String? = null): String {

@@ -17,7 +17,7 @@ class TokenState {
      * @param token token to get the state from, can be null
      */
     TokenState(final Token token) {
-        this.secondsToExpire = token != null ? token.getSecondsToExpire() : null;
+        this.secondsToExpire = token != null && token.isFilled() ? token.getSecondsToExpire() : null;
     }
 
     /**

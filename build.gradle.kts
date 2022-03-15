@@ -43,7 +43,10 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
-    testImplementation("io.strikt:strikt-core:0.33.0")
+
+    val striktVersion = "0.34.1"
+    testImplementation("io.strikt:strikt-core:$striktVersion")
+    testImplementation("io.strikt:strikt-jvm:$striktVersion")
     testImplementation("io.mockk:mockk:1.12.2")
 
     val jsonUnitVersion = "2.28.0"

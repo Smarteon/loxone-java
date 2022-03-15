@@ -320,7 +320,8 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
             authListeners.forEach(AuthListener::visuAuthCompleted);
             return State.CONSUMED;
         } else if (lastTokenCommand != null && lastTokenCommand.equals(command)) {
-            token = lastTokenCommand.ensureValue(message.getValue());
+            final Token newToken = lastTokenCommand.ensureValue(message.getValue());
+            token = token == null ? newToken : token.merge(newToken);
             log.info("Got loxone token, valid until: " + token.getValidUntilDateTime() + ", seconds to expire: " + token.getSecondsToExpire());
             tokenRepository.putToken(profile, token);
 

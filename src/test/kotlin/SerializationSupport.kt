@@ -1,6 +1,5 @@
-package cz.smarteon.loxone.message
+package cz.smarteon.loxone
 
-import cz.smarteon.loxone.Codec
 import kotlin.reflect.KClass
 
 private val classLoader = object{}.javaClass.enclosingClass

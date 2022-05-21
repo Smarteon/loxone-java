@@ -1,0 +1,19 @@
+{
+  "name": "kitchen-SqueezeTrack",
+  "type": "InfoOnlyAnalog",
+  "uuidAction": "192cdcb5-0250-2a43-ffffc0f606ef595c",
+  "room": "1177b172-039d-0c58-ffffc0f606ef595c",
+  "cat": "1177b172-0213-0b0f-ffffc0f606ef595c",
+  "defaultRating": 0,
+  "isFavorite": false,
+  "isSecured": false,
+  "defaultIcon": null,
+  "details": {
+    "jLockable": false,
+    "format": "%.1f"
+  },
+  "states": {
+    "value": "192cdcb5-0250-2a43-ffffc0f606ef595c",
+    "error": "192cdcb5-0250-2a42-ffff6f2343a00358"
+  }
+}

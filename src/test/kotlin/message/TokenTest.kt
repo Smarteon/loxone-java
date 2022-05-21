@@ -1,5 +1,6 @@
 package cz.smarteon.loxone.message
 
+import cz.smarteon.loxone.readResource
 import net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals
 import net.javacrumbs.jsonunit.core.util.ResourceUtils.resource
 import nl.jqno.equalsverifier.EqualsVerifier

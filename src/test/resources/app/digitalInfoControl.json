@@ -1,0 +1,25 @@
+{
+  "name": "kitchen-SqueezeSound",
+  "type": "InfoOnlyDigital",
+  "uuidAction": "192cc0b1-0168-ec92-ffffc0f606ef595c",
+  "room": "1177b172-00b9-0cf4-ffffc0f606ef595c",
+  "cat": "1177b172-0333-0bc1-ffffc0f606ef595c",
+  "defaultRating": 0,
+  "isFavorite": false,
+  "isSecured": false,
+  "defaultIcon": null,
+  "details": {
+    "jLockable": false,
+    "text": {
+      "off": "Vypnuto",
+      "on": "Zapnuto"
+    },
+    "color": {
+      "off": "#E73246",
+      "on": "#69C350"
+    }
+  },
+  "states": {
+    "active": "192cc0b1-0168-ec92-ffffc0f606ef595c"
+  }
+}

@@ -36,6 +36,12 @@ public abstract class Control {
     @JsonProperty(value = "isSecured")
     protected boolean secured;
 
+    @JsonProperty(value = "type")
+    protected String type;
+
+    @JsonProperty(value = "defaultRating")
+    protected int rating;
+
     @JsonProperty("states") @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     protected Map<String, LoxoneUuids> states;
 
@@ -63,6 +69,24 @@ public abstract class Control {
      */
     public boolean isSecured() {
         return secured;
+    }
+
+    /**
+     * Control type e.g. Jalousie, Daytimer, … empty type should not be visualized
+     * @return control type
+     */
+    @NotNull
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * Based on this number, controls are sorted in the UI
+     * @return control rating
+     */
+    @NotNull
+    public int getRating() {
+        return rating;
     }
 
     /**

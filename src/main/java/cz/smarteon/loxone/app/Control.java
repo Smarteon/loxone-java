@@ -16,7 +16,7 @@ import java.util.Map;
  * Base class for all the controls in loxone application
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeInfo(defaultImpl = UnknownControl.class, use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonTypeInfo(defaultImpl = UnknownControl.class, use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
 @JsonSubTypes({
         @JsonSubTypes.Type(name = AlarmControl.NAME, value = AlarmControl.class),
         @JsonSubTypes.Type(name = SwitchControl.NAME, value = SwitchControl.class),

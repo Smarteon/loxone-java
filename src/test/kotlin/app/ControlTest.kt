@@ -19,6 +19,8 @@ class ControlTest {
             get { name }.isEqualTo(testControl.controlName)
             get { states.size }.isEqualTo(testControl.statesSize)
             get { secured }.isEqualTo(testControl.secured)
+            get { type }.isEqualTo(testControl.controlType)
+            get { rating }.isEqualTo(testControl.controlRating)
             if (testControl.specificState != null) {
                 get { getStates()?.get(testControl.specificState.first)?.only() }
                     .isEqualTo(testControl.specificState.second)
@@ -32,7 +34,10 @@ class ControlTest {
         val controlName: String,
         val statesSize: Int,
         val secured: Boolean = false,
-        val specificState: Pair<String, LoxoneUuid>? = null
+        val specificState: Pair<String, LoxoneUuid>? = null,
+        val controlType: String,
+        val controlRating: Int
+
 
     ) {
         Alarm(AlarmControl::class, "Alarm", 10, true, Pair("armed", LoxoneUuid("0f86a2fe-0378-3e08-ffffb2d4efc8b5b6"))),

@@ -16,7 +16,7 @@ import java.util.Map;
  * Base class for all the controls in loxone application
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeInfo(defaultImpl = UnknownControl.class, use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonTypeInfo(defaultImpl = UnknownControl.class, use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
 @JsonSubTypes({
         @JsonSubTypes.Type(name = AlarmControl.NAME, value = AlarmControl.class),
         @JsonSubTypes.Type(name = SwitchControl.NAME, value = SwitchControl.class),
@@ -35,6 +35,12 @@ public abstract class Control {
 
     @JsonProperty(value = "isSecured")
     protected boolean secured;
+
+    @JsonProperty(value = "type")
+    protected String type;
+
+    @JsonProperty(value = "defaultRating")
+    protected int rating;
 
     @JsonProperty("states") @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     protected Map<String, LoxoneUuids> states;
@@ -63,6 +69,23 @@ public abstract class Control {
      */
     public boolean isSecured() {
         return secured;
+    }
+
+    /**
+     * Control type e.g. Jalousie, Daytimer, … empty type should not be visualized
+     * @return control type
+     */
+    @NotNull
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * Based on this number, controls are sorted in the UI
+     * @return control rating
+     */
+    public int getRating() {
+        return rating;
     }
 
     /**

@@ -23,8 +23,11 @@ hs_err_pid*
 
 # Gradle stuff
 .gradle
+gradle
 out
 build
+gradlew
+gradlew.bat
 
 # IDEA things
 .idea

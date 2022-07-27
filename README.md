@@ -70,9 +70,26 @@ On Android 6 and older, the `java.util.Base64` is not available. Please use `set
 Codec.setBase64Codec(..., ...);
 ```
 ## Development & Contributions
+
+_Note:_ Build currently requires at least JDK 11 & Gradle 7.2 to be locally installed
+
 Start by generating gradle wrapper binaries (using local gradle installation)
+
 ```bash
-gradle wrapper
+gradle wrapper --gradle-version 7.2
 ```
 
-_Note:_ Build currently requires at least JDK 11
+After that you can use the gradlew binary to do builds & tests
+
+```bash
+./gradlew build
+```
+
+This first build should succeed, this means the project is correctly setup and you can start contributing to it.
+
+_Note:_ When the MiniserverDiscovererTest fails this could be a firewall issue, this test opens up a random UDP port for the test
+
+```bash
+MiniserverDiscovererTest > should discover() FAILED
+    strikt.internal.opentest4j.AssertionFailed at MiniserverDiscovererTest.kt:31
+```

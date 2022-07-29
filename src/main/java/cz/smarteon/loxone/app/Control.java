@@ -39,6 +39,12 @@ public abstract class Control {
     @JsonProperty(value = "type")
     protected String type;
 
+    @JsonProperty(value = "room", required = true)
+    protected LoxoneUuid roomUuid;
+
+    @JsonProperty(value = "cat", required = true)
+    protected LoxoneUuid categoryUuid;
+
     @JsonProperty(value = "defaultRating")
     protected int rating;
 
@@ -78,6 +84,22 @@ public abstract class Control {
     @NotNull
     public String getType() {
         return type;
+    }
+
+    /**
+     * Room UUID this control is assigned to.
+     * @return room UUID
+     */
+    public LoxoneUuid getRoomUuid() {
+        return roomUuid;
+    }
+
+    /**
+     * Category UUID this control is assigned to.
+     * @return category UUID
+     */
+    public LoxoneUuid getCategoryUuid() {
+        return categoryUuid;
     }
 
     /**

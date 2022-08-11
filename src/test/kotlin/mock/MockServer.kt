@@ -1,6 +1,5 @@
 package cz.smarteon.loxone.mock
 
-import com.fasterxml.jackson.databind.node.NullNode
 import com.fasterxml.jackson.databind.node.TextNode
 import cz.smarteon.loxone.Codec.hexToBytes
 import cz.smarteon.loxone.Codec.writeMessage
@@ -25,7 +24,7 @@ import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import io.ktor.server.plugins.*
+import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
@@ -153,7 +152,6 @@ internal class MockMiniserver {
 
     private suspend fun processEncrypted(session: WebSocketServerSession, msg: String): Boolean {
         return Regex("jdev/sys/enc/(.*)").find(msg)?.let { encryptedMsg ->
-            @Suppress("BlockingMethodInNonBlockingContext") // TODO fix
             val encrypted = URLDecoder.decode(encryptedMsg.groupValues[1], "UTF-8").decodeBase64Bytes()
 
             Cipher.getInstance("AES/CBC/ZeroBytePadding").apply {
@@ -261,7 +259,6 @@ internal class MockMiniserver {
         send(LoxoneMessage(control, code, value))
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun WebSocketServerSession.send(loxMsg: LoxoneMessage<*>) {
         send(withContext(Dispatchers.IO) { writeMessage(loxMsg) })
     }

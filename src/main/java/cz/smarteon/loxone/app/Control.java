@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import cz.smarteon.loxone.LoxoneUuid;
 import cz.smarteon.loxone.LoxoneUuids;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +17,7 @@ import java.util.Map;
  * Base class for all the controls in loxone application
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeInfo(defaultImpl = UnknownControl.class, use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
+@JsonTypeInfo(defaultImpl = UnknownControl.class, use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
 @JsonSubTypes({
         @JsonSubTypes.Type(name = AlarmControl.NAME, value = AlarmControl.class),
         @JsonSubTypes.Type(name = SwitchControl.NAME, value = SwitchControl.class),
@@ -25,99 +26,61 @@ import java.util.Map;
         @JsonSubTypes.Type(name = DigitalInfoControl.NAME, value = DigitalInfoControl.class),
         @JsonSubTypes.Type(name = AnalogInfoControl.NAME, value = AnalogInfoControl.class)
 })
+@Getter
 public abstract class Control {
-
-    @JsonProperty(value = "uuidAction", required = true)
-    protected LoxoneUuid uuid;
-
-    @JsonProperty(value = "name", required = true)
-    protected String name;
-
-    @JsonProperty(value = "isSecured")
-    protected boolean secured;
-
-    @JsonProperty(value = "type")
-    protected String type;
-
-    @JsonProperty(value = "room", required = true)
-    protected LoxoneUuid roomUuid;
-
-    @JsonProperty(value = "cat", required = true)
-    protected LoxoneUuid categoryUuid;
-
-    @JsonProperty(value = "defaultRating")
-    protected int rating;
-
-    @JsonProperty("states") @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-    protected Map<String, LoxoneUuids> states;
 
     /**
      * UUID of this control, should be unique
-     * @return control UUID
      */
+    @JsonProperty(value = "uuidAction", required = true)
     @NotNull
-    public LoxoneUuid getUuid() {
-        return uuid;
-    }
+    protected LoxoneUuid uuid;
 
     /**
      * Control name - usually localized, non unique
-     * @return control name
      */
+    @JsonProperty(value = "name", required = true)
     @NotNull
-    public String getName() {
-        return name;
-    }
+    protected String name;
 
     /**
      * Whether this control is secured by visualization password.
-     * @return true when this control is secured, false otherwise
      */
-    public boolean isSecured() {
-        return secured;
-    }
+    @JsonProperty(value = "isSecured")
+    protected boolean secured;
 
     /**
      * Control type e.g. Jalousie, Daytimer, … empty type should not be visualized
-     * @return control type
      */
     @NotNull
-    public String getType() {
-        return type;
-    }
+    @JsonProperty(value = "type")
+    protected String type;
 
     /**
      * Room UUID this control is assigned to.
-     * @return room UUID
      */
-    public LoxoneUuid getRoomUuid() {
-        return roomUuid;
-    }
+    @JsonProperty(value = "room", required = true)
+    protected LoxoneUuid roomUuid;
 
     /**
-     * Category UUID this control is assigned to.
-     * @return category UUID
+     * Room UUID this control is assigned to.
      */
-    public LoxoneUuid getCategoryUuid() {
-        return categoryUuid;
-    }
+    @JsonProperty(value = "cat", required = true)
+    protected LoxoneUuid categoryUuid;
 
     /**
      * Based on this number, controls are sorted in the UI
-     * @return control rating
      */
-    public int getRating() {
-        return rating;
-    }
+    @JsonProperty(value = "defaultRating")
+    protected int rating;
 
     /**
      * Control states map
-     * @return control states
      */
+    @JsonProperty("states")
+    @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     @Nullable
-    public Map<String, LoxoneUuids> getStates() {
-        return states;
-    }
+    protected Map<String, LoxoneUuids> states;
 
     /**
      * Helper to get state by name, which should be in this control.

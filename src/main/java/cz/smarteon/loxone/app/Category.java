@@ -1,32 +1,33 @@
 package cz.smarteon.loxone.app;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.smarteon.loxone.LoxoneUuid;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents Category
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Jacksonized
+@Builder
+@Value
 public class Category {
 
-    private final LoxoneUuid uuid;
+    /**
+     * UUID of this category, should be unique
+     */
+    @JsonProperty(value = "uuid", required = true)
+    @NotNull
+    LoxoneUuid uuid;
 
-    private final String name;
-
-    @JsonCreator
-    public Category(@JsonProperty(value = "uuid", required = true) LoxoneUuid uuid,
-                    @JsonProperty(value = "name", required = true) String name) {
-        this.uuid = uuid;
-        this.name = name;
-    }
-
-    public LoxoneUuid getUuid() {
-        return uuid;
-    }
-
-    public String getName() {
-        return name;
-    }
+    /**
+     * Category name - usually localized, non unique
+     */
+    @JsonProperty(value = "name", required = true)
+    @NotNull
+    String name;
 }

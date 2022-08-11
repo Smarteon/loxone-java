@@ -42,9 +42,9 @@ class LoxoneAppTest extends Specification implements SerializationSupport {
         config.getControl(AlarmControl) == alarmControl
 
         where:
-        alarmControl << [new AlarmControl(), Stub(AlarmControl)]
-        room << [new Room(UUID_ROOM, "room"), Stub(Room)]
-        category << [new Category(UUID_CATEGORY, "category"), Stub(Category)]
+        alarmControl << [new AlarmControl()]
+        room << [new Room(UUID_ROOM, "room")]
+        category << [new Category(UUID_CATEGORY, "category")]
     }
 
     def "should getControl by name and type"() {

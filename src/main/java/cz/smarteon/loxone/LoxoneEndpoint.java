@@ -15,17 +15,36 @@ import static java.util.Objects.requireNonNull;
 public final class LoxoneEndpoint {
 
     private final String address;
-    private final int port;
+    private final Integer port;
     private final boolean useSsl;
+    private boolean hasPath;
+    private String host;
+    private String path;
+    private static final String SLASH = "/";
 
     private static final String WS_TEMPLATE = "%s://%s:%d/ws/rfc6455";
+    private static final String WS_TEMPLATE_PATH = "%s://%s/ws/rfc6455";
 
     /**
      * Create new instance of given address (only the address without protocol or port part is expected) and default port
      * @param address loxone address
      */
     public LoxoneEndpoint(@NotNull final String address) {
-        this(address, 80);
+        if(address.contains("://")) throw new IllegalArgumentException("Address cannot contain protocol");
+
+        int slashIndex = address.indexOf(SLASH);
+        if(slashIndex != -1){
+            this.host = address.substring(0, slashIndex);
+            this.path = address.substring(slashIndex);
+            this.hasPath = true;
+            this.useSsl = true;
+            this.port = null;
+        } else {
+            this.hasPath = false;
+            this.port = 80;
+            this.useSsl = false;
+        }
+        this.address = address;
     }
 
     /**
@@ -58,7 +77,11 @@ public final class LoxoneEndpoint {
      */
     @NotNull
     URI webSocketUri() {
-        return URI.create(String.format(WS_TEMPLATE, useSsl ? "wss" : "ws", address, port));
+        if(hasPath){
+            return URI.create(String.format(WS_TEMPLATE_PATH, useSsl ? "wss" : "ws", address));
+        } else {
+            return URI.create(String.format(WS_TEMPLATE, useSsl ? "wss" : "ws", address, port));
+        }
     }
 
     /**
@@ -70,7 +93,11 @@ public final class LoxoneEndpoint {
     @NotNull
     URL httpUrl(@NotNull final String path) throws MalformedURLException {
         final String pathPart = requireNonNull(path, "path can't be null");
-        return new URL(useSsl ? "https" : "http", address, port, pathPart.startsWith("/") ? pathPart : "/" + pathPart);
+        if(hasPath){
+            return new URL("https", host, this.path);
+        } else {
+            return new URL(useSsl ? "https" : "http", address, port, pathPart.startsWith("/") ? pathPart : "/" + pathPart);
+        }
     }
 
     @Override
@@ -78,16 +105,24 @@ public final class LoxoneEndpoint {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LoxoneEndpoint that = (LoxoneEndpoint) o;
-        return port == that.port && useSsl == that.useSsl && Objects.equals(address, that.address);
+        return Objects.equals(port, that.port) && useSsl == that.useSsl && Objects.equals(address, that.address);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(address, port, useSsl);
+        if(hasPath){
+            return Objects.hash(address, useSsl);
+        } else {
+            return Objects.hash(address, port, useSsl);
+        }
     }
 
     @Override
     public String toString() {
-        return address + ":" + port + " " + (useSsl ? "(secured)" : "(unsecured)");
+        if(hasPath){
+            return address + " " + "(secured)";
+        } else {
+            return address + ":" + port + " " + (useSsl ? "(secured)" : "(unsecured)");
+        }
     }
 }

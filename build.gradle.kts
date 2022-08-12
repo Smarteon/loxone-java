@@ -24,7 +24,7 @@ repositories {
 dependencies {
     implementation("org.java-websocket:Java-WebSocket:1.5.2")
 
-    val jacksonVersion = "2.13.0"
+    val jacksonVersion = "2.13.3"
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
@@ -58,11 +58,11 @@ dependencies {
     testRuntimeOnly("org.slf4j:slf4j-simple:$slf4jVersion")
     testImplementation("org.bouncycastle:bcprov-jdk15on:1.69")
 
-    val jadlerVersion = "1.3.0"
+    val jadlerVersion = "1.3.1"
     testImplementation("net.jadler:jadler-core:$jadlerVersion")
     testImplementation("net.jadler:jadler-jdk:$jadlerVersion")
 
-    val ktorVersion = "2.0.0-beta-1"
+    val ktorVersion = "2.0.3"
     testImplementation("io.ktor:ktor-server-core:$ktorVersion")
     testImplementation("io.ktor:ktor-server-netty:$ktorVersion")
     testImplementation("io.ktor:ktor-server-websockets:$ktorVersion")
@@ -157,6 +157,12 @@ tasks {
             "java.base/jdk.internal.misc=ALL-UNNAMED",
             "-Dio.netty.tryReflectionSetAccessible=true"
         )
+    }
+
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "11"
+        }
     }
 
     check {

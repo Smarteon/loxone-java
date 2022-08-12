@@ -68,6 +68,7 @@ public abstract class Codec {
      * Decodes HEX represented as String in bytes to String
      *
      * @param hex String to decode
+     * @return the decoded bytes
      */
     public static byte[] hexToBytes(String hex) {
         final byte[] decoded = new byte[hex.length() / 2];
@@ -134,10 +135,12 @@ public abstract class Codec {
         return JsonMapperHolder.mapper.writeValueAsString(message);
     }
 
+    @Deprecated
     public static LoxoneMessage<?> readMessage(final String message) throws IOException {
         return readMessage(message, LoxoneMessage.class);
     }
 
+    @Deprecated
     public static LoxoneMessage<?> readMessage(final InputStream message) throws IOException {
         return readMessage(message, LoxoneMessage.class);
     }

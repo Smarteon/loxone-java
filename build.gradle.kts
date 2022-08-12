@@ -35,6 +35,13 @@ dependencies {
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
     compileOnly("org.jetbrains:annotations:22.0.0")
 
+    val lombokVersion = "1.18.24"
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
+
     testImplementation("org.spockframework:spock-core:2.0-groovy-3.0")
 
     testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")

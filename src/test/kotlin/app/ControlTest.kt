@@ -17,7 +17,7 @@ class ControlTest {
         expectThat(readResource("app/${testControl.resourceName}.json", Control::class)) {
             get { this::class }.isEqualTo(testControl.type)
             get { name }.isEqualTo(testControl.controlName)
-            get { states.size }.isEqualTo(testControl.statesSize)
+            get { states?.size }.isEqualTo(testControl.statesSize)
             get { secured }.isEqualTo(testControl.secured)
             get { type }.isEqualTo(testControl.controlType)
             get { rating }.isEqualTo(testControl.controlRating)

@@ -87,9 +87,13 @@ After that you can use the gradlew binary to do builds & tests
 
 This first build should succeed, this means the project is correctly setup and you can start contributing to it.
 
-_Note:_ When the MiniserverDiscovererTest fails this could be a firewall issue, this test opens up a random UDP port for the test
+_Note:_ When the MiniserverDiscovererTest fails this could be a firewall issue, this test opens up a random UDP port for 
+the test
 
 ```bash
 MiniserverDiscovererTest > should discover() FAILED
     strikt.internal.opentest4j.AssertionFailed at MiniserverDiscovererTest.kt:31
 ```
+
+It is adviced to install the lombok plugin for your IDE of choice, this makes coding & debugging easier, you can find the 
+instructions for installing the plugin for various IDE's on the following location https://projectlombok.org/setup/

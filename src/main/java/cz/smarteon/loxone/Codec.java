@@ -135,12 +135,12 @@ public abstract class Codec {
         return JsonMapperHolder.mapper.writeValueAsString(message);
     }
 
-    @SuppressWarnings("unused") //TODO is this method still needed?
+    @Deprecated
     public static LoxoneMessage<?> readMessage(final String message) throws IOException {
         return readMessage(message, LoxoneMessage.class);
     }
 
-    @SuppressWarnings("unused") //TODO is this method still needed?
+    @Deprecated
     public static LoxoneMessage<?> readMessage(final InputStream message) throws IOException {
         return readMessage(message, LoxoneMessage.class);
     }

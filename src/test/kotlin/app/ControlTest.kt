@@ -25,7 +25,6 @@ class ControlTest {
                 get { getStates()?.get(testControl.specificState.first)?.only() }
                     .isEqualTo(testControl.specificState.second)
             }
-
         }
     }
 
@@ -37,9 +36,6 @@ class ControlTest {
         val controlRating: Int,
         val secured: Boolean = false,
         val specificState: Pair<String, LoxoneUuid>? = null
-
-
-
     ) {
         Alarm(AlarmControl::class, "Alarm", 10,"Alarm", 1, true, Pair("armed", LoxoneUuid("0f86a2fe-0378-3e08-ffffb2d4efc8b5b6"))),
         Switch(SwitchControl::class, "CallState", 1, "Switch", 0, false, Pair("active", LoxoneUuid("110cb849-0125-20f9-ffffac0ced78bcf2"))),

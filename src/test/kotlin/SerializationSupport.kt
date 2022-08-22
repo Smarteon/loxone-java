@@ -1,5 +1,6 @@
 package cz.smarteon.loxone
 
+import strikt.api.Assertion
 import java.util.Calendar
 import java.util.Date
 import kotlin.reflect.KClass
@@ -10,6 +11,17 @@ internal fun <T : Any> readResource(path: String, type: KClass<T>): T {
     val stream = classLoader.getResourceAsStream(sanitizePath(path))
     return Codec.readMessage(stream, type.java)
 }
+
+internal fun <T : Any> readResourceXml(path: String, type: KClass<T>): T {
+    val stream = classLoader.getResourceAsStream(sanitizePath(path))
+    return Codec.readXml(stream, type.java)
+}
+
+internal fun <T> Assertion.Builder<T>.isLoxoneUuid(uuid: String): Assertion.Builder<T> =
+    assert("is Loxone UUID ${LoxoneUuid(uuid)}"){
+        if (it == LoxoneUuid(uuid)) pass()
+        else fail()
+    }
 
 internal fun <T : Any> readValue(value: String, type: KClass<T>): T = Codec.readMessage(value, type.java)
 

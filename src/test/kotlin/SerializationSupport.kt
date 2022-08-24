@@ -5,20 +5,20 @@ import java.util.Calendar
 import java.util.Date
 import kotlin.reflect.KClass
 
-private val classLoader = object{}.javaClass.enclosingClass
+private val classLoader = object {}.javaClass.enclosingClass
 
-internal fun <T : Any> readResource(path: String, type: KClass<T>): T {
-    val stream = classLoader.getResourceAsStream(sanitizePath(path))
-    return Codec.readMessage(stream, type.java)
-}
+internal fun <T : Any> readResource(path: String, type: KClass<T>): T =
+    classLoader.getResourceAsStream(sanitizePath(path)).use { stream ->
+        Codec.readMessage(stream, type.java)
+    }
 
-internal fun <T : Any> readResourceXml(path: String, type: KClass<T>): T {
-    val stream = classLoader.getResourceAsStream(sanitizePath(path))
-    return Codec.readXml(stream, type.java)
-}
+internal fun <T : Any> readResourceXml(path: String, type: KClass<T>): T =
+    classLoader.getResourceAsStream(sanitizePath(path)).use { stream ->
+        Codec.readXml(stream, type.java)
+    }
 
 internal fun <T> Assertion.Builder<T>.isLoxoneUuid(uuid: String): Assertion.Builder<T> =
-    assert("is Loxone UUID ${LoxoneUuid(uuid)}"){
+    assert("is Loxone UUID ${LoxoneUuid(uuid)}") {
         if (it == LoxoneUuid(uuid)) pass()
         else fail()
     }

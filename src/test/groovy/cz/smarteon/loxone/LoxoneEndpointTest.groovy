@@ -4,7 +4,7 @@ import nl.jqno.equalsverifier.EqualsVerifier
 import spock.lang.Specification
 import spock.lang.Unroll
 
-class LoxoneEndpointTest extends Specification {
+class LoxoneEndpointTest2 extends Specification {
 
     @Unroll
     def "test #testCase"() {
@@ -31,6 +31,6 @@ class LoxoneEndpointTest extends Specification {
     }
     def "should verify equals"() {
         expect:
-        EqualsVerifier.forClass(LoxoneEndpoint).verify()
+        EqualsVerifier.forClass(LoxoneEndpoint).withNonnullFields("host", "path").verify()
     }
 }

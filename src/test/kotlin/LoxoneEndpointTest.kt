@@ -16,7 +16,7 @@ class LoxoneEndpointTest {
     ) {
         ProxyAddress("dns.loxonecloud.com/50r6f1a0565d3e", "https://dns.loxonecloud.com/50r6f1a0565d3e"),
         ProxyAddressMultiple("dns.loxonecloud.com/50r6f1a0565d3e/5d5d/4se", "https://dns.loxonecloud.com/50r6f1a0565d3e/5d5d/4se"),
-        LocalAddress("192.168.88.77", "http://192.168.88.77:80/"),
+        LocalAddress("192.168.88.77", "http://192.168.88.77:80"),
     }
     @ParameterizedTest
     @EnumSource(TestParameters::class)

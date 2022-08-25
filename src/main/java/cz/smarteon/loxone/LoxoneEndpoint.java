@@ -1,6 +1,7 @@
 package cz.smarteon.loxone;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -14,12 +15,10 @@ import static java.util.Objects.requireNonNull;
  */
 public final class LoxoneEndpoint {
 
-    private final String address;
+    private final String host;
     private final Integer port;
+    private final String path;
     private final boolean useSsl;
-    private boolean hasPath;
-    private String host;
-    private String path;
     private static final String SLASH = "/";
 
     private static final String WS_TEMPLATE = "%s://%s:%d/ws/rfc6455";
@@ -30,45 +29,51 @@ public final class LoxoneEndpoint {
      * @param address loxone address
      */
     public LoxoneEndpoint(@NotNull final String address) {
-        if(address.contains("://")) throw new IllegalArgumentException("Address cannot contain protocol");
-
-        int slashIndex = address.indexOf(SLASH);
-        if(slashIndex != -1){
-            this.host = address.substring(0, slashIndex);
-            this.path = address.substring(slashIndex);
-            this.hasPath = true;
-            this.useSsl = true;
-            this.port = null;
-        } else {
-            this.hasPath = false;
-            this.port = 80;
-            this.useSsl = false;
-        }
-        this.address = address;
+        this(
+                checkAndParseHost(requireNonNull(address, "address can't be null")),
+                address.contains(SLASH) ? null : 80,
+                address.contains(SLASH),
+                address.contains(SLASH) ? address.substring(address.indexOf(SLASH)) : ""
+        );
     }
 
     /**
-     * Create new instance of given address (only the address without protocol or port part is expected) and port
-     * @param address loxone address
-     * @param port loxone port
+     * Create new instance of given host (only the host without protocol or port part is expected) and port
+     * @param host loxone address host
+     * @param port loxone address port
      */
-    public LoxoneEndpoint(@NotNull final String address, final int port) {
-        this(address, port, false);
+    public LoxoneEndpoint(@NotNull final String host, final int port) {
+        this(host, port, false);
     }
 
     /**
-     * Create new instance of given address (only the address without protocol or port part is expected), port
+     * Create new instance of given host (only the host without protocol or port part is expected), port
      * and sets whether to use SSL.
      * BEWARE: Loxone miniserver (in version 10) doesn't support SSL natively. So the {@code useSsl} make sense only
      * when accessing miniserver through some reverse HTTPS proxy.
-     * @param address loxone address
-     * @param port loxone port
+     * @param host loxone address host
+     * @param port loxone address port
      * @param useSsl whether to use SSL
      */
-    public LoxoneEndpoint(@NotNull final String address, final int port, final boolean useSsl) {
-        this.address = address;
+    public LoxoneEndpoint(@NotNull final String host, final int port, final boolean useSsl) {
+        this(host, port, useSsl, "");
+    }
+
+    /**
+     * Create new instance of given host (only the host without protocol or port part is expected), port
+     * and sets whether to use SSL.
+     * BEWARE: Loxone miniserver (in version 10) doesn't support SSL natively. So the {@code useSsl} make sense only
+     * when accessing miniserver through some reverse HTTPS proxy.
+     * @param host loxone address host
+     * @param port loxone address port
+     * @param useSsl whether to use SSL
+     * @param path loxone address path
+     */
+    public LoxoneEndpoint(@NotNull final String host, @Nullable final Integer port, final boolean useSsl, @NotNull final String path) {
+        this.host = requireNonNull(host, "host can't be null");
         this.port = port;
         this.useSsl = useSsl;
+        this.path = sanitizePath(requireNonNull(path, "path can't be null"));
     }
 
     /**
@@ -77,10 +82,10 @@ public final class LoxoneEndpoint {
      */
     @NotNull
     URI webSocketUri() {
-        if(hasPath){
-            return URI.create(String.format(WS_TEMPLATE_PATH, useSsl ? "wss" : "ws", address));
+        if(hasPath()){
+            return URI.create(String.format(WS_TEMPLATE_PATH, useSsl ? "wss" : "ws", host));
         } else {
-            return URI.create(String.format(WS_TEMPLATE, useSsl ? "wss" : "ws", address, port));
+            return URI.create(String.format(WS_TEMPLATE, useSsl ? "wss" : "ws", host, port));
         }
     }
 
@@ -93,10 +98,10 @@ public final class LoxoneEndpoint {
     @NotNull
     URL httpUrl(@NotNull final String path) throws MalformedURLException {
         final String pathPart = requireNonNull(path, "path can't be null");
-        if(hasPath){
-            return new URL("https", host, this.path);
+        if(hasPath()){
+            return new URL("https", host, this.path + sanitizePath(pathPart));
         } else {
-            return new URL(useSsl ? "https" : "http", address, port, pathPart.startsWith("/") ? pathPart : "/" + pathPart);
+            return new URL(useSsl ? "https" : "http", host, port, sanitizePath(pathPart));
         }
     }
 
@@ -105,24 +110,34 @@ public final class LoxoneEndpoint {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LoxoneEndpoint that = (LoxoneEndpoint) o;
-        return Objects.equals(port, that.port) && useSsl == that.useSsl && Objects.equals(address, that.address);
+        return useSsl == that.useSsl && host.equals(that.host) && Objects.equals(port, that.port) && path.equals(that.path);
     }
 
     @Override
     public int hashCode() {
-        if(hasPath){
-            return Objects.hash(address, useSsl);
-        } else {
-            return Objects.hash(address, port, useSsl);
-        }
+        return Objects.hash(host, port, path, useSsl);
     }
 
     @Override
     public String toString() {
-        if(hasPath){
-            return address + " " + "(secured)";
+        if(hasPath()){
+            return host + SLASH + path + " " + "(secured)";
         } else {
-            return address + ":" + port + " " + (useSsl ? "(secured)" : "(unsecured)");
+            return host + ":" + port + " " + (useSsl ? "(secured)" : "(unsecured)");
         }
     }
+
+    private static String sanitizePath(final String path) {
+        return path.startsWith(SLASH) || path.isEmpty() ? path : SLASH + path;
+    }
+
+    private boolean hasPath() {
+        return !path.isEmpty();
+    }
+
+    private static String checkAndParseHost(final String address) {
+        if(address.contains("://")) throw new IllegalArgumentException("Address cannot contain protocol");
+        return address.contains(SLASH) ? address.substring(0, address.indexOf(SLASH)) : address;
+    }
+
 }

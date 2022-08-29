@@ -96,7 +96,7 @@ publishing {
                 licenses {
                     license {
                         name.set("3-Clause BSD License")
-                        url.set("http://opensource.org/licenses/BSD-3-Clause")
+                        url.set("https://opensource.org/licenses/BSD-3-Clause")
                         distribution.set("repo")
                     }
                 }

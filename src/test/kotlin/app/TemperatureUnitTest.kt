@@ -19,6 +19,6 @@ class TemperatureUnitTest {
     @ParameterizedTest
     @EnumSource(TestTempUnit::class)
     fun `should deserialize`(testParameters: TestTempUnit) {
-        expectThat(readValue(testParameters.value, TemperatureUnit::class)).isEqualTo(testParameters.unit)
+        expectThat(readValue<TemperatureUnit>(testParameters.value)).isEqualTo(testParameters.unit)
     }
 }

@@ -10,7 +10,7 @@ class MiniserverInfoTest {
 
     @Test
     fun `should deserialize`() {
-        expectThat(readResource("app/miniserverInfo.json", MiniserverInfo::class)) {
+        expectThat(readResource<MiniserverInfo>("app/miniserverInfo.json")) {
             get { serialNumber }.isEqualTo("504F9410B84A")
             get { name }.isEqualTo("ShowRoom")
             get { projectName }.isEqualTo("ShowRoom project")

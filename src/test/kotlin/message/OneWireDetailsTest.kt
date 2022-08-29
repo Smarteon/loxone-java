@@ -13,7 +13,7 @@ class OneWireDetailsTest {
 
     @Test
     fun `should deserialize`() {
-        expectThat(readResource("message/oneWireDetails.json", OneWireDetails::class)) {
+        expectThat(readResource<OneWireDetails>("message/oneWireDetails.json")) {
             get { asMap().size }.isEqualTo(2)
             get { asMap()["28.BB.CE.AD.07.00.00.2F"] }.isNotNull().and {
                 get { serial }.isEqualTo("28.BB.CE.AD.07.00.00.2F")
@@ -26,7 +26,7 @@ class OneWireDetailsTest {
 
     @Test
     fun `should deserialize error`() {
-        expectThat(readValue("\"timeout\"", OneWireDetails::class)) {
+        expectThat(readValue<OneWireDetails>("\"timeout\"")) {
             get { isInvalid }.isTrue()
             get { invalid }.isEqualTo("timeout")
         }

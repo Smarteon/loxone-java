@@ -14,7 +14,7 @@ class ControlTest {
     @ParameterizedTest(name = "should deserialize {0}Control")
     @EnumSource(TestControl::class)
     fun `should deserialize`(testControl: TestControl) {
-        expectThat(readResource("app/${testControl.resourceName}.json", Control::class)) {
+        expectThat(readResource<Control>("app/${testControl.resourceName}.json")) {
             get { this::class }.isEqualTo(testControl.type)
             get { name }.isEqualTo(testControl.controlName)
             get { states?.size }.isEqualTo(testControl.statesSize)

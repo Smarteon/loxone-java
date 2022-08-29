@@ -11,7 +11,7 @@ class MiniserverUserTest {
 
     @Test
     fun `should deserialize`() {
-        expectThat(readResource("app/miniserverUser.json", MiniserverUser::class)) {
+        expectThat(readResource<MiniserverUser>("app/miniserverUser.json")) {
             get { name }.isEqualTo("showroom")
             get { uuid }.isLoxoneUuid("0f86a25d-026f-1c1e-ffffd4c75dbaf53c")
             get { isAdmin }.isTrue()

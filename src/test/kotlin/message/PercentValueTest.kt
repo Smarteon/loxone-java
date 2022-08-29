@@ -21,7 +21,7 @@ class PercentValueTest {
     @ParameterizedTest
     @EnumSource(TestValue::class)
     fun `should deserialize`(testParameters: TestValue) {
-        expectThat(readValue(testParameters.value, PercentValue::class).value).isEqualTo(testParameters.expected)
+        expectThat(readValue<PercentValue>(testParameters.value).value).isEqualTo(testParameters.expected)
     }
 
     @Test

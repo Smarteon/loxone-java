@@ -17,7 +17,7 @@ class LoxoneAppTest {
 
     @Test
     fun `should deserialize`() {
-        expectThat(readResource("app/LoxAPP3.json", LoxoneApp::class)) {
+        expectThat(readResource<LoxoneApp>("app/LoxAPP3.json")) {
             get { lastModified }.isEqualTo(LAST_MODIFIED)
             get { miniserverInfo.name }.isEqualTo("ShowRoom")
             get { rooms }.hasSize(3)
@@ -70,7 +70,7 @@ class LoxoneAppTest {
 
     @Test
     fun `should getControlsForRoom by room`() {
-        val config = readResource("app/LoxAPP3.json", LoxoneApp::class)
+        val config = readResource<LoxoneApp>("app/LoxAPP3.json")
         val roomUuid = LoxoneUuid("0f869a64-028d-0cc2-ffffd4c75dbaf53c")
         val room = checkNotNull(config.rooms[roomUuid])
 
@@ -81,7 +81,7 @@ class LoxoneAppTest {
 
     @Test
     fun `should getControlsForCategory by category`() {
-        val config = readResource("app/LoxAPP3.json", LoxoneApp::class)
+        val config = readResource<LoxoneApp>("app/LoxAPP3.json")
         val categoryUuid = LoxoneUuid("0f869a64-0221-0b28-ffffd4c75dbaf53c")
         val category = checkNotNull(config.categories[categoryUuid])
 
@@ -92,7 +92,7 @@ class LoxoneAppTest {
 
     @Test
     fun `should getControlsForRoomAndCategory by room and category`() {
-        val config = readResource("app/LoxAPP3.json", LoxoneApp::class)
+        val config = readResource<LoxoneApp>("app/LoxAPP3.json")
         val categoryUuid = LoxoneUuid("0f869a64-0221-0b28-ffffd4c75dbaf53c")
         val roomUuid = LoxoneUuid("0f869a64-028d-0cc2-ffffd4c75dbaf53c")
         val category = checkNotNull(config.categories[categoryUuid])

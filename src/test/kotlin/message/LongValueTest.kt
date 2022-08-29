@@ -10,7 +10,7 @@ class LongValueTest {
 
     @Test
     fun `should deserialize`() {
-        expectThat(readValue("\"220283340\"", LongValue::class).value).isEqualTo(220283340)
+        expectThat(readValue<LongValue>("\"220283340\"").value).isEqualTo(220283340)
     }
 
     @Test

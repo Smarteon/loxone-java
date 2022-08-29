@@ -2,7 +2,6 @@ group = "cz.smarteon"
 
 plugins {
     `java-library`
-    groovy
     signing
     `maven-publish`
     jacoco
@@ -41,8 +40,6 @@ dependencies {
 
     testCompileOnly("org.projectlombok:lombok:$lombokVersion")
     testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
-
-    testImplementation("org.spockframework:spock-core:2.0-groovy-3.0")
 
     testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 

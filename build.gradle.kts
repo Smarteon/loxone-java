@@ -110,8 +110,13 @@ publishing {
                         email.set("vojtech.zavrel@smarteon.cz")
                     }
                     developer {
+                        name.set("Tomáš Knotek")
+                        email.set("tomas.knotek@smarteon.cz")
+                    }
+                }
+                contributors {
+                    contributor {
                         name.set("Petr Žufan")
-                        email.set("petr.zufan@smarteon.cz")
                     }
                 }
                 scm {

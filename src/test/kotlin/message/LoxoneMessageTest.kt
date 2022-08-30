@@ -13,7 +13,7 @@ class LoxoneMessageTest {
 
     @Test
     fun `should deserialize get key`() {
-        expectThat(readResource("message/getKeyMessage.json", LoxoneMessage::class)) {
+        expectThat(readResource<LoxoneMessage<*>>("message/getKeyMessage.json")) {
             get { control }.isEqualTo("jdev/sys/getkey2/showroom")
             get { code }.isEqualTo(200)
             get { value }.isEqualTo(HASHING)
@@ -29,18 +29,18 @@ class LoxoneMessageTest {
     fun `should serialize`() {
         JsonAssert.assertJsonEquals(
             LoxoneMessage("jdev/sys/getkey2/showroom", 200, HASHING),
-            readResource("message/getKeyMessage.json", LoxoneMessage::class)
+            readResource<LoxoneMessage<*>>("message/getKeyMessage.json")
         )
     }
 
     @Test
     fun `should deserialize alarm all`() {
-        expectCatching { readResource("message/alarmAll.json", LoxoneMessage::class) }.isSuccess()
+        expectCatching { readResource<LoxoneMessage<*>>("message/alarmAll.json") }.isSuccess()
     }
 
     @Test
     fun `should deserialize getToken failure`() {
-        expectThat(readResource("message/getToken401.json", LoxoneMessage::class).code).isEqualTo(401)
+        expectThat(readResource<LoxoneMessage<*>>("message/getToken401.json").code).isEqualTo(401)
     }
 
     companion object {

@@ -10,7 +10,7 @@ import strikt.assertions.isTrue
 class AlarmControlTest {
     @Test
     fun `should deserialize`() {
-        expectThat(readResource("app/alarmControl.json", AlarmControl::class)) {
+        expectThat(readResource<AlarmControl>("app/alarmControl.json")) {
             get { uuid }.isLoxoneUuid("0f86a2fe-0378-3e15-ffff373f9870b52a")
             get { name }.isEqualTo("Alarm")
             get { secured }.isTrue()

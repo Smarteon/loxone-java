@@ -13,7 +13,7 @@ class DateValueTest {
     fun `should deserialize`() {
         val expectedDate = getDate()
 
-        expectThat(readValue("\"${formatDate(expectedDate)}\"", DateValue::class)) {
+        expectThat(readValue<DateValue>("\"${formatDate(expectedDate)}\"")) {
             get { date }.isEqualTo(expectedDate)
         }
     }

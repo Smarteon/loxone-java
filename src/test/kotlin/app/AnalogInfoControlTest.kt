@@ -10,7 +10,7 @@ class AnalogInfoControlTest {
 
     @Test
     fun `should deserialize`() {
-        expectThat(readResource("app/analogInfoControl.json", AnalogInfoControl::class)) {
+        expectThat(readResource<AnalogInfoControl>("app/analogInfoControl.json")) {
             get { uuid }.isLoxoneUuid("192cdcb5-0250-2a43-ffffc0f606ef595c")
             get { name }.isEqualTo("kitchen-SqueezeTrack")
             get { stateValue() }.isLoxoneUuid("192cdcb5-0250-2a43-ffffc0f606ef595c")

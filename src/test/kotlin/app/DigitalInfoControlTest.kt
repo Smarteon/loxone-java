@@ -10,7 +10,7 @@ class DigitalInfoControlTest {
 
     @Test
     fun `should deserialize`() {
-        expectThat(readResource("app/digitalInfoControl.json", DigitalInfoControl::class)) {
+        expectThat(readResource<DigitalInfoControl>("app/digitalInfoControl.json")) {
             get { uuid }.isLoxoneUuid("192cc0b1-0168-ec92-ffffc0f606ef595c")
             get { name }.isEqualTo("kitchen-SqueezeSound")
             get { stateActive() }.isLoxoneUuid("192cc0b1-0168-ec92-ffffc0f606ef595c")

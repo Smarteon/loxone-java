@@ -11,7 +11,7 @@ class TechnicalAlarmTest {
 
     @Test
     fun `should deserialize`() {
-        expectThat(readResource("app/technicalAlarmControl.json", TechnicalAlarmControl::class)) {
+        expectThat(readResource<TechnicalAlarmControl>("app/technicalAlarmControl.json")) {
             get { uuid }.isLoxoneUuid("10a75401-013a-1272-fffff8bbb0459c02")
             get { name }.isEqualTo("Technical alarm")
             get { secured }.isFalse()

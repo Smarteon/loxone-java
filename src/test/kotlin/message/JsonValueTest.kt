@@ -19,7 +19,7 @@ class JsonValueTest {
     @ParameterizedTest
     @ValueSource(strings = ["\"\"", "123", "{}", "[null, -6]", "{\"a\":null,\"b\":34.5}"])
     fun `should deserialize`(value: String) {
-        expectCatching { readValue(value, JsonValue::class) }.isSuccess()
+        expectCatching { readValue<JsonValue>(value) }.isSuccess()
     }
 
     @Test
@@ -29,8 +29,8 @@ class JsonValueTest {
 
     @Test
     fun `should convert to primitives`() {
-        expectThat(readValue("\"20\"", JsonValue::class).`as`(IntValue::class.java)).isA<IntValue>()
-        expectThat(readValue("\"220283340\"", JsonValue::class).`as`((IntValue::class.java))).isA<IntValue>()
+        expectThat(readValue<JsonValue>("\"20\"").`as`(IntValue::class.java)).isA<IntValue>()
+        expectThat(readValue<JsonValue>("\"220283340\"").`as`((IntValue::class.java))).isA<IntValue>()
     }
 
     @Test

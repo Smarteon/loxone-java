@@ -1,29 +1,26 @@
 package cz.smarteon.loxone
 
-import strikt.api.Assertion
+import java.io.InputStream
 import java.util.Calendar
 import java.util.Date
-import kotlin.reflect.KClass
 
 private val classLoader = object {}.javaClass.enclosingClass
 
-internal fun <T : Any> readResource(path: String, type: KClass<T>): T =
-    classLoader.getResourceAsStream(sanitizePath(path)).use { stream ->
-        Codec.readMessage(stream, type.java)
+internal inline fun <reified T : Any> readResource(path: String): T =
+    readResource<T>(path) { stream ->
+        Codec.readMessage(stream, T::class.java)
     }
 
-internal fun <T : Any> readResourceXml(path: String, type: KClass<T>): T =
-    classLoader.getResourceAsStream(sanitizePath(path)).use { stream ->
-        Codec.readXml(stream, type.java)
+internal inline fun <reified T : Any> readResourceXml(path: String): T =
+    readResource<T>(path) { stream ->
+        Codec.readXml(stream, T::class.java)
     }
 
-internal fun <T> Assertion.Builder<T>.isLoxoneUuid(uuid: String): Assertion.Builder<T> =
-    assert("is Loxone UUID ${LoxoneUuid(uuid)}") {
-        if (it == LoxoneUuid(uuid)) pass()
-        else fail()
-    }
+private fun <T : Any> readResource(path: String, reader: (InputStream) -> T): T =
+    classLoader.getResourceAsStream((sanitizePath(path)))?.use(reader)
+        ?: throw IllegalArgumentException("Resource $path not found")
 
-internal fun <T : Any> readValue(value: String, type: KClass<T>): T = Codec.readMessage(value, type.java)
+internal inline fun < reified T : Any> readValue(value: String,): T = Codec.readMessage(value, T::class.java)
 
 internal fun writeValue(value: Any): String = Codec.writeMessage(value)
 

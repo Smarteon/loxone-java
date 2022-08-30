@@ -10,7 +10,7 @@ class IntValueTest {
 
     @Test
     fun `should deserialize`() {
-        expectThat(readValue("\"48\"", IntValue::class).value).isEqualTo(48)
+        expectThat(readValue<IntValue>("\"48\"").value).isEqualTo(48)
     }
 
     @Test

@@ -14,7 +14,7 @@ class LoxoneUuidTest {
 
     @Test
     fun `should deserialize`() {
-        expectThat(readValue("\"$testUuidString\"", LoxoneUuid::class)).isEqualTo(testUuid)
+        expectThat(readValue<LoxoneUuid>("\"$testUuidString\"",)).isEqualTo(testUuid)
     }
 
     @Test

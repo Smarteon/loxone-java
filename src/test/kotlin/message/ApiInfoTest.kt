@@ -11,7 +11,7 @@ class ApiInfoTest {
 
     @Test
     fun `should deserialize`() {
-        expectThat(readResource("message/apiInfo.json", ApiInfo::class)) {
+        expectThat(readResource<ApiInfo>("message/apiInfo.json")) {
             get { mac }.isEqualTo("50:4F:94:10:B8:4A")
             get { version }.isEqualTo("9.1.10.30")
         }
@@ -19,7 +19,7 @@ class ApiInfoTest {
 
     @Test
     fun `should deserialize version 10_3`() {
-        expectThat(readResource("message/apiInfo103.json", ApiInfo::class)) {
+        expectThat(readResource<ApiInfo>("message/apiInfo103.json")) {
             get { mac }.isEqualTo("EE:E0:00:D8:0B:0E")
             get { version }.isEqualTo("10.3.11.25")
             get { eventSlots }.isTrue()
@@ -30,7 +30,7 @@ class ApiInfoTest {
     fun `should serialize`() {
         JsonAssert.assertJsonEquals(
             ApiInfo("50:4F:94:10:B8:4A", "9.1.10.30"),
-            readResource("message/apiInfo.json", ApiInfo::class)
+            readResource<ApiInfo>("message/apiInfo.json")
         )
     }
 }

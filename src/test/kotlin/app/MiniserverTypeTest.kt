@@ -22,6 +22,6 @@ class MiniserverTypeTest {
     @ParameterizedTest
     @EnumSource(TestMiniserverType::class)
     fun `should deserialize`(testParameters: TestMiniserverType) {
-        expectThat(readValue(testParameters.value, MiniserverType::class)).isEqualTo(testParameters.type)
+        expectThat(readValue<MiniserverType>(testParameters.value)).isEqualTo(testParameters.type)
     }
 }

@@ -2,7 +2,6 @@ group = "cz.smarteon"
 
 plugins {
     `java-library`
-    groovy
     signing
     `maven-publish`
     jacoco
@@ -41,8 +40,6 @@ dependencies {
 
     testCompileOnly("org.projectlombok:lombok:$lombokVersion")
     testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
-
-    testImplementation("org.spockframework:spock-core:2.0-groovy-3.0")
 
     testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
@@ -99,7 +96,7 @@ publishing {
                 licenses {
                     license {
                         name.set("3-Clause BSD License")
-                        url.set("http://opensource.org/licenses/BSD-3-Clause")
+                        url.set("https://opensource.org/licenses/BSD-3-Clause")
                         distribution.set("repo")
                     }
                 }
@@ -113,8 +110,13 @@ publishing {
                         email.set("vojtech.zavrel@smarteon.cz")
                     }
                     developer {
+                        name.set("Tomáš Knotek")
+                        email.set("tomas.knotek@smarteon.cz")
+                    }
+                }
+                contributors {
+                    contributor {
                         name.set("Petr Žufan")
-                        email.set("petr.zufan@smarteon.cz")
                     }
                 }
                 scm {

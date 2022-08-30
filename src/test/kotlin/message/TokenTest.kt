@@ -21,7 +21,7 @@ class TokenTest {
 
     @Test
     fun `should deserialize`() {
-        expectThat(readResource("message/token.json", Token::class)).propertiesAreEqualTo(TEST_TOKEN)
+        expectThat(readResource<Token>("message/token.json")).propertiesAreEqualTo(TEST_TOKEN)
     }
 
     @Test

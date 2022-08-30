@@ -11,7 +11,7 @@ class PubKeyInfoTest {
 
     @Test
     fun `should deserialize`() {
-        expectThat(readValue(PUB_KEY_JSON, PubKeyInfo::class).pubKey).isEqualTo(PUB_KEY_STRING.decodeBase64Bytes())
+        expectThat(readValue<PubKeyInfo>(PUB_KEY_JSON).pubKey).isEqualTo(PUB_KEY_STRING.decodeBase64Bytes())
     }
 
     @Test

@@ -10,7 +10,7 @@ class MiniserverStatusTest {
 
     @Test
     fun `should deserialize`() {
-        val ms = readResourceXml("system/status/status.xml", MiniserverStatus::class)
+        val ms = readResourceXml<MiniserverStatus>("system/status/status.xml")
 
         expectThat(ms) {
             get { modified }.isEqualTo("2019-09-04 13:02:36")

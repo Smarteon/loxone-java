@@ -22,7 +22,7 @@ class HashingTest {
     @ParameterizedTest
     @EnumSource(TestVersions::class)
     fun `should deserialize`(testParameters: TestVersions) {
-        expectThat(readResource("message/hashing_${testParameters.version}.json", Hashing::class)) {
+        expectThat(readResource<Hashing>("message/hashing_${testParameters.version}.json")) {
             get { key }.isEqualTo(byteArrayOf(0x41, 0x43))
             get { salt }.isEqualTo("3130")
             get { hashAlg }.isEqualTo(testParameters.hashAlg)
@@ -34,7 +34,7 @@ class HashingTest {
     fun `should serialize`(testParameters: TestVersions) {
         JsonAssert.assertJsonEquals(
             Hashing(byteArrayOf(0x41, 0x43), "3130", testParameters.hashAlg),
-            readResource("message/hashing_${testParameters.version}.json", Hashing::class)
+            readResource<Hashing>("message/hashing_${testParameters.version}.json")
         )
     }
 

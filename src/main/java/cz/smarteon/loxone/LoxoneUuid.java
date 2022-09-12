@@ -2,18 +2,14 @@ package cz.smarteon.loxone;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.EqualsAndHashCode;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Objects;
 
-import static cz.smarteon.loxone.Codec.bytesToHex;
-import static cz.smarteon.loxone.Codec.hexToBytes;
-import static cz.smarteon.loxone.Codec.readUnsignedShort;
-import static cz.smarteon.loxone.Codec.readUnsingedInt;
-import static cz.smarteon.loxone.Codec.toUnsignedIntHex;
-import static cz.smarteon.loxone.Codec.toUnsignedShortHex;
+import static cz.smarteon.loxone.Codec.*;
 
+@EqualsAndHashCode
 public final class LoxoneUuid {
 
     private final long id1;
@@ -42,28 +38,6 @@ public final class LoxoneUuid {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        LoxoneUuid that = (LoxoneUuid) o;
-
-        if (id1 != that.id1) return false;
-        if (id2 != that.id2) return false;
-        if (id3 != that.id3) return false;
-        return Arrays.equals(id4, that.id4);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) (id1 ^ (id1 >>> 32));
-        result = 31 * result + id2;
-        result = 31 * result + id3;
-        result = 31 * result + Arrays.hashCode(id4);
-        return result;
-    }
-
-    @Override
     @JsonValue
     public String toString() {
         return toUnsignedIntHex(id1) + "-"
@@ -71,4 +45,5 @@ public final class LoxoneUuid {
                 + toUnsignedShortHex(id3) + "-"
                 + bytesToHex(id4);
     }
+
 }

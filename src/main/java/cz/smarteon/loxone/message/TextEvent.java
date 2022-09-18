@@ -1,6 +1,8 @@
 package cz.smarteon.loxone.message;
 
 import cz.smarteon.loxone.LoxoneUuid;
+import lombok.Getter;
+import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
 import static java.util.Objects.requireNonNull;
@@ -8,8 +10,18 @@ import static java.util.Objects.requireNonNull;
 /**
  * Loxone event carrying text value.
  */
+@Getter
+@ToString(callSuper = true)
 public class TextEvent extends LoxoneEvent {
+
+    /**
+     * Icon uuid
+     */
     private final LoxoneUuid iconUuid;
+
+    /**
+     * Carried text value
+     */
     private final String text;
 
     /**
@@ -22,32 +34,5 @@ public class TextEvent extends LoxoneEvent {
         super(uuid);
         this.iconUuid = requireNonNull(iconUuid, "iconUuid can't be null");
         this.text = requireNonNull(text, "text can't be null");
-    }
-
-    /**
-     * Icon uuid
-     * @return icon uuid
-     */
-    @NotNull
-    public LoxoneUuid getIconUuid() {
-        return iconUuid;
-    }
-
-    /**
-     * Carried text value
-     * @return text value
-     */
-    @NotNull
-    public String getText() {
-        return text;
-    }
-
-    @Override
-    public String toString() {
-        return "TextEvent{" +
-                "uuid=" + uuid +
-                ", iconUuid=" + iconUuid +
-                ", text='" + text + '\'' +
-                '}';
     }
 }

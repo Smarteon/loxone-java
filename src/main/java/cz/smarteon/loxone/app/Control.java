@@ -29,6 +29,8 @@ import java.util.Map;
 @Getter
 public abstract class Control {
 
+    private static final String STATE_JLOCKED = "jLocked";
+
     /**
      * UUID of this control, should be unique.
      */
@@ -98,4 +100,18 @@ public abstract class Control {
         }
     }
 
+    /**
+     * Helper to get the jLocked state UUID for this control.
+     * If the control doesn't support locking, it will return null.
+     *
+     * @return UUID of the jLocked state or null if this control does not support it
+     */
+    @Nullable
+    public LoxoneUuid stateLocked() {
+        if (states != null && states.containsKey(STATE_JLOCKED)) {
+            return states.get(STATE_JLOCKED).only();
+        } else {
+            return null;
+        }
+    }
 }

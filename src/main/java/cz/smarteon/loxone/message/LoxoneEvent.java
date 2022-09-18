@@ -1,6 +1,8 @@
 package cz.smarteon.loxone.message;
 
 import cz.smarteon.loxone.LoxoneUuid;
+import lombok.Getter;
+import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
 import static java.util.Objects.requireNonNull;
@@ -8,8 +10,14 @@ import static java.util.Objects.requireNonNull;
 /**
  * Common predecessor of loxone events.
  */
+@Getter
+@ToString
 public abstract class LoxoneEvent {
 
+    /**
+     * Event uuid.
+     */
+    @NotNull
     protected final LoxoneUuid uuid;
 
     /**
@@ -18,14 +26,5 @@ public abstract class LoxoneEvent {
      */
     protected LoxoneEvent(final @NotNull LoxoneUuid uuid) {
         this.uuid = requireNonNull(uuid, "uuid can't be null");
-    }
-
-    /**
-     * Get event uuid.
-     * @return event uuid
-     */
-    @NotNull
-    public LoxoneUuid getUuid() {
-        return uuid;
     }
 }

@@ -20,6 +20,7 @@ final class ExtensionAdapter extends XmlAdapter<Extension, Extension> {
             case "Dimmer Extension":
             case "AO Extension":
             case "AI Extension":
+            case "RS232 Extension":
                 return new BasicExtension(v);
             case "Dali Extension":
                 return new DaliExtension(v);

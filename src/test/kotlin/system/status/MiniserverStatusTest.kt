@@ -28,7 +28,7 @@ class MiniserverStatusTest {
             get { lanErrorsPercent }.isEqualTo(0.0)
             get { linkErrorsCount }.isEqualTo(0)
 
-            get { extensions }.hasSize(12)
+            get { extensions }.hasSize(13)
             get { extensions[1] }
                 .isA<BasicExtension>()
                 .get { name }.isEqualTo("Extension")
@@ -58,7 +58,8 @@ class MiniserverStatusTest {
             }
             get { extensions[9].serialNumber }.isEqualTo("17d8060c")
             get { extensions[10].serialNumber }.isEqualTo("16d80173")
-            get { extensions[11] }
+            get { extensions[11].serialNumber }.isEqualTo("06d81137")
+            get { extensions[12] }
                 .isA<UnrecognizedExtension>()
                 .get { name }.isEqualTo("Some Future Extension")
         }

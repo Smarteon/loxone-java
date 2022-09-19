@@ -47,7 +47,7 @@
                             TimeDiff="1" DummyDev="false"/>
                 <TreeDevice Code="-2147352395" Name="MoveDining" Place="Jídelna" Inst="MoveDining" Serial="B0142CEB"
                             Version="10.0.7.25" Online="true" LastReceived="2019-09-04 13:02:37" TimeDiff="1"
-                            DummyDev="false" Updating="true" UpdateProgress="73" />
+                            DummyDev="false" Updating="true" UpdateProgress="73"/>
             </TreeBranch>
             <TreeBranch Branch="3" Devices="1" Errors="0">
                 <TreeDevice Code="-2146697035" Name="Linka" Place="Kuchyně" Inst="BarPult" Serial="C0101D3E"
@@ -85,6 +85,8 @@
                    DummyDev="false" IntDev="false"/>
         <Extension Type="AI Extension" Code="199" Name="AI Extension" Serial="16d80173" Version="10.5.1.15"
                    HwVersion="1" Online="true" DummyDev="false" IntDev="false"/>
+        <Extension Type="RS232 Extension" Code="10" Name="RS232 Extension" Serial="06d81137" Version="10.5.4.16"
+                   Online="true" DummyDev="false" IntDev="false"/>
         <Extension Type="Some Future Extension" Code="777" Name="Some Future Extension" Serial="02d867e0"
                    Mac="Some Future Extension" Version="9.2.12.14" HwVersion="2" Online="true" DummyDev="false"
                    Occupied="false" Interfered="false" IntDev="false"/>

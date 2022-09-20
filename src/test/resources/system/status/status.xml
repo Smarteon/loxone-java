@@ -39,7 +39,7 @@
                    DummyDev="false" Occupied="false" Interfered="false" IntDev="false"/>
         <Extension Type="RS485 Extension" Code="9" Name="RS485 Extension" Serial="07d8095b" Version="9.0.8.22"
                    Online="true" DummyDev="false" Occupied="false" Interfered="false" IntDev="false"/>
-        <Extension Type="Tree Extension" Code="180" Name="Tree Extension" Serial="13103fa8" Version="9.3.3.5"
+        <Extension Type="Tree Extension" Code="180" Name="Tree 1.NP" Serial="13103fa8" Version="9.3.3.5"
                    Online="true" DummyDev="false" Occupied="false" Interfered="false" IntDev="false">
             <TreeBranch Branch="2" Devices="2" Errors="0">
                 <TreeDevice Code="-2147352395" Name="MoveLivingUp" Place="Obývací pokoj" Inst="MoveLivingUp"

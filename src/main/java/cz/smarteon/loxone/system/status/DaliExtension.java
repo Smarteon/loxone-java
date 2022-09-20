@@ -10,7 +10,7 @@ public class DaliExtension extends Extension implements DevicesProvider<DaliDevi
     private final List<DaliDevice> devices;
 
     DaliExtension(final Extension e) {
-        super(e.code, e.name, e.serialNumber, e.version, e.hwVersion, e.online, e.dummy, e.occupied, e.interfered,
+        super(e.type, e.code, e.name, e.serialNumber, e.version, e.hwVersion, e.online, e.dummy, e.occupied, e.interfered,
                 e.intDev, e.updating, e.updateProgress);
         devices = e.daliDevices;
     }

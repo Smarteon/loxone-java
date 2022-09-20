@@ -10,7 +10,7 @@ public class AirBaseExtension extends Extension implements DevicesProvider<AirDe
     private final List<AirDevice> devices;
 
     AirBaseExtension(final Extension e) {
-        super(e.code, e.name, e.serialNumber, e.version, e.hwVersion, e.online, e.dummy, e.occupied, e.interfered,
+        super(e.type, e.code, e.name, e.serialNumber, e.version, e.hwVersion, e.online, e.dummy, e.occupied, e.interfered,
                 e.intDev, e.updating, e.updateProgress);
         devices = e.airDevices;
     }

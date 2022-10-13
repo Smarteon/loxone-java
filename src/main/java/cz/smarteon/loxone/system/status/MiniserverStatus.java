@@ -11,6 +11,7 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -161,7 +162,23 @@ public class MiniserverStatus {
      */
     @NotNull
     public List<Extension> getExtensions() {
-        return content.extensions != null ? content.extensions : Collections.emptyList();
+        final List<Extension> allExtensions = content.extensions != null ?
+                new ArrayList<>(content.extensions) : new ArrayList<>();
+        if (getNetworkDevices() != null && getNetworkDevices().getGenericDevices() != null) {
+            getNetworkDevices().getGenericDevices().stream()
+                    .map(GenericNetworkDevice::getExtensions)
+                    .forEach(allExtensions::addAll);
+        }
+        return allExtensions;
+    }
+
+    /**
+     * List of configured network devices
+     * @return configured network devices or null
+     */
+    @Nullable
+    public NetworkDevices getNetworkDevices() {
+        return content.networkDevices;
     }
 
     /**
@@ -210,6 +227,9 @@ public class MiniserverStatus {
         private Integer linkErrorsCount;
         @XmlElement(name = "Extension") @XmlJavaTypeAdapter(ExtensionAdapter.class)
         private List<Extension> extensions;
+
+        @XmlElement(name = "NetworkDevices")
+        private NetworkDevices networkDevices;
 
         Content() {}
     }

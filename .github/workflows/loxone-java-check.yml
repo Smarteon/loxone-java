@@ -9,10 +9,7 @@ on:
 
 jobs:
   loxone-java-check:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
@@ -27,4 +24,3 @@ jobs:
         arguments: clean check
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
-      if: matrix.os == 'ubuntu-latest'

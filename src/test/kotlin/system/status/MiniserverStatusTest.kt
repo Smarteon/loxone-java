@@ -28,7 +28,20 @@ class MiniserverStatusTest {
             get { lanErrorsPercent }.isEqualTo(0.0)
             get { linkErrorsCount }.isEqualTo(0)
 
-            get { extensions }.hasSize(13)
+            get { networkDevices }.isNotNull().and {
+                get { genericDevices }.isNotNull().hasSize(1)
+                    .get { first() }.and {
+                        get { type }.isEqualTo("Intercom")
+                        get { name }.isEqualTo("Intercom")
+                        get { place }.isEqualTo("Zádveří")
+                        get { mac }.isEqualTo("504F94E051F4")
+                        get { isOnline }.isTrue()
+                        get { version }.isEqualTo("13.00.06.29")
+                        get { extensions }.hasSize(1).get { first() }.isA<TreeExtension>()
+                    }
+            }
+
+            get { extensions }.hasSize(14)
             get { extensions[1] }
                 .isA<BasicExtension>()
                 .get { name }.isEqualTo("Extension")
@@ -83,12 +96,12 @@ class MiniserverStatusTest {
 
         val treeExtensions = ms.getExtensions(TreeExtension::class.java)
         expectThat(treeExtensions) {
-            hasSize(1)
-            get { this[0].leftBranch?.devices?.size }.isEqualTo(2)
-            get { this[0].rightBranch?.devices?.get(0)?.name }.isEqualTo("Linka")
-            get { this[0].rightBranch?.devices?.get(1)?.name }.isEqualTo("Tree to Air Bridge")
-            get { this[0].leftBranch?.devices?.get(1)?.updating }.isTrue()
-            get { this[0].leftBranch?.devices?.get(1)?.updateProgress }.isEqualTo(73)
+            hasSize(2)
+            get { first().leftBranch?.devices?.size }.isEqualTo(2)
+            get { first().rightBranch?.devices?.get(0)?.name }.isEqualTo("Linka")
+            get { first().rightBranch?.devices?.get(1)?.name }.isEqualTo("Tree to Air Bridge")
+            get { first().leftBranch?.devices?.get(1)?.updating }.isTrue()
+            get { first().leftBranch?.devices?.get(1)?.updateProgress }.isEqualTo(73)
         }
 
         val tree2airBridge = treeExtensions[0].rightBranch?.devices?.get(1) as TreeToAirBridge

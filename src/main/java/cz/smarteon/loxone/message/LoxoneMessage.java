@@ -18,6 +18,13 @@ import static java.util.Objects.requireNonNull;
  */
 public class LoxoneMessage<V extends LoxoneValue> {
 
+    public static final int CODE_OK = 200;
+    public static final int CODE_AUTH_FAIL = 401;
+    public static final int CODE_NOT_AUTHENTICATED = 400;
+    public static final int CODE_NOT_FOUND = 404;
+    public static final int CODE_AUTH_TOO_LONG = 420;
+    public static final int CODE_UNAUTHORIZED = 500;
+
     @JsonProperty("LL")
     protected final Content<V> content;
 
@@ -43,7 +50,7 @@ public class LoxoneMessage<V extends LoxoneValue> {
      * Return code
      * @return return code
      */
-    @NotNull @JsonIgnore
+    @JsonIgnore
     public int getCode() {
         return content.getCode();
     }
@@ -55,6 +62,24 @@ public class LoxoneMessage<V extends LoxoneValue> {
     @NotNull @JsonIgnore
     public V getValue() {
         return content.getValue();
+    }
+
+    /**
+     * Evaluates if this message is successful response.
+     * @return true if {@link #getCode()} returns 200, false otherwise
+     */
+    @JsonIgnore
+    public boolean isSuccess() {
+        return getCode() == CODE_OK;
+    }
+
+    /**
+     * Evaluates if this messages represents authentication failed response.
+     * @return true if {@link #getCode()} is 400, 401 or 420
+     */
+    @JsonIgnore
+    public boolean isAuthFailed() {
+        return getCode() == CODE_AUTH_FAIL || getCode() == CODE_NOT_AUTHENTICATED || getCode() == CODE_AUTH_TOO_LONG;
     }
 
     @Override

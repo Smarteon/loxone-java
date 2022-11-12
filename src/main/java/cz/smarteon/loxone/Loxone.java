@@ -25,14 +25,14 @@ import static java.util.Objects.requireNonNull;
 /**
  * Main entry point of the library. Provides complex access to Loxone API. Needs to be started to work properly
  * and stopped to release all the resources correctly (see {@link #start()} amd {@link #stop()}).
- *
+ * <p>
  * After {@link #start()} request the instance of {@link LoxoneApp} and then provides it by {@link #app()}, also
  * allows to listen for newly fetched {@link LoxoneApp} using {@link LoxoneAppListener}, set by
  * {@link #registerLoxoneAppListener(LoxoneAppListener)}.
- *
+ * <p>
  * Allows to configure the connection to receive update events using {@link #setEventsEnabled(boolean)}. Use
  * {@link LoxoneWebSocket#registerListener(LoxoneEventListener)} to listen for those events.
- *
+ * <p>
  * Provides set of methods to send loxone commands based on {@link Control}. Use {@link LoxoneWebSocket#registerListener(CommandResponseListener)} to listen for command responses.
  */
 public class Loxone {
@@ -85,6 +85,7 @@ public class Loxone {
         init();
     }
 
+    @SuppressWarnings("unused")
     @TestOnly
     Loxone(final @NotNull LoxoneHttp loxoneHttp, final @NotNull LoxoneWebSocket loxoneWebSocket,
            final @NotNull LoxoneAuth loxoneAuth) {

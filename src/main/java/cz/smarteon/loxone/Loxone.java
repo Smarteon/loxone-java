@@ -306,7 +306,7 @@ public class Loxone {
         }
 
         @Override
-        public boolean accepts(final @NotNull Class clazz) {
+        public boolean accepts(final @NotNull Class<?> clazz) {
             return LoxoneApp.class.equals(clazz);
         }
     }

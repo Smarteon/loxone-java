@@ -89,6 +89,16 @@ public class Command<T> {
     }
 
     /**
+     * Kill token command
+     * @param tokenHash hashed token
+     * @param user token uses
+     * @return void websocket command
+     */
+    static Command<Void> killToken(final String tokenHash, final String user) {
+        return voidWsCommand(MiniserverType.KNOWN, "jdev/sys/killtoken/%s/%s", tokenHash, user);
+    }
+
+    /**
      * Check whether this command matches the given argument.
      * @param toCompare command to compare
      * @return true when the argument contains this command identifier, false otherwise

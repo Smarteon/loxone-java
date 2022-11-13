@@ -72,6 +72,7 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
 
     // Communication stuff
     private Hashing visuHashing;
+    private Hashing hashing;
     private Token token;
     private TokenStateEvaluator tokenStateEvaluator = new TokenStateEvaluator() {};
     private TokenRepository tokenRepository = new InMemoryTokenRepository();
@@ -296,7 +297,7 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
     public State onCommand(@NotNull final Command<? extends LoxoneMessage<?>> command, @NotNull final LoxoneMessage<?> message) {
         if (message.isSuccess()) {
             if (getKeyCommand.equals(command)) {
-                final Hashing hashing = getKeyCommand.ensureValue(message.getValue());
+                hashing = getKeyCommand.ensureValue(message.getValue());
                 final TokenState tokenState = tokenStateEvaluator.evaluate(token);
                 if (tokenState.isExpired()) {
                     lastTokenCommand = EncryptedCommand.getToken(
@@ -374,6 +375,16 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
         if (autoRefreshFuture != null) {
             autoRefreshFuture.cancel(true);
         }
+    }
+
+    void killToken() {
+        sendCommand(
+                Command.killToken(
+                        LoxoneCrypto.loxoneHashing(requireNonNull(token.getToken()), hashing, "killtoken"),
+                        profile.getUsername()
+                )
+        );
+        tokenRepository.removeToken(profile);
     }
 
     private void sendCommand(final Command<?> command) {

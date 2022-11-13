@@ -270,10 +270,25 @@ public class Loxone {
 
     /**
      * Stops the service closing underlying resources, namely {@link LoxoneWebSocket}.
+     * Kills the authentication token.
      *
      * @throws LoxoneException in case the proper close failed
      */
     public void stop() {
+        stop(true);
+    }
+
+    /**
+     * Stops the service closing underlying resources, namely {@link LoxoneWebSocket}.
+     * Kills the authentication token, if requested by parameter.
+     *
+     * @param killToken whether to kill authentication token
+     * @throws LoxoneException in case the proper close failed
+     */
+    public void stop(final boolean killToken) {
+        if (killToken) {
+            loxoneAuth.killToken();
+        }
         loxoneWebSocket.close();
     }
 

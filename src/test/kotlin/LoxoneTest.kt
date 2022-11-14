@@ -7,8 +7,11 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import nl.jqno.equalsverifier.internal.lib.bytebuddy.build.HashCodeAndEqualsPlugin.ValueHandling
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import strikt.api.expectThat
 import strikt.api.expectThrows
 import strikt.assertions.isEqualTo
@@ -29,7 +32,7 @@ class LoxoneTest {
             val captureObject = slot<CommandResponseListener<Any?>>()
             every { registerListener(capture(captureObject)) } answers { appCmdListener = captureObject.captured }
         }
-        auth = mockk()
+        auth = mockk(relaxed = true)
 
         loxone = Loxone(http, webSocket, auth)
     }
@@ -119,5 +122,13 @@ class LoxoneTest {
 
         loxone.sendControlCommand(control) { genericControlCommand(it.uuid.toString(), "customOp") }
         verify(exactly = 1) { webSocket.sendCommand(match { it.command.matches(Regex(".*customOp")) }) }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `should stop`(killToken: Boolean) {
+        loxone.stop(killToken)
+        verify(exactly = if (killToken) 1 else 0) { auth.killToken() }
+        verify { webSocket.close() }
     }
 }

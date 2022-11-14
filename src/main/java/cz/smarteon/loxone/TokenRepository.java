@@ -23,4 +23,10 @@ public interface TokenRepository {
      * @param token token to be put
      */
     void putToken(final @NotNull LoxoneProfile profile, final @NotNull Token token);
+
+    /**
+     * Remove the token for given profile from the repository.
+     * @param profile Loxone profile
+     */
+    void removeToken(final @NotNull LoxoneProfile profile);
 }

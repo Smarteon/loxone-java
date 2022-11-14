@@ -1,8 +1,11 @@
 package cz.smarteon.loxone.message
 
+import com.fasterxml.jackson.databind.node.NullNode
 import cz.smarteon.loxone.readResource
 import net.javacrumbs.jsonunit.JsonAssert
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import strikt.api.expectCatching
 import strikt.api.expectThat
 import strikt.assertions.contains
@@ -41,6 +44,23 @@ class LoxoneMessageTest {
     @Test
     fun `should deserialize getToken failure`() {
         expectThat(readResource<LoxoneMessage<*>>("message/getToken401.json").code).isEqualTo(401)
+    }
+
+    @ParameterizedTest
+    @EnumSource(CodeWithStates::class)
+    fun `should have correct success state`(codeWithStates: CodeWithStates) {
+        expectThat(LoxoneMessage("control", codeWithStates.code, JsonValue(NullNode.instance))) {
+            get { isSuccess }.isEqualTo(codeWithStates.success)
+            get { isAuthFailed }.isEqualTo(codeWithStates.authFailed)
+        }
+    }
+
+    enum class CodeWithStates(val code: Int, val success: Boolean, val authFailed: Boolean) {
+        SUCCESS(200, true, false),
+        ERROR(500, false, false),
+        AUTH_FAIL_400(400, false, true),
+        AUTH_FAIL_401(401, false, true),
+        AUTH_FAIL_420(420, false, true),
     }
 
     companion object {

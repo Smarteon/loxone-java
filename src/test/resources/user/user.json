@@ -1,0 +1,35 @@
+{
+  "uuid":"12eebb90-00a1-3073-ffff88c561c84c44",
+  "name":"admin",
+  "userid":"1234 24 12 83",
+  "isAdmin":true,
+  "masterAdmin":true,
+  "changePassword":true,
+  "userstate":2,
+  "validUntil":1200,
+  "validFrom":130,
+  "userRights":2047,
+  "scorePWD":2,
+  "scoreVisuPWD":-2,
+  "usergroups":[
+    {
+      "name":"Administratoren",
+      "uuid":"12eebb90-00a1-3076-ffff88c561c84c44"
+    },
+    {
+      "name":"Alle",
+      "uuid":"12eebb90-00a1-307c-ffff88c561c84c44"
+    }
+  ],
+  "nfcTags":[
+    {
+      "name":"NFC-Tag",
+      "id":"12 34 56 78 90 98 76 54"
+    }
+  ],
+  "keycodes":[
+    {
+      "code":"6C3A7D85A4B196E37C5DADFDE7E0586ED4D7137C"
+    }
+  ]
+}

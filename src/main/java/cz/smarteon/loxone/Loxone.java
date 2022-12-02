@@ -4,6 +4,9 @@ import cz.smarteon.loxone.app.Control;
 import cz.smarteon.loxone.app.LoxoneApp;
 import cz.smarteon.loxone.message.ControlCommand;
 import cz.smarteon.loxone.message.JsonValue;
+import cz.smarteon.loxone.message.LoxoneMessage;
+import cz.smarteon.loxone.message.LoxoneValue;
+import cz.smarteon.loxone.user.UserCommand;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -265,6 +268,22 @@ public class Loxone {
         } else {
             webSocket().sendCommand(controlCommand);
         }
+    }
+
+    /**
+     * Sends command built by {@link UserCommand} using http
+     * @param userCommand user command
+     */
+    public <V extends LoxoneValue> LoxoneMessage<V> sendUserCommandHttp(final @NotNull UserCommand<V> userCommand) {
+        return loxoneHttp.get(userCommand, loxoneAuth);
+    }
+
+    /**
+     * Sends command built by {@link UserCommand} using websocket
+     * @param userCommand user command
+     */
+    public void sendUserCommand(final @NotNull UserCommand<?> userCommand) {
+        loxoneWebSocket.sendCommand(userCommand);
     }
 
     /**

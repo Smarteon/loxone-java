@@ -32,9 +32,15 @@ import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITI
 import static cz.smarteon.loxone.message.MessageHeader.FIRST_BYTE;
 import static cz.smarteon.loxone.message.MessageHeader.PAYLOAD_LENGTH;
 
+/**
+ * Coding and decoding utilities. Central point in the library for all the coding and decoding configuration and logic.
+ */
+@SuppressWarnings({"InnerTypeLast", "ClassDataAbstractionCoupling"})
 public abstract class Codec {
 
     private static final String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    private static final char SEPARATOR = ':';
+
     private static final Function<byte[], String> DEFAULT_BASE64_ENCODER =
             bytes -> Base64.getEncoder().encodeToString(bytes);
     private static final Function<String, byte[]> DEFAULT_BASE64_DECODER =
@@ -43,18 +49,16 @@ public abstract class Codec {
     private static Function<byte[], String> base64encoder = DEFAULT_BASE64_ENCODER;
     private static Function<String, byte[]> base64decoder = DEFAULT_BASE64_DECODER;
 
-    public static DateFormat DATE_FORMAT = new SimpleDateFormat(DATE_PATTERN);
+    public static final DateFormat DATE_FORMAT = new SimpleDateFormat(DATE_PATTERN);
 
     private static class JsonMapperHolder {
-        static final ObjectMapper mapper = JsonMapper.builder()
+        static final ObjectMapper MAPPER = JsonMapper.builder()
                 .configure(ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
                 .enable(ALLOW_UNESCAPED_CONTROL_CHARS)
                 .defaultDateFormat(DATE_FORMAT)
                 .defaultLocale(Locale.getDefault())
                 .build();
     }
-
-    private static final char SEPARATOR = ':';
 
     static String concat(String first, String second) {
         return first + SEPARATOR + second;
@@ -65,7 +69,7 @@ public abstract class Codec {
     }
 
     /**
-     * Decodes HEX represented as String in bytes to String
+     * Decodes HEX represented as String in bytes to String.
      *
      * @param hex String to decode
      * @return the decoded bytes
@@ -81,7 +85,7 @@ public abstract class Codec {
     public static String bytesToHex(byte[] bytes) {
         final StringBuilder sb = new StringBuilder(bytes.length * 2);
 
-        Formatter formatter = new Formatter(sb);
+        final Formatter formatter = new Formatter(sb);
         for (byte b : bytes) {
             formatter.format("%02x", b);
         }
@@ -132,7 +136,7 @@ public abstract class Codec {
     }
 
     public static String writeMessage(final Object message) throws IOException {
-        return JsonMapperHolder.mapper.writeValueAsString(message);
+        return JsonMapperHolder.MAPPER.writeValueAsString(message);
     }
 
     @Deprecated
@@ -146,11 +150,11 @@ public abstract class Codec {
     }
 
     public static <T> T readMessage(final String message, final Class<T> clazz) throws IOException {
-        return JsonMapperHolder.mapper.readValue(message, clazz);
+        return JsonMapperHolder.MAPPER.readValue(message, clazz);
     }
 
     public static <T> T readMessage(final InputStream message, final Class<T> clazz) throws IOException {
-        return JsonMapperHolder.mapper.readValue(message, clazz);
+        return JsonMapperHolder.MAPPER.readValue(message, clazz);
     }
 
     public static <T> T readXml(final InputStream xml, final Class<T> clazz) throws IOException {
@@ -171,7 +175,7 @@ public abstract class Codec {
      * @return converted object
      */
     public static <T> T convertValue(final @NotNull JsonNode jsonNode, final @NotNull Class<T> clazz) {
-        return JsonMapperHolder.mapper.convertValue(jsonNode, clazz);
+        return JsonMapperHolder.MAPPER.convertValue(jsonNode, clazz);
     }
 
     public static MessageHeader readHeader(final ByteBuffer bytes) {
@@ -179,7 +183,8 @@ public abstract class Codec {
         final int limit = bytes.limit();
         final byte first = bytes.get();
         if (limit != PAYLOAD_LENGTH || first != FIRST_BYTE) {
-            throw new LoxoneException("Payload is not a valid loxone message header, size=" + limit + ", firstByte=" + first);
+            throw new LoxoneException("Payload is not a valid loxone message header, size="
+                    + limit + ", firstByte=" + first);
         } else {
 
             return new MessageHeader(
@@ -245,7 +250,7 @@ public abstract class Codec {
 
     private static byte[] readBytes(final ByteBuffer buffer, final int length) {
         // sanitize when less than declared length actually received
-        int l = Math.min(length, buffer.remaining());
+        final int l = Math.min(length, buffer.remaining());
         final byte[] bytes = new byte[l];
         buffer.get(bytes, 0, l);
         return bytes;

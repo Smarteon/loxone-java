@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import cz.smarteon.loxone.LoxoneTime;
 import cz.smarteon.loxone.LoxoneUuid;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,8 +27,6 @@ import static java.util.Objects.requireNonNull;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
 public class User extends UserBase{
-
-    private static final int LOXONE_EPOCH_BEGIN = 1230768000;
 
     /**
      * Provided as seconds since 1.1.2009 00:00:00
@@ -103,8 +102,7 @@ public class User extends UserBase{
      */
     @JsonIgnore
     public LocalDateTime getValidFromDateTime() {
-        return LocalDateTime.ofEpochSecond(LOXONE_EPOCH_BEGIN + validFrom, 0,
-                ZoneOffset.systemDefault().getRules().getOffset(Instant.now()));
+        return LoxoneTime.getLocalDateTime(validFrom);
     }
 
     /**
@@ -113,7 +111,6 @@ public class User extends UserBase{
      */
     @JsonIgnore
     public LocalDateTime getValidUntilDateTime() {
-        return LocalDateTime.ofEpochSecond(LOXONE_EPOCH_BEGIN + validUntil, 0,
-                ZoneOffset.systemDefault().getRules().getOffset(Instant.now()));
+        return LoxoneTime.getLocalDateTime(validUntil);
     }
 }

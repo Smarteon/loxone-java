@@ -5,11 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import cz.smarteon.loxone.LoxoneTime;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -17,8 +16,6 @@ import java.util.Objects;
  * Represents Loxone authentication token.
  */
 public class Token implements LoxoneValue {
-
-    private static final int LOXONE_EPOCH_BEGIN = 1230768000;
 
     private final String token;
     private final byte[] key;
@@ -82,7 +79,7 @@ public class Token implements LoxoneValue {
      */
     @JsonIgnore
     public long getSecondsToExpire() {
-        return (LOXONE_EPOCH_BEGIN + validUntil) - (System.currentTimeMillis() / 1000);
+        return LoxoneTime.getUnixEpochSeconds(validUntil) - (System.currentTimeMillis() / 1000);
     }
 
     /**
@@ -91,8 +88,7 @@ public class Token implements LoxoneValue {
      */
     @JsonIgnore
     public LocalDateTime getValidUntilDateTime() {
-        return LocalDateTime.ofEpochSecond(LOXONE_EPOCH_BEGIN + validUntil, 0,
-                ZoneOffset.systemDefault().getRules().getOffset(Instant.now()));
+        return LoxoneTime.getLocalDateTime(validUntil);
     }
 
     /**

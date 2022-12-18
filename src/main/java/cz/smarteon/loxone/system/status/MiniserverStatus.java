@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +33,7 @@ public class MiniserverStatus {
     @XmlElement(name = "NetworkDevices")
     private List<NetworkDevices> networkDevices;
 
-    MiniserverStatus() {}
+    MiniserverStatus() { }
 
     @Nullable
     public String getModified() {
@@ -42,7 +41,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Miniserver type
+     * Miniserver type.
      * @return type of miniserver
      */
     @NotNull
@@ -51,7 +50,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Miniserver name
+     * Miniserver name.
      * @return name
      */
     @Nullable
@@ -60,7 +59,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Miniserver IP address
+     * Miniserver IP address.
      * @return IP address
      */
     @Nullable
@@ -69,7 +68,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Miniserver network address mask
+     * Miniserver network address mask.
      * @return network mask
      */
     @Nullable
@@ -78,7 +77,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Network gateway miniserver uses
+     * Network gateway miniserver uses.
      * @return gateway
      */
     @Nullable
@@ -87,7 +86,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Whether the network was set by DHCP
+     * Whether the network was set by DHCP.
      * @return true if DHCP used, false otherwise
      */
     public boolean usesDhcp() {
@@ -95,7 +94,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Assigned DNS server 1
+     * Assigned DNS server 1.
      * @return DNS server address
      */
     @Nullable
@@ -104,7 +103,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Assigned DNS server 2
+     * Assigned DNS server 2.
      * @return DNS server address
      */
     @Nullable
@@ -113,7 +112,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Miniserver's MAC address
+     * Miniserver's MAC address.
      * @return mac address
      */
     @Nullable
@@ -122,7 +121,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Miniserver device label
+     * Miniserver device label.
      * @return device
      */
     @Nullable
@@ -131,7 +130,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Miniserver version
+     * Miniserver version.
      * @return version
      */
     @Nullable
@@ -153,7 +152,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Count of loxone link errors
+     * Count of loxone link errors.
      * @return loxone link errors
      */
     @Nullable
@@ -180,18 +179,6 @@ public class MiniserverStatus {
     }
 
     /**
-     * List of configured network devices
-     * @return configured network devices
-     */
-    @NotNull
-    public List<NetworkDevices> getNetworkDevices() {
-        final List<NetworkDevices> result =
-                networkDevices != null ? new ArrayList<>(networkDevices) : new ArrayList<>();
-        if (content.networkDevices != null) result.addAll(content.networkDevices);
-        return result;
-    }
-
-    /**
      * List of extensions of given type.
      * @param extensionType extension type class
      * @param <T> extension type
@@ -203,6 +190,20 @@ public class MiniserverStatus {
                 .filter(e -> extensionType.isAssignableFrom(e.getClass()))
                 .map(extensionType::cast)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * List of configured network devices.
+     * @return configured network devices
+     */
+    @NotNull
+    public List<NetworkDevices> getNetworkDevices() {
+        final List<NetworkDevices> result =
+                networkDevices != null ? new ArrayList<>(networkDevices) : new ArrayList<>();
+        if (content.networkDevices != null) {
+            result.addAll(content.networkDevices);
+        }
+        return result;
     }
 
 
@@ -247,13 +248,19 @@ public class MiniserverStatus {
         @XmlElement(name = "TreeBranch")
         private List<TreeBranch> treeBranches;
 
-        Content() {}
+        Content() { }
 
         @NotNull List<Extension> getExtensions() {
             final List<Extension> result = new ArrayList<>();
-            if (extensions != null) result.addAll(extensions);
-            if (link != null && link.extensions != null) result.addAll(link.extensions);
-            if (treeBranches != null) result.add(new TreeExtension(treeBranches));
+            if (extensions != null) {
+                result.addAll(extensions);
+            }
+            if (link != null && link.extensions != null) {
+                result.addAll(link.extensions);
+            }
+            if (treeBranches != null) {
+                result.add(new TreeExtension(treeBranches));
+            }
             return result;
         }
     }

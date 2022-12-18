@@ -244,12 +244,16 @@ public class MiniserverStatus {
         @XmlElement(name = "Link")
         private Link link;
 
+        @XmlElement(name = "TreeBranch")
+        private List<TreeBranch> treeBranches;
+
         Content() {}
 
         @NotNull List<Extension> getExtensions() {
             final List<Extension> result = new ArrayList<>();
             if (extensions != null) result.addAll(extensions);
             if (link != null && link.extensions != null) result.addAll(link.extensions);
+            if (treeBranches != null) result.add(new TreeExtension(treeBranches));
             return result;
         }
     }

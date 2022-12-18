@@ -131,4 +131,18 @@ class MiniserverStatusTest {
             get { networkDevices }.hasSize(3)
         }
     }
+
+    @Test
+    fun `should deserialize 13_1 Gen2`() {
+        val ms = readResourceXml<MiniserverStatus>("system/status/status_13_1_Gen2.xml")
+
+        expectThat(ms) {
+            get { extensions }.hasSize(3)
+            get { getExtensions(TreeExtension::class.java) }.hasSize(2).and {
+                get { firstOrNull { it.type == "BuiltIn Tree" } }.isNotNull().and {
+                    get { rightBranch?.devices }.isNotNull().hasSize(1)
+                }
+            }
+        }
+    }
 }

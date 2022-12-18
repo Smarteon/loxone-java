@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Status Modified="2022-12-06 16:55:53">
+    <Miniserver Type="0" Name="oak" IP="10.54.20.10" Mask="255.255.255.0" Gateway="10.54.20.1" DHCP="true"
+                DNS1="10.54.20.12" DNS2="10.54.20.11" MAC="504F9411125F" Device="oak" Version="13.1.10.19"
+                Offline="true" LANErrors="0.000%" LinkErrors="0">
+        <NetworkDevices Name="Síťové periferie" Type="NetworkDevices" Branch="27" Icon="221"/>
+        <Extension Type="" Code="64" Name="KNX/EIB sběrnice" Serial="00000000" Version="0.0.0.0" Online="false"
+                   IntDev="false" DummyDev="false"/>
+        <NetworkDevices Name="Intercom" Type="NetworkDevices" Branch="21" Icon="647"/>
+        <Link Name="Link" Type="Link" Branch="24" Icon="697">
+            <Extension Type="Tree Extension" Code="180" Name="Tree Extension" Serial="13106567" Version="11.2.11.10"
+                       Online="true" IntDev="false" DummyDev="false">
+                <TreeBranch Branch="2" Name="Tree větev" Icon="228" Serial="13106567" Version="11.2.11.10" Devices="9"
+                            Errors="9">
+                    <TreeDevice Code="-2147417931" Name="U okna" Place="Děcák" Inst="" Serial="B01746DC"
+                                Version="12.2.9.10" Online="true" LastReceived="2022-12-06 16:55:53" TimeDiff="0"
+                                DummyDev="false"/>
+                </TreeBranch>
+                <TreeBranch Branch="3" Name="Tree větev" Icon="228" Serial="13106567" Version="11.2.11.10" Devices="2"
+                            Errors="7">
+                    <TreeDevice Code="-2147286859" Name="Touch Tree" Place="Ložnice" Inst="Nad postelí"
+                                Serial="B0173D60" Version="12.4.3.10" Online="true" LastReceived="2022-12-06 16:55:53"
+                                TimeDiff="0" DummyDev="false"/>
+                </TreeBranch>
+            </Extension>
+            <Extension Type="Air Base Extension" Code="170" Name="Air Base Extension" Serial="0cd87947"
+                       Version="13.1.9.5" Online="true" IntDev="false" DummyDev="false" Mac="50:4F:94:FF:FE:86:04:3E"
+                       Occupied="false" Interfered="false">
+                <AirDevice Type="Senzor teploty/vlhkosti Air" Code="393387" Name="Koupelna 2NP"
+                           Place="Koupelna v prvním patře" Inst="Koupelna 2NP" Serial="50:4F:94:FF:FE:87:6E:30"
+                           IP="FE80000000000000524F94FFFE876E30" LastReceived="2022-12-06 16:44:59" TimeDiff="654"
+                           Version="11.2.11.12" MinVersion="11021112" HwVersion="1" Hops="2" QualityExt="3"
+                           QualityDev="3" Online="true" Battery="68" DummyDev="false"/>
+            </Extension>
+            <Extension Type="1-Wire Extension" Code="8" Name="1-Wire Extension" Serial="05d8726f" Version="12.1.3.22"
+                       Online="true" IntDev="false" DummyDev="false">
+                <OneWireDevice Name="Koupelna naši Teplota" Code="101" Serial="28.BB.CE.AD.07.00.00.2F"
+                               Family="00000028" LastReceived="2022-12-06 16:54:56" TimeDiff="57" Online="true"/>
+            </Extension>
+        </Link>
+    </Miniserver>
+    <NetworkDevices Name="Audio" Type="NetworkDevices" Branch="14" Icon="225"/>
+</Status>

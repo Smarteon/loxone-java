@@ -1,5 +1,6 @@
 package cz.smarteon.loxone.system.status;
 
+import cz.smarteon.loxone.LoxoneNotDocumented;
 import cz.smarteon.loxone.PercentDoubleAdapter;
 import cz.smarteon.loxone.app.MiniserverType;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 /**
  * Represents {@link cz.smarteon.loxone.Command#DATA_STATUS} payload. Only intended for deserialization.
  */
+@LoxoneNotDocumented
 @XmlRootElement(name = "Status")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MiniserverStatus {
@@ -28,6 +30,9 @@ public class MiniserverStatus {
 
     @XmlElement(name = "Miniserver")
     private Content content;
+
+    @XmlElement(name = "NetworkDevices")
+    private List<NetworkDevices> networkDevices;
 
     MiniserverStatus() {}
 
@@ -162,23 +167,28 @@ public class MiniserverStatus {
      */
     @NotNull
     public List<Extension> getExtensions() {
-        final List<Extension> allExtensions = content.extensions != null ?
-                new ArrayList<>(content.extensions) : new ArrayList<>();
-        if (getNetworkDevices() != null && getNetworkDevices().getGenericDevices() != null) {
-            getNetworkDevices().getGenericDevices().stream()
-                    .map(GenericNetworkDevice::getExtensions)
-                    .forEach(allExtensions::addAll);
-        }
+        final List<Extension> allExtensions = content.getExtensions();
+        getNetworkDevices().forEach(nd -> {
+            if (nd.getGenericDevices() != null) {
+                nd.getGenericDevices().stream()
+                        .map(GenericNetworkDevice::getExtensions)
+                        .forEach(allExtensions::addAll);
+
+            }
+        });
         return allExtensions;
     }
 
     /**
      * List of configured network devices
-     * @return configured network devices or null
+     * @return configured network devices
      */
-    @Nullable
-    public NetworkDevices getNetworkDevices() {
-        return content.networkDevices;
+    @NotNull
+    public List<NetworkDevices> getNetworkDevices() {
+        final List<NetworkDevices> result =
+                networkDevices != null ? new ArrayList<>(networkDevices) : new ArrayList<>();
+        if (content.networkDevices != null) result.addAll(content.networkDevices);
+        return result;
     }
 
     /**
@@ -229,8 +239,24 @@ public class MiniserverStatus {
         private List<Extension> extensions;
 
         @XmlElement(name = "NetworkDevices")
-        private NetworkDevices networkDevices;
+        private List<NetworkDevices> networkDevices;
+
+        @XmlElement(name = "Link")
+        private Link link;
 
         Content() {}
+
+        @NotNull List<Extension> getExtensions() {
+            final List<Extension> result = new ArrayList<>();
+            if (extensions != null) result.addAll(extensions);
+            if (link != null && link.extensions != null) result.addAll(link.extensions);
+            return result;
+        }
+    }
+
+    @XmlAccessorType(XmlAccessType.FIELD)
+    private static class Link {
+        @XmlElement(name = "Extension") @XmlJavaTypeAdapter(ExtensionAdapter.class)
+        private List<Extension> extensions;
     }
 }

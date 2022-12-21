@@ -28,8 +28,8 @@ class MiniserverStatusTest {
             get { lanErrorsPercent }.isEqualTo(0.0)
             get { linkErrorsCount }.isEqualTo(0)
 
-            get { networkDevices }.isNotNull().and {
-                get { genericDevices }.isNotNull().hasSize(1)
+            get { networkDevices }.hasSize(1).and {
+                get { first().genericDevices }.isNotNull().hasSize(1)
                     .get { first() }.and {
                         get { type }.isEqualTo("Intercom")
                         get { name }.isEqualTo("Intercom")
@@ -119,6 +119,30 @@ class MiniserverStatusTest {
             hasSize(1)
             get { this[0].devices }.hasSize(1)
             get { this[0].devices[0].serialNumber }.isEqualTo("0:83213221")
+        }
+    }
+
+    @Test
+    fun `should deserialize 13_1 Gen1`() {
+        val ms = readResourceXml<MiniserverStatus>("system/status/status_13_1_Gen1.xml")
+
+        expectThat(ms) {
+            get { extensions }.hasSize(4)
+            get { networkDevices }.hasSize(3)
+        }
+    }
+
+    @Test
+    fun `should deserialize 13_1 Gen2`() {
+        val ms = readResourceXml<MiniserverStatus>("system/status/status_13_1_Gen2.xml")
+
+        expectThat(ms) {
+            get { extensions }.hasSize(3)
+            get { getExtensions(TreeExtension::class.java) }.hasSize(2).and {
+                get { firstOrNull { it.type == "BuiltIn Tree" } }.isNotNull().and {
+                    get { rightBranch?.devices }.isNotNull().hasSize(1)
+                }
+            }
         }
     }
 }

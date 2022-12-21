@@ -1,5 +1,6 @@
 package cz.smarteon.loxone.system.status;
 
+import cz.smarteon.loxone.LoxoneNotDocumented;
 import cz.smarteon.loxone.PercentDoubleAdapter;
 import cz.smarteon.loxone.app.MiniserverType;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -12,13 +13,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Represents {@link cz.smarteon.loxone.Command#DATA_STATUS} payload. Only intended for deserialization.
  */
+@LoxoneNotDocumented
 @XmlRootElement(name = "Status")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MiniserverStatus {
@@ -29,7 +30,10 @@ public class MiniserverStatus {
     @XmlElement(name = "Miniserver")
     private Content content;
 
-    MiniserverStatus() {}
+    @XmlElement(name = "NetworkDevices")
+    private List<NetworkDevices> networkDevices;
+
+    MiniserverStatus() { }
 
     @Nullable
     public String getModified() {
@@ -37,7 +41,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Miniserver type
+     * Miniserver type.
      * @return type of miniserver
      */
     @NotNull
@@ -46,7 +50,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Miniserver name
+     * Miniserver name.
      * @return name
      */
     @Nullable
@@ -55,7 +59,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Miniserver IP address
+     * Miniserver IP address.
      * @return IP address
      */
     @Nullable
@@ -64,7 +68,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Miniserver network address mask
+     * Miniserver network address mask.
      * @return network mask
      */
     @Nullable
@@ -73,7 +77,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Network gateway miniserver uses
+     * Network gateway miniserver uses.
      * @return gateway
      */
     @Nullable
@@ -82,7 +86,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Whether the network was set by DHCP
+     * Whether the network was set by DHCP.
      * @return true if DHCP used, false otherwise
      */
     public boolean usesDhcp() {
@@ -90,7 +94,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Assigned DNS server 1
+     * Assigned DNS server 1.
      * @return DNS server address
      */
     @Nullable
@@ -99,7 +103,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Assigned DNS server 2
+     * Assigned DNS server 2.
      * @return DNS server address
      */
     @Nullable
@@ -108,7 +112,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Miniserver's MAC address
+     * Miniserver's MAC address.
      * @return mac address
      */
     @Nullable
@@ -117,7 +121,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Miniserver device label
+     * Miniserver device label.
      * @return device
      */
     @Nullable
@@ -126,7 +130,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Miniserver version
+     * Miniserver version.
      * @return version
      */
     @Nullable
@@ -148,7 +152,7 @@ public class MiniserverStatus {
     }
 
     /**
-     * Count of loxone link errors
+     * Count of loxone link errors.
      * @return loxone link errors
      */
     @Nullable
@@ -162,23 +166,16 @@ public class MiniserverStatus {
      */
     @NotNull
     public List<Extension> getExtensions() {
-        final List<Extension> allExtensions = content.extensions != null ?
-                new ArrayList<>(content.extensions) : new ArrayList<>();
-        if (getNetworkDevices() != null && getNetworkDevices().getGenericDevices() != null) {
-            getNetworkDevices().getGenericDevices().stream()
-                    .map(GenericNetworkDevice::getExtensions)
-                    .forEach(allExtensions::addAll);
-        }
-        return allExtensions;
-    }
+        final List<Extension> allExtensions = content.getExtensions();
+        getNetworkDevices().forEach(nd -> {
+            if (nd.getGenericDevices() != null) {
+                nd.getGenericDevices().stream()
+                        .map(GenericNetworkDevice::getExtensions)
+                        .forEach(allExtensions::addAll);
 
-    /**
-     * List of configured network devices
-     * @return configured network devices or null
-     */
-    @Nullable
-    public NetworkDevices getNetworkDevices() {
-        return content.networkDevices;
+            }
+        });
+        return allExtensions;
     }
 
     /**
@@ -193,6 +190,20 @@ public class MiniserverStatus {
                 .filter(e -> extensionType.isAssignableFrom(e.getClass()))
                 .map(extensionType::cast)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * List of configured network devices.
+     * @return configured network devices
+     */
+    @NotNull
+    public List<NetworkDevices> getNetworkDevices() {
+        final List<NetworkDevices> result =
+                networkDevices != null ? new ArrayList<>(networkDevices) : new ArrayList<>();
+        if (content.networkDevices != null) {
+            result.addAll(content.networkDevices);
+        }
+        return result;
     }
 
 
@@ -229,8 +240,34 @@ public class MiniserverStatus {
         private List<Extension> extensions;
 
         @XmlElement(name = "NetworkDevices")
-        private NetworkDevices networkDevices;
+        private List<NetworkDevices> networkDevices;
 
-        Content() {}
+        @XmlElement(name = "Link")
+        private Link link;
+
+        @XmlElement(name = "TreeBranch")
+        private List<TreeBranch> treeBranches;
+
+        Content() { }
+
+        @NotNull List<Extension> getExtensions() {
+            final List<Extension> result = new ArrayList<>();
+            if (extensions != null) {
+                result.addAll(extensions);
+            }
+            if (link != null && link.extensions != null) {
+                result.addAll(link.extensions);
+            }
+            if (treeBranches != null) {
+                result.add(new TreeExtension(treeBranches));
+            }
+            return result;
+        }
+    }
+
+    @XmlAccessorType(XmlAccessType.FIELD)
+    private static class Link {
+        @XmlElement(name = "Extension") @XmlJavaTypeAdapter(ExtensionAdapter.class)
+        private List<Extension> extensions;
     }
 }

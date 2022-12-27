@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Status Modified="2022-12-07 07:20:37">
+    <Miniserver Type="2" Name="SomeName" IP="192.168.16.77" Mask="255.255.255.0" Gateway="192.168.16.1" DHCP="false" DNS1="192.168.16.1" DNS2="8.8.8.8" MAC="504F94A0AXX21" Device="SS" Version="13.1.10.19" Offline="true">
+        <NetworkDevices Name="Intercom" Type="NetworkDevices" Branch="21" Icon="647"/>
+        <NetworkDevices Name="Síťové periferie" Type="NetworkDevices" Branch="27" Icon="221"/>
+        <TreeBranch Branch="3" Name="Tree větev" Icon="228" Serial="13000001" Version="13.1.9.19" Devices="44" Errors="0">
+            <TreeDevice Code="-2146697035" Name="DIMM1" Place="Not assigned" Inst="" Serial="C012B3B6" Version="12.4.6.24" Online="true" LastReceived="2022-12-07 07:20:38" TimeDiff="1" DummyDev="false"/>
+        </TreeBranch>
+        <Link Name="Link" Type="Link" Branch="24" Icon="697">
+            <Extension Type="Relay Extension" Code="160" Name="Relay Extension 1" Serial="0bda6368" Version="12.4.5.25" HwVersion="2" Online="true" IntDev="false" DummyDev="false"/>
+            <Extension Type="Tree Extension" Code="180" Name="Tree Extension" Serial="131100eb" Version="11.2.11.10" HwVersion="2" Online="true" IntDev="false" DummyDev="false">
+                <TreeBranch Branch="2" Name="Tree větev" Icon="228" Serial="131100eb" Version="11.2.11.10" Devices="1" Errors="0">
+                    <TreeDevice Code="-2146828107" Name="Meteostanice" Place="Outside" Inst="Střecha" Serial="B028F337" Version="11.2.12.2" Online="true" LastReceived="2022-12-07 07:20:38" TimeDiff="1" DummyDev="false"/>
+                </TreeBranch>
+                <TreeBranch Branch="3" Name="Tree větev" Icon="228" Serial="131100eb" Version="11.2.11.10" Devices="31" Errors="2">
+                    <TreeDevice Code="-2147155787" Name="TL110.1 u vchodu" Place="110 Living room" Inst="" Serial="B02E0D29" Version="12.4.6.8" Online="true" LastReceived="2022-12-07 07:20:38" TimeDiff="1" DummyDev="false"/>
+                </TreeBranch>
+            </Extension>
+        </Link>
+    </Miniserver>
+    <NetworkDevices Name="Audio" Type="NetworkDevices" Branch="14" Icon="225">
+        <MultiMediaServer Name="as3F0A" IP="192.168.16.76:7095" MAC="504F94F03F0A" Version="MINISERVER V 2.7.06.28 504F94F03F0A | ~API:2.0~  " TreeTurbo="1.046dM.001530" State="2" ST="1">
+            <TreeTurbo Name="Tree Turbo" Type="TreeTurbo" Branch="8" Icon="519" Version="1.046dM.001530">
+                <Zone Name="SE1" MAC="504F94F147C4" CType="3" CType2="0" CState="2" VER="2.7.6.28"/>
+            </TreeTurbo>
+        </MultiMediaServer>
+    </NetworkDevices>
+</Status>

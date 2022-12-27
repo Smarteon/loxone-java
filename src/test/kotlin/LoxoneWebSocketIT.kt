@@ -1,7 +1,6 @@
 package cz.smarteon.loxone
 
 import cz.smarteon.loxone.Command.voidWsCommand
-import cz.smarteon.loxone.app.MiniserverType
 import cz.smarteon.loxone.app.MiniserverType.KNOWN
 import cz.smarteon.loxone.message.ControlCommand.genericControlCommand
 import cz.smarteon.loxone.mock.CryptoMock.PASS
@@ -38,7 +37,7 @@ class LoxoneWebSocketIT {
     @Test
     fun `should send simple command`() {
         mockServer.expect(equalTo("testCmd"))
-        lws.sendCommand(Command.voidWsCommand(MiniserverType.KNOWN, "testCmd"))
+        lws.sendCommand(voidWsCommand(KNOWN, "testCmd"))
         await.until { mockServer.verifyExpectations() }
     }
 

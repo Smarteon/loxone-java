@@ -28,7 +28,20 @@ class MiniserverStatusTest {
             get { lanErrorsPercent }.isEqualTo(0.0)
             get { linkErrorsCount }.isEqualTo(0)
 
-            get { extensions }.hasSize(12)
+            get { networkDevices }.hasSize(1).and {
+                get { first().genericDevices }.isNotNull().hasSize(1)
+                    .get { first() }.and {
+                        get { type }.isEqualTo("Intercom")
+                        get { name }.isEqualTo("Intercom")
+                        get { place }.isEqualTo("Zádveří")
+                        get { mac }.isEqualTo("504F94E051F4")
+                        get { isOnline }.isTrue()
+                        get { version }.isEqualTo("13.00.06.29")
+                        get { extensions }.hasSize(1).get { first() }.isA<TreeExtension>()
+                    }
+            }
+
+            get { extensions }.hasSize(14)
             get { extensions[1] }
                 .isA<BasicExtension>()
                 .get { name }.isEqualTo("Extension")
@@ -58,7 +71,8 @@ class MiniserverStatusTest {
             }
             get { extensions[9].serialNumber }.isEqualTo("17d8060c")
             get { extensions[10].serialNumber }.isEqualTo("16d80173")
-            get { extensions[11] }
+            get { extensions[11].serialNumber }.isEqualTo("06d81137")
+            get { extensions[12] }
                 .isA<UnrecognizedExtension>()
                 .get { name }.isEqualTo("Some Future Extension")
         }
@@ -82,12 +96,12 @@ class MiniserverStatusTest {
 
         val treeExtensions = ms.getExtensions(TreeExtension::class.java)
         expectThat(treeExtensions) {
-            hasSize(1)
-            get { this[0].leftBranch?.devices?.size }.isEqualTo(2)
-            get { this[0].rightBranch?.devices?.get(0)?.name }.isEqualTo("Linka")
-            get { this[0].rightBranch?.devices?.get(1)?.name }.isEqualTo("Tree to Air Bridge")
-            get { this[0].leftBranch?.devices?.get(1)?.updating }.isTrue()
-            get { this[0].leftBranch?.devices?.get(1)?.updateProgress }.isEqualTo(73)
+            hasSize(2)
+            get { first().leftBranch?.devices?.size }.isEqualTo(2)
+            get { first().rightBranch?.devices?.get(0)?.name }.isEqualTo("Linka")
+            get { first().rightBranch?.devices?.get(1)?.name }.isEqualTo("Tree to Air Bridge")
+            get { first().leftBranch?.devices?.get(1)?.updating }.isTrue()
+            get { first().leftBranch?.devices?.get(1)?.updateProgress }.isEqualTo(73)
         }
 
         val tree2airBridge = treeExtensions[0].rightBranch?.devices?.get(1) as TreeToAirBridge
@@ -105,6 +119,30 @@ class MiniserverStatusTest {
             hasSize(1)
             get { this[0].devices }.hasSize(1)
             get { this[0].devices[0].serialNumber }.isEqualTo("0:83213221")
+        }
+    }
+
+    @Test
+    fun `should deserialize 13_1 Gen1`() {
+        val ms = readResourceXml<MiniserverStatus>("system/status/status_13_1_Gen1.xml")
+
+        expectThat(ms) {
+            get { extensions }.hasSize(4)
+            get { networkDevices }.hasSize(3)
+        }
+    }
+
+    @Test
+    fun `should deserialize 13_1 Gen2`() {
+        val ms = readResourceXml<MiniserverStatus>("system/status/status_13_1_Gen2.xml")
+
+        expectThat(ms) {
+            get { extensions }.hasSize(3)
+            get { getExtensions(TreeExtension::class.java) }.hasSize(2).and {
+                get { firstOrNull { it.type == "BuiltIn Tree" } }.isNotNull().and {
+                    get { rightBranch?.devices }.isNotNull().hasSize(1)
+                }
+            }
         }
     }
 }

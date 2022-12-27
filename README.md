@@ -71,15 +71,9 @@ Codec.setBase64Codec(..., ...);
 ```
 ## Development & Contributions
 
-_Note:_ Build currently requires at least JDK 11 & Gradle 7.2 to be locally installed
+_Note:_ Build currently requires at least JDK 11 to be locally installed
 
-Start by generating gradle wrapper binaries (using local gradle installation)
-
-```bash
-gradle wrapper --gradle-version 7.2
-```
-
-After that you can use the gradlew binary to do builds & tests
+Gradle wrapper is in the repository - should be available once you clone it. You can use the `gradlew` to do builds & tests
 
 ```bash
 ./gradlew build
@@ -97,3 +91,8 @@ MiniserverDiscovererTest > should discover() FAILED
 
 It is adviced to install the lombok plugin for your IDE of choice, this makes coding & debugging easier, you can find the 
 instructions for installing the plugin for various IDE's on the following location https://projectlombok.org/setup/
+
+### Writing unit tests
+We prefer [Junit5 with Kotlin](https://www.baeldung.com/kotlin/junit-5-kotlin), [Strikt](https://strikt.io/) and [Mockk](https://mockk.io/) for writing unit testing. Please follow the guidelines and documentation on the internet. 
+Kotlin is easy to grab fro Java programmers and in many cases it allows more concise code. However Java + Junit5 unit 
+tests will be accepted as well.

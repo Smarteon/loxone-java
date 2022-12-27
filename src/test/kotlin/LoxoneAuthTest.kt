@@ -1,8 +1,11 @@
 package cz.smarteon.loxone
 
+import com.fasterxml.jackson.databind.node.NullNode
 import cz.smarteon.loxone.CommandResponseListener.State.CONSUMED
 import cz.smarteon.loxone.message.ApiInfo
+import cz.smarteon.loxone.message.ControlCommand.genericControlCommand
 import cz.smarteon.loxone.message.EncryptedCommand
+import cz.smarteon.loxone.message.JsonValue
 import cz.smarteon.loxone.message.LoxoneMessage
 import cz.smarteon.loxone.message.LoxoneMessageCommand
 import cz.smarteon.loxone.message.LoxoneMessageCommand.DEV_CFG_API
@@ -140,6 +143,23 @@ class LoxoneAuthTest {
         loxoneAuth.onCommand(tokenCmd, LoxoneMessage(tokenCmd.decryptedCommand, 200, TOKEN))
         verify {
             repository.putToken(profile, TOKEN)
+        }
+    }
+
+    @Test
+    fun `should remove invalid token`() {
+        val token = Token(TOKEN.token, TOKEN.key, needsRefreshIn2Secs(), TOKEN.rights, TOKEN.isUnsecurePassword)
+        val repository = mockk<TokenRepository>(relaxed = true) {
+            every { getToken(profile) }.returns(token)
+        }
+        loxoneAuth.setTokenRepository(repository)
+
+        loxoneAuth.onCommand(
+            genericControlCommand("testUuid", "pulse"),
+            LoxoneMessage("testCmd", 400, JsonValue(NullNode.instance))
+        )
+        verify {
+            repository.removeToken(profile)
         }
     }
 

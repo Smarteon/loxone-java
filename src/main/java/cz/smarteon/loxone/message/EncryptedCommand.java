@@ -3,8 +3,8 @@ package cz.smarteon.loxone.message;
 import cz.smarteon.loxone.app.MiniserverType;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
@@ -79,7 +79,7 @@ public class EncryptedCommand<V extends LoxoneValue> extends LoxoneMessageComman
                                                    final @NotNull Function<String, String> encryptor) {
         final String cmd = "jdev/sys/gettoken/"
                 + requireNonNull(tokenHash, "tokenHash can't be null") + "/"
-                + requireNonNull(user, "user can't be null") + "/" +
+                + requireNonNull(user, "user can't be null") + "/"
                 + requireNonNull(permissionType, "permissionType can't be null").getId() + "/"
                 + requireNonNull(clientUuid, "clientUuid can't be null") + "/"
                 + requireNonNull(clientInfo, "clientInfo can't be null");
@@ -102,10 +102,6 @@ public class EncryptedCommand<V extends LoxoneValue> extends LoxoneMessageComman
     }
 
     private static String encodeUrl(String toEncode) {
-        try {
-            return URLEncoder.encode(toEncode, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("UTF-8 encoding should be present everywhere", e);
-        }
+        return URLEncoder.encode(toEncode, StandardCharsets.UTF_8);
     }
 }

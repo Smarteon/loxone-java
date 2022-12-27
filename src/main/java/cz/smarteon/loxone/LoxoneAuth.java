@@ -38,7 +38,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @see <a href="https://www.loxone.com/enen/wp-content/uploads/sites/3/2016/10/1000_Communicating-with-the-Miniserver.pdf">Loxone communication</a>
  */
-public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
+public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
 
     /**
      * UUID of this client sent as part of token request
@@ -72,6 +72,7 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
 
     // Communication stuff
     private Hashing visuHashing;
+    private Hashing hashing;
     private Token token;
     private TokenStateEvaluator tokenStateEvaluator = new TokenStateEvaluator() {};
     private TokenRepository tokenRepository = new InMemoryTokenRepository();
@@ -294,53 +295,60 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
      */
     @Override @NotNull
     public State onCommand(@NotNull final Command<? extends LoxoneMessage<?>> command, @NotNull final LoxoneMessage<?> message) {
-        if (getKeyCommand.equals(command)) {
-            final Hashing hashing = getKeyCommand.ensureValue(message.getValue());
-            final TokenState tokenState = tokenStateEvaluator.evaluate(token);
-            if (tokenState.isExpired()) {
-                lastTokenCommand = EncryptedCommand.getToken(
-                        LoxoneCrypto.loxoneHashing(profile.getPassword(), profile.getUsername(), hashing, "gettoken"),
-                        profile.getUsername(), tokenPermissionType, CLIENT_UUID, clientInfo, this::encryptCommand
-                );
-            } else if (tokenState.needsRefresh()) {
-                lastTokenCommand = EncryptedCommand.refreshToken(
-                        LoxoneCrypto.loxoneHashing(token.getToken(), hashing, "refreshtoken"),
-                        profile.getUsername(), this::encryptCommand
-                );
-            } else {
-                lastTokenCommand = EncryptedCommand.authWithToken(
-                        LoxoneCrypto.loxoneHashing(token.getToken(), hashing, "authwithtoken"),
-                        profile.getUsername(), this::encryptCommand
-                );
-            }
-            sendCommand(lastTokenCommand);
-            return State.CONSUMED;
-        } else if (getVisuHashCommand.equals(command)) {
-            visuHashing = getVisuHashCommand.ensureValue(message.getValue());
-            authListeners.forEach(AuthListener::visuAuthCompleted);
-            return State.CONSUMED;
-        } else if (lastTokenCommand != null && lastTokenCommand.equals(command)) {
-            final Token newToken = lastTokenCommand.ensureValue(message.getValue());
-            token = token == null ? newToken : token.merge(newToken);
-            log.info("Got loxone token, valid until: " + token.getValidUntilDateTime() + ", seconds to expire: " + token.getSecondsToExpire());
-            tokenRepository.putToken(profile, token);
-
-            if (autoRefreshToken) {
-                final long secondsToRefresh = tokenStateEvaluator.evaluate(token).secondsToRefresh();
-                if (secondsToRefresh > 0) {
-                    if (autoRefreshScheduler != null) {
-                        log.info("Scheduling token auto refresh in " + secondsToRefresh + " seconds");
-                        autoRefreshFuture = autoRefreshScheduler.schedule(this::startAuthentication, secondsToRefresh, TimeUnit.SECONDS);
-                    } else {
-                        log.warn("autoRefreshScheduler not set, can't schedule token refresh");
-                    }
+        if (message.isSuccess()) {
+            if (getKeyCommand.equals(command)) {
+                hashing = getKeyCommand.ensureValue(message.getValue());
+                final TokenState tokenState = tokenStateEvaluator.evaluate(token);
+                if (tokenState.isExpired()) {
+                    lastTokenCommand = EncryptedCommand.getToken(
+                            LoxoneCrypto.loxoneHashing(profile.getPassword(), profile.getUsername(), hashing, "gettoken"),
+                            profile.getUsername(), tokenPermissionType, CLIENT_UUID, clientInfo, this::encryptCommand
+                    );
+                } else if (tokenState.needsRefresh()) {
+                    lastTokenCommand = EncryptedCommand.refreshToken(
+                            LoxoneCrypto.loxoneHashing(requireNonNull(token.getToken()), hashing, "refreshtoken"),
+                            profile.getUsername(), this::encryptCommand
+                    );
                 } else {
-                    log.warn("Can't schedule token auto refresh, token expires too early or is already expired");
+                    lastTokenCommand = EncryptedCommand.authWithToken(
+                            LoxoneCrypto.loxoneHashing(requireNonNull(token.getToken()), hashing, "authwithtoken"),
+                            profile.getUsername(), this::encryptCommand
+                    );
                 }
-            }
+                sendCommand(lastTokenCommand);
+                return State.CONSUMED;
+            } else if (getVisuHashCommand.equals(command)) {
+                visuHashing = getVisuHashCommand.ensureValue(message.getValue());
+                authListeners.forEach(AuthListener::visuAuthCompleted);
+                return State.CONSUMED;
+            } else if (lastTokenCommand != null && lastTokenCommand.equals(command)) {
+                final Token newToken = lastTokenCommand.ensureValue(message.getValue());
+                token = token == null ? newToken : token.merge(newToken);
+                log.info("Got loxone token, valid until: " + token.getValidUntilDateTime() + ", seconds to expire: " + token.getSecondsToExpire());
+                tokenRepository.putToken(profile, token);
 
-            authListeners.forEach(AuthListener::authCompleted);
-            lastTokenCommand = null;
+                if (autoRefreshToken) {
+                    final long secondsToRefresh = tokenStateEvaluator.evaluate(token).secondsToRefresh();
+                    if (secondsToRefresh > 0) {
+                        if (autoRefreshScheduler != null) {
+                            log.info("Scheduling token auto refresh in " + secondsToRefresh + " seconds");
+                            autoRefreshFuture = autoRefreshScheduler.schedule(this::startAuthentication, secondsToRefresh, TimeUnit.SECONDS);
+                        } else {
+                            log.warn("autoRefreshScheduler not set, can't schedule token refresh");
+                        }
+                    } else {
+                        log.warn("Can't schedule token auto refresh, token expires too early or is already expired");
+                    }
+                }
+
+                authListeners.forEach(AuthListener::authCompleted);
+                lastTokenCommand = null;
+                return State.CONSUMED;
+            }
+        } else if (message.isAuthFailed()) {
+            log.info("Authentication failed discarding current token");
+            token = null;
+            tokenRepository.removeToken(profile);
             return State.CONSUMED;
         }
 
@@ -348,8 +356,8 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
     }
 
     @Override
-    public boolean accepts(@NotNull final Class clazz) {
-        return LoxoneMessage.class.isAssignableFrom(clazz);
+    public boolean acceptsErrorResponses() {
+        return true;
     }
 
     /**
@@ -367,6 +375,16 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
         if (autoRefreshFuture != null) {
             autoRefreshFuture.cancel(true);
         }
+    }
+
+    void killToken() {
+        sendCommand(
+                Command.killToken(
+                        LoxoneCrypto.loxoneHashing(requireNonNull(token.getToken()), hashing, "killtoken"),
+                        profile.getUsername()
+                )
+        );
+        tokenRepository.removeToken(profile);
     }
 
     private void sendCommand(final Command<?> command) {
@@ -468,6 +486,11 @@ public class LoxoneAuth implements CommandResponseListener<LoxoneMessage<?>> {
         @Override
         public void putToken(final @NotNull LoxoneProfile profile, final @NotNull Token token) {
             tokens.put(profile, token);
+        }
+
+        @Override
+        public void removeToken(final @NotNull LoxoneProfile profile) {
+            tokens.remove(profile);
         }
     }
 }

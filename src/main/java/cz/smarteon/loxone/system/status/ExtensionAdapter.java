@@ -6,11 +6,11 @@ final class ExtensionAdapter extends XmlAdapter<Extension, Extension> {
 
     @Override
     public Extension unmarshal(final Extension v) {
-        String name = v.getName();
-        if (name == null) {
+        final String type = v.getType();
+        if (type == null) {
             return new UnrecognizedExtension(v);
         }
-        switch (name) {
+        switch (type) {
             case "Extension":
             case "Relay Extension":
             case "RS485 Extension":
@@ -20,6 +20,7 @@ final class ExtensionAdapter extends XmlAdapter<Extension, Extension> {
             case "Dimmer Extension":
             case "AO Extension":
             case "AI Extension":
+            case "RS232 Extension":
                 return new BasicExtension(v);
             case "Dali Extension":
                 return new DaliExtension(v);

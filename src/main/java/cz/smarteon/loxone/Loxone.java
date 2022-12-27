@@ -4,6 +4,9 @@ import cz.smarteon.loxone.app.Control;
 import cz.smarteon.loxone.app.LoxoneApp;
 import cz.smarteon.loxone.message.ControlCommand;
 import cz.smarteon.loxone.message.JsonValue;
+import cz.smarteon.loxone.message.LoxoneMessage;
+import cz.smarteon.loxone.message.LoxoneValue;
+import cz.smarteon.loxone.user.UserCommand;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -25,14 +28,14 @@ import static java.util.Objects.requireNonNull;
 /**
  * Main entry point of the library. Provides complex access to Loxone API. Needs to be started to work properly
  * and stopped to release all the resources correctly (see {@link #start()} amd {@link #stop()}).
- *
+ * <p>
  * After {@link #start()} request the instance of {@link LoxoneApp} and then provides it by {@link #app()}, also
  * allows to listen for newly fetched {@link LoxoneApp} using {@link LoxoneAppListener}, set by
  * {@link #registerLoxoneAppListener(LoxoneAppListener)}.
- *
+ * <p>
  * Allows to configure the connection to receive update events using {@link #setEventsEnabled(boolean)}. Use
  * {@link LoxoneWebSocket#registerListener(LoxoneEventListener)} to listen for those events.
- *
+ * <p>
  * Provides set of methods to send loxone commands based on {@link Control}. Use {@link LoxoneWebSocket#registerListener(CommandResponseListener)} to listen for command responses.
  */
 public class Loxone {
@@ -85,6 +88,7 @@ public class Loxone {
         init();
     }
 
+    @SuppressWarnings("unused")
     @TestOnly
     Loxone(final @NotNull LoxoneHttp loxoneHttp, final @NotNull LoxoneWebSocket loxoneWebSocket,
            final @NotNull LoxoneAuth loxoneAuth) {
@@ -268,11 +272,42 @@ public class Loxone {
     }
 
     /**
+     * Sends command built by {@link UserCommand} using http
+     * @param userCommand user command
+     */
+    public <V extends LoxoneValue> LoxoneMessage<V> sendUserCommandHttp(final @NotNull UserCommand<V> userCommand) {
+        return loxoneHttp.get(userCommand, loxoneAuth);
+    }
+
+    /**
+     * Sends command built by {@link UserCommand} using websocket
+     * @param userCommand user command
+     */
+    public void sendUserCommand(final @NotNull UserCommand<?> userCommand) {
+        loxoneWebSocket.sendCommand(userCommand);
+    }
+
+    /**
      * Stops the service closing underlying resources, namely {@link LoxoneWebSocket}.
+     * Kills the authentication token.
      *
      * @throws LoxoneException in case the proper close failed
      */
     public void stop() {
+        stop(true);
+    }
+
+    /**
+     * Stops the service closing underlying resources, namely {@link LoxoneWebSocket}.
+     * Kills the authentication token, if requested by parameter.
+     *
+     * @param killToken whether to kill authentication token
+     * @throws LoxoneException in case the proper close failed
+     */
+    public void stop(final boolean killToken) {
+        if (killToken) {
+            loxoneAuth.killToken();
+        }
         loxoneWebSocket.close();
     }
 
@@ -306,7 +341,7 @@ public class Loxone {
         }
 
         @Override
-        public boolean accepts(final @NotNull Class clazz) {
+        public boolean accepts(final @NotNull Class<?> clazz) {
             return LoxoneApp.class.equals(clazz);
         }
     }

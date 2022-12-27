@@ -39,6 +39,7 @@ public interface CommandResponseListener<T> {
         abstract State fold(State next);
     }
 
+
     /**
      * Process response message of given command and returns {@link State}
      * @param command command

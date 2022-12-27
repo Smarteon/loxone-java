@@ -16,6 +16,7 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Extension implements Updatable {
 
+    @XmlAttribute(name = "Type") protected String type;
     @XmlAttribute(name = "Code") protected String code;
     @XmlAttribute(name = "Name") protected String name;
     @XmlAttribute(name = "Serial") protected String serialNumber;
@@ -36,9 +37,10 @@ public class Extension implements Updatable {
 
     Extension() {}
 
-    Extension(final String code, final String name, final String serialNumber, final String version, final String hwVersion,
-                        final Boolean online, final Boolean dummy, final Boolean occupied, final Boolean interfered,
-                        final Boolean intDev, final Boolean updating, final Integer updateProgress) {
+    Extension(final String type, final String code, final String name, final String serialNumber, final String version,
+              final String hwVersion, final Boolean online, final Boolean dummy, final Boolean occupied,
+              final Boolean interfered, final Boolean intDev, final Boolean updating, final Integer updateProgress) {
+        this.type = type;
         this.code = code;
         this.name = name;
         this.serialNumber = serialNumber;
@@ -51,6 +53,15 @@ public class Extension implements Updatable {
         this.intDev = intDev;
         this.updating = updating;
         this.updateProgress = updateProgress;
+    }
+
+    /**
+     * Extension type as represent in status payload.
+     * @return type
+     */
+    @Nullable
+    public String getType() {
+        return type;
     }
 
     /**

@@ -13,35 +13,33 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
 /**
- * Represents User
+ * Represents User.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
-public class User extends UserBase{
+public class User extends UserBase {
 
     /**
-     * Provided as seconds since 1.1.2009 00:00:00
+     * Provided as seconds since 1.1.2009 00:00:00.
      */
     @Setter
     private int validFrom;
 
     /**
-     * Provided as seconds since 1.1.2009 00:00:00
+     * Provided as seconds since 1.1.2009 00:00:00.
      */
     @Setter
     private int validUntil;
 
     /**
-     * Groups this user is part of
+     * Groups this user is part of.
      */
     @JsonProperty(value = "usergroups")
     @JsonSerialize(contentUsing = UserGroup.UserGroupSerializer.class)
@@ -49,21 +47,21 @@ public class User extends UserBase{
     private @Nullable List<UserGroup> userGroups;
 
     /**
-     * NFC tags associated with this user
+     * NFC tags associated with this user.
      */
     @JsonSerialize(contentUsing = NfcTag.NfcTagSerializer.class)
     @Setter
     private @Nullable List<NfcTag> nfcTags;
 
-    public User (@NotNull LoxoneUuid uuid){
+    public User(@NotNull LoxoneUuid uuid) {
         super(requireNonNull(uuid, "uuid can't be null"));
     }
 
-    public User (@NotNull String name){
+    public User(@NotNull String name) {
         super(requireNonNull(name, "name can't be null"));
     }
 
-    public User (@NotNull LoxoneUuid uuid, @NotNull String name){
+    public User(@NotNull LoxoneUuid uuid, @NotNull String name) {
         super(requireNonNull(uuid, "uuid can't be null"), requireNonNull(name, "name can't be null"));
     }
 
@@ -74,11 +72,14 @@ public class User extends UserBase{
             int validFrom,
             @NotNull UserState userState) {
         super(uuid, name, requireNonNull(userState, "userState can't be null"));
-        if (uuid == null && name == null) throw new NullPointerException("uuid and name can't be both null");
+        if (uuid == null && name == null) {
+            throw new NullPointerException("uuid and name can't be both null");
+        }
         this.validUntil = validUntil;
         this.validFrom = validFrom;
     }
 
+    @SuppressWarnings("checkstyle:parameternumber")
     @JsonCreator
     public User(
             @JsonProperty(value = "uuid") @Nullable LoxoneUuid uuid,
@@ -98,6 +99,7 @@ public class User extends UserBase{
 
     /**
      * Get human understandable date and time of user's start of validity in system default time zone.
+     *
      * @return valid from date and time
      */
     @JsonIgnore
@@ -107,6 +109,7 @@ public class User extends UserBase{
 
     /**
      * Get human understandable date and time of user's end of validity in system default time zone.
+     *
      * @return valid until date and time
      */
     @JsonIgnore

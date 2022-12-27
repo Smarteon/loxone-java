@@ -15,13 +15,13 @@ import lombok.Setter;
 import java.io.IOException;
 
 /**
- * Base class for User
+ * Base class for User.
  */
 @Getter
 public abstract class UserBase {
 
     /**
-     * Enum class containing constants for userState
+     * Enum class containing constants for userState.
      */
     @RequiredArgsConstructor
     public enum UserState {
@@ -39,8 +39,9 @@ public abstract class UserBase {
         public static User.UserState fromValue(final int value) {
             UserState result = UNKNOWN;
             for (UserState state : values()) {
-                if (state.value == value)
+                if (state.value == value) {
                     result = state;
+                }
             }
 
             return result;
@@ -48,17 +49,17 @@ public abstract class UserBase {
     }
 
     /**
-     * Name of this user, should be unique
+     * Name of this user, should be unique.
      */
     private final String name;
 
     /**
-     * UUID of this user, should be unique
+     * UUID of this user, should be unique.
      */
     private final LoxoneUuid uuid;
 
     /**
-     * Whether user is an admin
+     * Whether user is an admin.
      */
     private final boolean isAdmin;
 
@@ -79,21 +80,21 @@ public abstract class UserBase {
     @JsonIgnore
     private final boolean representsControl;
 
-    protected UserBase (LoxoneUuid uuid){
+    protected UserBase(LoxoneUuid uuid) {
         this.uuid = uuid;
         this.name = null;
         this.isAdmin = false;
         this.representsControl = false;
     }
 
-    protected UserBase (String name){
+    protected UserBase(String name) {
         this.name = name;
         this.uuid = null;
         this.isAdmin = false;
         this.representsControl = false;
     }
 
-    protected UserBase (LoxoneUuid uuid, String name){
+    protected UserBase(LoxoneUuid uuid, String name) {
         this.uuid = uuid;
         this.name = name;
         this.isAdmin = false;
@@ -116,7 +117,9 @@ public abstract class UserBase {
             String name,
             UserState userState,
             boolean isAdmin) {
-        if (uuid == null && name == null) throw new NullPointerException("uuid and name can't be both null");
+        if (uuid == null && name == null) {
+            throw new NullPointerException("uuid and name can't be both null");
+        }
         this.uuid = uuid;
         this.name = name;
         this.userState = userState;
@@ -137,6 +140,9 @@ public abstract class UserBase {
         this.representsControl = representsControl;
     }
 
+    /**
+     * Used to correctly serialize {@link UserBase.UserState}.
+     */
     public static class UserStateSerializer extends StdSerializer<UserState> {
 
         public UserStateSerializer() {

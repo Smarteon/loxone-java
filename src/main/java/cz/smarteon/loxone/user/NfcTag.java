@@ -15,6 +15,9 @@ import java.io.IOException;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * Represents NfcTag.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -31,18 +34,21 @@ public class NfcTag {
     private final @Nullable String name;
 
     @JsonCreator
-    public NfcTag (
+    public NfcTag(
             @JsonProperty(value = "name") @NotNull String name,
             @JsonProperty(value = "id", required = true) @NotNull String id) {
         this.name = requireNonNull(name, "name can't be null");
         this.id = requireNonNull(id, "id can't be null");
     }
 
-    public NfcTag (@NotNull String id) {
+    public NfcTag(@NotNull String id) {
         this.id = requireNonNull(id, "id can't be null");
         this.name = null;
     }
 
+    /**
+     * Used to properly serialize {@link NfcTag}.
+     */
     public static class NfcTagSerializer extends StdSerializer<NfcTag> {
 
         public NfcTagSerializer() {

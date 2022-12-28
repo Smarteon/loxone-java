@@ -9,23 +9,24 @@ import lombok.extern.jackson.Jacksonized;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents Category
+ * Represents Category.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Jacksonized
 @Builder
 @Value
+@SuppressWarnings("checkstyle:visibilitymodifier")
 public class Category {
 
     /**
-     * UUID of this category, should be unique
+     * UUID of this category, should be unique.
      */
     @JsonProperty(value = "uuid", required = true)
     @NotNull
     LoxoneUuid uuid;
 
     /**
-     * Category name - usually localized, non unique
+     * Category name - usually localized, non unique.
      */
     @JsonProperty(value = "name", required = true)
     @NotNull

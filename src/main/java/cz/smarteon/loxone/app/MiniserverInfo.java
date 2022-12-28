@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Represents the miniserver generic info - contains static information on the Miniserver and it’s configuration
+ * Represents the miniserver generic info - contains static information on the Miniserver and it’s configuration.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MiniserverInfo {
@@ -26,6 +26,7 @@ public class MiniserverInfo {
     private final MiniserverUser currentUser;
 
     @JsonCreator
+    @SuppressWarnings("checkstyle:parameternumber")
     public MiniserverInfo(@JsonProperty("serialNr") String serialNumber,
                           @JsonProperty("msName") String name,
                           @JsonProperty("projectName") String projectName,

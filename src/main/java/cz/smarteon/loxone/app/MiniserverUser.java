@@ -9,6 +9,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.math.BigInteger;
 
+/**
+ * Represents a user and their rights.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MiniserverUser {
 

@@ -10,6 +10,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * {@link LoxoneValue} where the JSON string is expected to encode a hashed value.
+ */
 public class Hashing implements LoxoneValue {
     private final byte[] key;
     private final String salt;
@@ -34,17 +37,27 @@ public class Hashing implements LoxoneValue {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Nullable
-    public String getHashAlg() {return hashAlg;}
+    public String getHashAlg() {
+        return hashAlg;
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
-        Hashing hashing = (Hashing) o;
+        final Hashing hashing = (Hashing) o;
 
-        if (!Arrays.equals(key, hashing.key)) return false;
-        if (!Objects.equals(hashAlg, hashing.hashAlg)) return false;
+        if (!Arrays.equals(key, hashing.key)) {
+            return false;
+        }
+        if (!Objects.equals(hashAlg, hashing.hashAlg)) {
+            return false;
+        }
         return Objects.equals(salt, hashing.salt);
     }
 
@@ -58,10 +71,10 @@ public class Hashing implements LoxoneValue {
 
     @Override
     public String toString() {
-        return "Hashing{" +
-                "key=" + Arrays.toString(key) +
-                ", salt='" + salt + '\'' +
-                ", hashAlg='" + hashAlg + '\'' +
-                '}';
+        return "Hashing{"
+                + "key=" + Arrays.toString(key)
+                + ", salt='" + salt + '\''
+                + ", hashAlg='" + hashAlg + '\''
+                + '}';
     }
 }

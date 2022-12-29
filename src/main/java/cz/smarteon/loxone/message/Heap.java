@@ -42,11 +42,15 @@ public class Heap implements LoxoneValue {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Heap heap = (Heap) o;
-        return used == heap.used &&
-                allowed == heap.allowed;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Heap heap = (Heap) o;
+        return used == heap.used
+                && allowed == heap.allowed;
     }
 
     @Override
@@ -56,12 +60,15 @@ public class Heap implements LoxoneValue {
 
     @Override
     public String toString() {
-        return "Heap{" +
-                "used=" + used +
-                ", allowed=" + allowed +
-                '}';
+        return "Heap{"
+                + "used=" + used
+                + ", allowed=" + allowed
+                + '}';
     }
 
+    /**
+     * Used to correctly deserialize {@link Heap}.
+     */
     public static class Deserializer extends JsonDeserializer<Heap> {
 
         private static final Pattern HEAP_VALUE_PATTERN = Pattern.compile("([0-9]+)/([0-9]+)kB");

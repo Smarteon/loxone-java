@@ -13,7 +13,7 @@ public class ValueEvent extends LoxoneEvent {
     private final double value;
 
     /**
-     * Creates new instance
+     * Creates new instance.
      * @param uuid event uuid
      * @param value carried value
      */
@@ -23,7 +23,7 @@ public class ValueEvent extends LoxoneEvent {
     }
 
     /**
-     * Carried numeric value
+     * Carried numeric value.
      * @return numeric value
      */
     public double getValue() {
@@ -32,9 +32,9 @@ public class ValueEvent extends LoxoneEvent {
 
     @Override
     public String toString() {
-        return "ValueEvent{" +
-                "uuid=" + uuid +
-                ", value=" + value +
-                '}';
+        return "ValueEvent{"
+                + "uuid=" + uuid
+                + ", value=" + value
+                + '}';
     }
 }

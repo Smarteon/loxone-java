@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 
 import java.util.Date;
 
-public class DateValue implements LoxoneValue {
+/**
+ * {@link LoxoneValue} where the JSON string is expected to encode date value.
+ */
+public final class DateValue implements LoxoneValue {
 
     private final Date date;
 

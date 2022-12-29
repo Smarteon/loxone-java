@@ -9,7 +9,10 @@ import java.io.IOException;
 
 class HexSerializer extends JsonSerializer<byte[]> {
     @Override
-    public void serialize(final byte[] value, final JsonGenerator gen, final SerializerProvider serializers) throws IOException {
+    public void serialize(
+            final byte[] value,
+            final JsonGenerator gen,
+            final SerializerProvider serializers) throws IOException {
         gen.writeString(Codec.bytesToHex(value));
     }
 }

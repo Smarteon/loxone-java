@@ -2,6 +2,9 @@ package cz.smarteon.loxone.message;
 
 import java.util.Objects;
 
+/**
+ * Represents the first part of loxone message.
+ */
 public final class MessageHeader {
 
     public static final int PAYLOAD_LENGTH = 8;
@@ -38,26 +41,29 @@ public final class MessageHeader {
 
     @Override
     public String toString() {
-        return "MessageHeader{" +
-                "kind=" + kind +
-                ", sizeEstimated=" + sizeEstimated +
-                ", messageSize=" + messageSize +
-                '}';
+        return "MessageHeader{"
+                + "kind=" + kind
+                + ", sizeEstimated=" + sizeEstimated
+                + ", messageSize=" + messageSize
+                + '}';
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MessageHeader that = (MessageHeader) o;
-        return sizeEstimated == that.sizeEstimated &&
-                messageSize == that.messageSize &&
-                kind == that.kind;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final MessageHeader that = (MessageHeader) o;
+        return sizeEstimated == that.sizeEstimated
+                && messageSize == that.messageSize
+                && kind == that.kind;
     }
 
     @Override
     public int hashCode() {
-
         return Objects.hash(kind, sizeEstimated, messageSize);
     }
 }

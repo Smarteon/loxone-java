@@ -50,7 +50,6 @@ public class Token implements LoxoneValue {
      * @return token key
      */
     @JsonSerialize(using = HexSerializer.class)
-    @Nullable
     public byte[] getKey() {
         return key;
     }
@@ -120,14 +119,18 @@ public class Token implements LoxoneValue {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Token token1 = (Token) o;
-        return validUntil == token1.validUntil &&
-                rights == token1.rights &&
-                unsecurePassword == token1.unsecurePassword &&
-                Objects.equals(token, token1.token) &&
-                Arrays.equals(key, token1.key);
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Token token1 = (Token) o;
+        return validUntil == token1.validUntil
+                && rights == token1.rights
+                && unsecurePassword == token1.unsecurePassword
+                && Objects.equals(token, token1.token)
+                && Arrays.equals(key, token1.key);
     }
 
     @Override
@@ -139,12 +142,12 @@ public class Token implements LoxoneValue {
 
     @Override
     public String toString() {
-        return "Token{" +
-                "token='" + token + '\'' +
-                ", key=" + Arrays.toString(key) +
-                ", validUntil=" + validUntil +
-                ", rights=" + rights +
-                ", unsecurePassword=" + unsecurePassword +
-                '}';
+        return "Token{"
+                + "token='" + token + '\''
+                + ", key=" + Arrays.toString(key)
+                + ", validUntil=" + validUntil
+                + ", rights=" + rights
+                + ", unsecurePassword=" + unsecurePassword
+                + '}';
     }
 }

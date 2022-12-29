@@ -1,10 +1,8 @@
 package cz.smarteon.loxone.message;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +24,7 @@ import static java.util.Objects.requireNonNull;
  * @see LoxoneMessageCommand#oneWireDetails(String)
  */
 @JsonDeserialize(using = OneWireDetails.Deserializer.class)
-public class OneWireDetails implements LoxoneValue {
+public final class OneWireDetails implements LoxoneValue {
 
     private final Map<String, OneWireDetail> details;
     private final String invalid;
@@ -70,11 +68,15 @@ public class OneWireDetails implements LoxoneValue {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        OneWireDetails that = (OneWireDetails) o;
-        return Objects.equals(details, that.details) &&
-                Objects.equals(invalid, that.invalid);
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final OneWireDetails that = (OneWireDetails) o;
+        return Objects.equals(details, that.details)
+                && Objects.equals(invalid, that.invalid);
     }
 
     @Override
@@ -82,6 +84,10 @@ public class OneWireDetails implements LoxoneValue {
         return Objects.hash(details, invalid);
     }
 
+    /**
+     * Represents OneWire device.
+     */
+    @SuppressWarnings({"checkstyle:membername", "checkstyle:methodname"})
     public static class OneWireDetail {
         private final String serial;
         private final long packetRequests;
@@ -96,7 +102,7 @@ public class OneWireDetails implements LoxoneValue {
         }
 
         /**
-         * 1-wire device serial number
+         * 1-wire device serial number.
          * @return serial number
          */
         @NotNull
@@ -105,7 +111,7 @@ public class OneWireDetails implements LoxoneValue {
         }
 
         /**
-         * Count of packet requests since last extension restart
+         * Count of packet requests since last extension restart.
          * @return count of packet request
          */
         public long getPacketRequests() {
@@ -113,7 +119,7 @@ public class OneWireDetails implements LoxoneValue {
         }
 
         /**
-         * Count of CRC errors since last extension restart
+         * Count of CRC errors since last extension restart.
          * @return count of CRC errors
          */
         public long getCrcErrors() {
@@ -121,7 +127,7 @@ public class OneWireDetails implements LoxoneValue {
         }
 
         /**
-         * Count of so called 85 degree errors since last extension restart
+         * Count of so called 85 degree errors since last extension restart.
          * @return count of 85 degree errors
          */
         public int get_85DegreeErrors() {
@@ -130,13 +136,17 @@ public class OneWireDetails implements LoxoneValue {
 
         @Override
         public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            OneWireDetail that = (OneWireDetail) o;
-            return packetRequests == that.packetRequests &&
-                    crcErrors == that.crcErrors &&
-                    _85DegreeErrors == that._85DegreeErrors &&
-                    Objects.equals(serial, that.serial);
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            final OneWireDetail that = (OneWireDetail) o;
+            return packetRequests == that.packetRequests
+                    && crcErrors == that.crcErrors
+                    && _85DegreeErrors == that._85DegreeErrors
+                    && Objects.equals(serial, that.serial);
         }
 
         @Override
@@ -145,12 +155,18 @@ public class OneWireDetails implements LoxoneValue {
         }
     }
 
+    /**
+     * Used to correctly deserialize {@link OneWireDetails}.
+     */
     public static class Deserializer extends JsonDeserializer<OneWireDetails> {
 
         private static final Pattern ONE_WIRE_DETAIL_PATTERN = Pattern.compile(
-                "^1-Wire\\s+Serial\\s+([0-9A-F.]+):\\s+(\\d+)\\s+Packet Requests,\\s+(\\d+)\\s+CRC Errors,\\s+(\\d+)\\s+85 Degree Problems$");
+                "^1-Wire\\s+Serial\\s+([0-9A-F.]+):\\s+(\\d+)\\s+Packet Requests,"
+                        + "\\s+(\\d+)\\s+CRC Errors,\\s+(\\d+)\\s+85 Degree Problems$");
         @Override
-        public OneWireDetails deserialize(final JsonParser p, final DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        public OneWireDetails deserialize(
+                final JsonParser p,
+                final DeserializationContext ctxt) throws IOException {
             final String textValue = p.getValueAsString();
             final String[] devices = textValue.trim().split("\\s*;\\s*");
             final Map<String, OneWireDetail> detailsMap = stream(devices)

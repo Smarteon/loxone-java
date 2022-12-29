@@ -17,8 +17,8 @@ public class PercentValue extends IntValue {
 
     @Override
     public String toString() {
-        return "IntValue{" +
-                "value=" + getValue() +
-                '}';
+        return "IntValue{"
+                + "value=" + getValue()
+                + '}';
     }
 }

@@ -28,9 +28,13 @@ public class IntValue implements LoxoneValue {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        IntValue longValue = (IntValue) o;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final IntValue longValue = (IntValue) o;
         return value == longValue.value;
     }
 
@@ -41,8 +45,8 @@ public class IntValue implements LoxoneValue {
 
     @Override
     public String toString() {
-        return "IntValue{" +
-                "value=" + value +
-                '}';
+        return "IntValue{"
+                + "value=" + value
+                + '}';
     }
 }

@@ -6,6 +6,9 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import java.util.List;
 
+/**
+ * Base class for tree devices.
+ */
 class TreeDeviceBase extends UpdatableDevice {
 
     @XmlAttribute(name = "Place") protected String place;
@@ -22,8 +25,9 @@ class TreeDeviceBase extends UpdatableDevice {
     @XmlAttribute(name = "Interfered") protected Boolean interfered;
     @XmlElement(name = "AirDevice") @XmlJavaTypeAdapter(AirDeviceAdapter.class) protected List<AirDevice> airDevices;
 
-    TreeDeviceBase() {}
+    TreeDeviceBase() { }
 
+    @SuppressWarnings("checkstyle:parameternumber")
     TreeDeviceBase(final String code,
                    final String name,
                    final String serialNumber,

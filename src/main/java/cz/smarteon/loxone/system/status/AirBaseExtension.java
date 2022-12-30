@@ -5,13 +5,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Base class for air extensions.
+ */
 public class AirBaseExtension extends Extension implements DevicesProvider<AirDevice> {
 
     private final List<AirDevice> devices;
 
     AirBaseExtension(final Extension e) {
-        super(e.type, e.code, e.name, e.serialNumber, e.version, e.hwVersion, e.online, e.dummy, e.occupied, e.interfered,
-                e.intDev, e.updating, e.updateProgress);
+        super(e.type, e.code, e.name, e.serialNumber, e.version, e.hwVersion, e.online, e.dummy, e.occupied,
+                e.interfered, e.intDev, e.updating, e.updateProgress);
         devices = e.airDevices;
     }
 

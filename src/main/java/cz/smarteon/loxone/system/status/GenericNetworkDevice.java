@@ -9,6 +9,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Represents a generic network device.
+ */
 public class GenericNetworkDevice {
 
     @XmlAttribute(name = "Type") private String type;

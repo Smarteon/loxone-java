@@ -2,6 +2,9 @@ package cz.smarteon.loxone.system.status;
 
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents an air device.
+ */
 public class AirDevice extends AirDeviceBase {
 
     AirDevice(final AirDeviceBase ad) {

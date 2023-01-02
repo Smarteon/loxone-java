@@ -4,7 +4,7 @@ import cz.smarteon.loxone.LoxoneUuid;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents Burglar Alarm block
+ * Represents Burglar Alarm block.
  */
 public class AlarmControl extends Control {
 

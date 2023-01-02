@@ -25,7 +25,7 @@ public class TextEvent extends LoxoneEvent {
     }
 
     /**
-     * Icon uuid
+     * Icon uuid.
      * @return icon uuid
      */
     @NotNull
@@ -34,7 +34,7 @@ public class TextEvent extends LoxoneEvent {
     }
 
     /**
-     * Carried text value
+     * Carried text value.
      * @return text value
      */
     @NotNull
@@ -44,10 +44,10 @@ public class TextEvent extends LoxoneEvent {
 
     @Override
     public String toString() {
-        return "TextEvent{" +
-                "uuid=" + uuid +
-                ", iconUuid=" + iconUuid +
-                ", text='" + text + '\'' +
-                '}';
+        return "TextEvent{"
+                + "uuid=" + uuid
+                + ", iconUuid=" + iconUuid
+                + ", text='" + text + '\''
+                + '}';
     }
 }

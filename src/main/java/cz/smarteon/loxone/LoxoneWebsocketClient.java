@@ -23,26 +23,26 @@ import static java.util.Objects.requireNonNull;
  * <ul>
  *     <li>Initial connection setup</li>
  *     <li>Keepalive mechanism</li>
- *     <li>Loxone protocol guard (parses header messages)</li>
+ *     <li>Loxone protocol guard (parses header messages).</li>
  * </ul>
  */
 class LoxoneWebsocketClient extends WebSocketClient {
 
-    private static final Logger log = LoggerFactory.getLogger(LoxoneWebsocketClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LoxoneWebsocketClient.class);
 
     private static final int KEEP_ALIVE_INTERVAL_MINUTES = 4;
     private static final int KEEP_ALIVE_RESPONSE_TIMEOUT_SECONDS = 30;
 
-    private LoxoneWebSocket ws;
+    private final LoxoneWebSocket ws;
 
-    private AtomicReference<MessageHeader> msgHeaderRef = new AtomicReference<>();
+    private final AtomicReference<MessageHeader> msgHeaderRef = new AtomicReference<>();
 
-    private Runnable keepAliveTask;
+    private final Runnable keepAliveTask;
     private CountDownLatch keepAliveLatch;
     private ScheduledFuture keepAliveFuture;
 
     /**
-     * Creates new instance
+     * Creates new instance.
      * @param ws callback for processing messages and events
      * @param uri websocket URI to connect to
      */
@@ -54,23 +54,23 @@ class LoxoneWebsocketClient extends WebSocketClient {
             keepAliveLatch = new CountDownLatch(1);
             try {
                 if (!keepAliveLatch.await(KEEP_ALIVE_RESPONSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
-                    log.info("Keepalive response not received within timeout, closing connection");
+                    LOG.info("Keepalive response not received within timeout, closing connection");
                     LoxoneWebsocketClient.this.ws.closeWebSocket();
                 }
             } catch (InterruptedException e) {
-                log.debug("Keepalive latch has been interrupted");
+                LOG.debug("Keepalive latch has been interrupted");
             }
         };
     }
 
     @Override
     public void onOpen(final ServerHandshake handshakedata) {
-        log.info("Opened");
+        LOG.info("Opened");
 
         ws.connectionOpened();
 
         // schedule the keep alive guard
-        keepAliveFuture = ws.scheduler.scheduleAtFixedRate(keepAliveTask,
+        keepAliveFuture = ws.getScheduler().scheduleAtFixedRate(keepAliveTask,
                 KEEP_ALIVE_INTERVAL_MINUTES, KEEP_ALIVE_INTERVAL_MINUTES, TimeUnit.MINUTES);
     }
 
@@ -80,10 +80,10 @@ class LoxoneWebsocketClient extends WebSocketClient {
      */
     @Override
     public void onMessage(final String message) {
-        log.trace("Incoming message " + message);
+        LOG.trace("Incoming message " + message);
         final MessageHeader msgHeader = msgHeaderRef.getAndSet(null);
         if (msgHeader != null && msgHeader.getKind() != MessageKind.TEXT) {
-            log.warn("Got text message but " + msgHeader.getKind() + " has been expected");
+            LOG.warn("Got text message but " + msgHeader.getKind() + " has been expected");
         }
         ws.processMessage(message);
     }
@@ -103,10 +103,10 @@ class LoxoneWebsocketClient extends WebSocketClient {
             if (msgHeaderRef.get() == null) {
                 final MessageHeader header = Codec.readHeader(bytes);
                 if (MessageHeader.KEEP_ALIVE.equals(header)) {
-                    log.trace("Incoming keepalive");
+                    LOG.trace("Incoming keepalive");
                     keepAliveLatch.countDown();
                 } else if (msgHeaderRef.compareAndSet(null, header)) {
-                    log.trace("Incoming message header " + msgHeaderRef.get());
+                    LOG.trace("Incoming message header " + msgHeaderRef.get());
                 } else {
                     bytes.rewind();
                     ws.processEvents(msgHeaderRef.getAndSet(null), bytes);
@@ -116,13 +116,13 @@ class LoxoneWebsocketClient extends WebSocketClient {
             }
         } catch (Throwable t) {
             bytes.rewind();
-            log.error("Can't read binary message " + bytesToHex(bytes.array()), t);
+            LOG.error("Can't read binary message " + bytesToHex(bytes.array()), t);
         }
     }
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        log.info("Closed by " + (remote ? "remote" : "local") + " end because of " + code +": " + reason);
+        LOG.info("Closed by " + (remote ? "remote" : "local") + " end because of " + code + ": " + reason);
         ws.wsClosed();
         if (keepAliveFuture != null) {
             keepAliveFuture.cancel(true);
@@ -135,6 +135,6 @@ class LoxoneWebsocketClient extends WebSocketClient {
 
     @Override
     public void onError(Exception ex) {
-        log.info("Error of loxone connection", ex);
+        LOG.info("Error of loxone connection", ex);
     }
 }

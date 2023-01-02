@@ -8,12 +8,12 @@ import java.util.function.Function;
 public enum TokenPermissionType {
 
     /**
-     * WEB permission - short token validity (lasts for hours)
+     * WEB permission - short token validity (lasts for hours).
      */
     WEB(2),
 
     /**
-     * APP permission - long token validity (lasts for weeks)
+     * APP permission - long token validity (lasts for weeks).
      */
     APP(4);
 
@@ -24,7 +24,8 @@ public enum TokenPermissionType {
     }
 
     /**
-     * Token permission ID used in {@link EncryptedCommand#getToken(String, String, TokenPermissionType, String, String, Function)} request.
+     * Token permission ID used in
+     * {@link EncryptedCommand#getToken(String, String, TokenPermissionType, String, String, Function)} request.
      * @return permission ID
      */
     public int getId() {

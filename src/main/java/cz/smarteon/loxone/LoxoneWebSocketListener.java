@@ -14,12 +14,12 @@ public interface LoxoneWebSocketListener {
      * Loxone web socket has been closed by remote end.
      * @param code the code returned by the socket when the connection is closed
      */
-    default void webSocketRemoteClosed(int code) {}
+    default void webSocketRemoteClosed(int code) { }
 
     /**
      * Loxone web socket has been closed by local end. This is mostly the situation indicating
      * {@link LoxoneWebSocket#close()} has been called.
      * @param code the code returned by the socket when the connection is closed
      */
-    default void webSocketLocalClosed(int code) {}
+    default void webSocketLocalClosed(int code) { }
 }

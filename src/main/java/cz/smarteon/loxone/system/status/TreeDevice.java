@@ -2,6 +2,9 @@ package cz.smarteon.loxone.system.status;
 
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents a tree device.
+ */
 public class TreeDevice extends TreeDeviceBase {
 
     TreeDevice(final TreeDeviceBase td) {

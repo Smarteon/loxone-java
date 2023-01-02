@@ -6,6 +6,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Represents a tree to air extension.
+ */
 public class TreeToAirBridge extends TreeDevice implements DevicesProvider<AirDevice> {
 
     TreeToAirBridge(final TreeDeviceBase treeDeviceBase) {

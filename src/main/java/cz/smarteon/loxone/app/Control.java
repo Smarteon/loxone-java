@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 /**
- * Base class for all the controls in loxone application
+ * Base class for all the controls in loxone application.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(defaultImpl = UnknownControl.class, use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
@@ -30,14 +30,14 @@ import java.util.Map;
 public abstract class Control {
 
     /**
-     * UUID of this control, should be unique
+     * UUID of this control, should be unique.
      */
     @JsonProperty(value = "uuidAction", required = true)
     @NotNull
     protected LoxoneUuid uuid;
 
     /**
-     * Control name - usually localized, non unique
+     * Control name - usually localized, non unique.
      */
     @JsonProperty(value = "name", required = true)
     @NotNull
@@ -50,7 +50,7 @@ public abstract class Control {
     protected boolean secured;
 
     /**
-     * Control type e.g. Jalousie, Daytimer, … empty type should not be visualized
+     * Control type e.g. Jalousie, Daytimer, … empty type should not be visualized.
      */
     @NotNull
     @JsonProperty(value = "type")
@@ -69,13 +69,13 @@ public abstract class Control {
     protected LoxoneUuid categoryUuid;
 
     /**
-     * Based on this number, controls are sorted in the UI
+     * Based on this number, controls are sorted in the UI.
      */
     @JsonProperty(value = "defaultRating")
     protected int rating;
 
     /**
-     * Control states map
+     * Control states map.
      */
     @JsonProperty("states")
     @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)

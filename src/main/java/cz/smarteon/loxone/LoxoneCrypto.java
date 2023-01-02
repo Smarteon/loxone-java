@@ -31,7 +31,12 @@ import static cz.smarteon.loxone.Codec.concatToBytes;
  */
 abstract class LoxoneCrypto {
 
-    private static final Logger log = LoggerFactory.getLogger(LoxoneCrypto.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LoxoneCrypto.class);
+
+    private static final String SHA1 = "SHA1";
+    private static final String SHA_1 = "SHA-1";
+    private static final String SHA256 = "SHA256";
+    private static final String SHA_256 = "SHA-256";
 
     /**
      * Get instance of cryptographically secure random generator.
@@ -54,7 +59,7 @@ abstract class LoxoneCrypto {
             final KeyGenerator keyGen = KeyGenerator.getInstance("AES");
             keyGen.init(256);
             final SecretKey secretKey = keyGen.generateKey();
-            log.trace("Created sharedKey: {}", bytesToHex(secretKey.getEncoded()));
+            LOG.trace("Created sharedKey: {}", bytesToHex(secretKey.getEncoded()));
             return secretKey;
         } catch (NoSuchAlgorithmException e) {
             throw new LoxoneException("No AES provider present", e);
@@ -69,7 +74,7 @@ abstract class LoxoneCrypto {
     static byte[] createSharedKeyIv(final SecureRandom secureRandom) {
         final byte[] sharedKeyIv = new byte[16];
         secureRandom.nextBytes(sharedKeyIv);
-        log.trace("Created sharedKeyIv: {}", bytesToHex(sharedKeyIv));
+        LOG.trace("Created sharedKeyIv: {}", bytesToHex(sharedKeyIv));
         return sharedKeyIv;
     }
 
@@ -85,10 +90,12 @@ abstract class LoxoneCrypto {
         try {
             final Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            byte[] encryptedbytes = cipher.doFinal(concatToBytes(bytesToHex(sharedKey.getEncoded()), bytesToHex(sharedKeyIv)));
-            log.trace("Created session key (in hex): {}", bytesToHex(encryptedbytes));
+            final byte[] encryptedbytes = cipher
+                    .doFinal(concatToBytes(bytesToHex(sharedKey.getEncoded()), bytesToHex(sharedKeyIv)));
+            LOG.trace("Created session key (in hex): {}", bytesToHex(encryptedbytes));
             return bytesToBase64(encryptedbytes);
-        } catch (NoSuchAlgorithmException | BadPaddingException | NoSuchPaddingException | IllegalBlockSizeException | InvalidKeyException e) {
+        } catch (NoSuchAlgorithmException | BadPaddingException | NoSuchPaddingException
+                 | IllegalBlockSizeException | InvalidKeyException e) {
             throw new LoxoneException("Can't encrypt sharedKey to obtain sessionKey", e);
         }
     }
@@ -103,12 +110,16 @@ abstract class LoxoneCrypto {
      * @param operation description of the operation the hashing is needed for - just for logging purposes
      * @return loxone hash of given parameters
      */
-    static String loxoneHashing(final String secret, final String loxoneUser, final Hashing hashing, final String operation) {
+    static String loxoneHashing(
+            final String secret,
+            final String loxoneUser,
+            final Hashing hashing,
+            final String operation) {
         try {
             final MessageDigest md = MessageDigest.getInstance(getDigestAlg(hashing.getHashAlg()));
             final byte[] toSha1 = concatToBytes(secret, hashing.getSalt());
             final String secretHash = bytesToHex(md.digest(toSha1)).toUpperCase();
-            log.trace("{} hash: {}", operation, secretHash);
+            LOG.trace("{} hash: {}", operation, secretHash);
 
             final String toFinalHash = loxoneUser != null ? concat(loxoneUser, secretHash) : secretHash;
             return loxoneHashing(toFinalHash, hashing, operation);
@@ -134,7 +145,7 @@ abstract class LoxoneCrypto {
             mac.init(secretKeySpec);
             final byte[] hash = mac.doFinal(secret.getBytes());
             final String finalHash = bytesToHex(hash);
-            log.trace("{} final hash: {}", operation, finalHash);
+            LOG.trace("{} final hash: {}", operation, finalHash);
 
             return finalHash;
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
@@ -147,10 +158,10 @@ abstract class LoxoneCrypto {
      * Hex​ ​string​ ​(length​ ​may​ ​vary,​ ​e.g.​ ​2​ ​bytes)​ ​->​ ​{salt}
      * */
     static String generateSalt(final SecureRandom secureRandom) {
-        byte[] iv = new byte[16];
+        final byte[] iv = new byte[16];
         secureRandom.nextBytes(iv);
         final String salt = bytesToHex(iv);
-        log.trace("new command encryption salt generated: {}", salt);
+        LOG.trace("new command encryption salt generated: {}", salt);
         return salt;
     }
 
@@ -191,11 +202,6 @@ abstract class LoxoneCrypto {
             throw new LoxoneException("Can't perform AES decryption", e);
         }
     }
-
-    private static final String SHA1 = "SHA1";
-    private static final String SHA_1 = "SHA-1";
-    private static final String SHA256 = "SHA256";
-    private static final String SHA_256 = "SHA-256";
 
     private static String getDigestAlg(final String hashAlg) {
         if (hashAlg == null || SHA1.equals(hashAlg)) {

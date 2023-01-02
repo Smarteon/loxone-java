@@ -77,6 +77,25 @@ public class LoxoneApp implements Serializable {
     /**
      * @param type control type to get
      * @param <T> class of control type
+     * @return collection of found control for given type (may be empty)
+     */
+    @JsonIgnore
+    @SuppressWarnings("unchecked")
+    @NotNull
+    public <T extends Control> Collection<T> getControls(final @NotNull Class<T> type) {
+        requireNonNull(type, "control type can't be null");
+        final List<T> found = new ArrayList<>();
+        for (Control c : controls.values()) {
+            if (type.isAssignableFrom(c.getClass())) {
+                found.add((T) c);
+            }
+        }
+        return found;
+    }
+
+    /**
+     * @param type control type to get
+     * @param <T> class of control type
      * @return the only control of given type, or null if no such control exists
      * @throws cz.smarteon.loxone.LoxoneException if more than one control of given type exists
      */
@@ -95,26 +114,7 @@ public class LoxoneApp implements Serializable {
     }
 
     /**
-     * @param type control type to get
-     * @param <T> class of control type
-     * @return collection of found control for given type (may be empty)
-     */
-    @JsonIgnore
-    @SuppressWarnings("unchecked")
-    @NotNull
-    public <T extends Control> Collection<T> getControls(final @NotNull Class<T> type) {
-        requireNonNull(type, "control type can't be null");
-        final List<T> found = new ArrayList<>();
-        for (Control c : controls.values()) {
-            if ( type.isAssignableFrom(c.getClass())) {
-                found.add((T) c);
-            }
-        }
-        return found;
-    }
-
-    /**
-     * Get single (if any) control of given type and name
+     * Get single (if any) control of given type and name.
      * @param name control name
      * @param type control type
      * @param <T> class of control type
@@ -129,7 +129,8 @@ public class LoxoneApp implements Serializable {
         for (T control : getControls(type)) {
             if (name.equals(control.getName())) {
                 if (found != null) {
-                    throw new LoxoneException("More than one control of name " + name + " and type " + type.getSimpleName() + " found!");
+                    throw new LoxoneException(
+                            "More than one control of name " + name + " and type " + type.getSimpleName() + " found!");
                 } else {
                     found = control;
                 }
@@ -200,7 +201,7 @@ public class LoxoneApp implements Serializable {
     @JsonIgnore
     @NotNull
     public Room getRoomByName(final @NotNull String name) {
-        List<Room> roomList = getRooms().values().stream()
+        final List<Room> roomList = getRooms().values().stream()
                 .filter(r -> name.equalsIgnoreCase(r.getName()))
                 .collect(Collectors.toList());
 
@@ -221,7 +222,7 @@ public class LoxoneApp implements Serializable {
      * @throws LoxoneException when zero or more than one category is found for supplied the name
      */
     public Category getCategoryByName(final @NotNull String name) {
-        List<Category> categoryList = getCategories().values().stream()
+        final List<Category> categoryList = getCategories().values().stream()
                 .filter(c -> name.equalsIgnoreCase(c.getName()))
                 .collect(Collectors.toList());
 

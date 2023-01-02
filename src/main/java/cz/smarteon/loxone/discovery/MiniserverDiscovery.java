@@ -17,12 +17,12 @@ public final class MiniserverDiscovery {
 
     private static final Pattern RESPONSE_PATTERN =
             Pattern.compile(
-                    "^LoxLIVE: (.+) " + // name
-                    "(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}):(\\d+) " + // address:port
-                    "([A-Z\\d]{12}) " + // MAC address
-                    "(\\d[.\\d]*) " + // firmware version
-                    "Prog:([\\d-\\s:]+) " + // last configuration
-                    "Type:(\\d).*$"); // miniserver type
+                    "^LoxLIVE: (.+) " // name
+                            + "(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}):(\\d+) " // address:port
+                            + "([A-Z\\d]{12}) "  // MAC address
+                            + "(\\d[.\\d]*) "  // firmware version
+                            + "Prog:([\\d-\\s:]+) "  // last configuration
+                            + "Type:(\\d).*$"); // miniserver type
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -99,10 +99,20 @@ public final class MiniserverDiscovery {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MiniserverDiscovery that = (MiniserverDiscovery) o;
-        return port == that.port && Objects.equals(name, that.name) && Objects.equals(address, that.address) && Objects.equals(mac, that.mac) && type == that.type && Objects.equals(firmwareVersion, that.firmwareVersion) && Objects.equals(lastConfig, that.lastConfig);
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final MiniserverDiscovery that = (MiniserverDiscovery) o;
+        return port == that.port
+                && Objects.equals(name, that.name)
+                && Objects.equals(address, that.address)
+                && Objects.equals(mac, that.mac)
+                && type == that.type
+                && Objects.equals(firmwareVersion, that.firmwareVersion)
+                && Objects.equals(lastConfig, that.lastConfig);
     }
 
     @Override
@@ -112,14 +122,14 @@ public final class MiniserverDiscovery {
 
     @Override
     public String toString() {
-        return "MiniserverDiscovery{" +
-                "name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                ", port=" + port +
-                ", mac='" + mac + '\'' +
-                ", type=" + type +
-                ", firmwareVersion='" + firmwareVersion + '\'' +
-                ", lastConfig=" + lastConfig +
-                '}';
+        return "MiniserverDiscovery{"
+                + "name='" + name + '\''
+                + ", address='" + address + '\''
+                + ", port=" + port
+                + ", mac='" + mac + '\''
+                + ", type=" + type
+                + ", firmwareVersion='" + firmwareVersion + '\''
+                + ", lastConfig=" + lastConfig
+                + '}';
     }
 }

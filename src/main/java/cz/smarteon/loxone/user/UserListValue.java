@@ -3,14 +3,12 @@ package cz.smarteon.loxone.user;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 import cz.smarteon.loxone.Codec;
 import cz.smarteon.loxone.LoxoneUuid;
 import cz.smarteon.loxone.message.LoxoneValue;
 import lombok.Getter;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,7 +26,10 @@ public class UserListValue implements LoxoneValue {
         this.users = Arrays.asList(Codec.readMessage(users, UserListElement[].class));
     }
 
-    public static class UserListElement extends UserBase{
+    /**
+     * Helper class to properly serialize/deserialize {@link UserListValue}.
+     */
+    public static class UserListElement extends UserBase {
         @JsonCreator
         protected UserListElement(@JsonProperty("name") String name,
                                   @JsonProperty("uuid") LoxoneUuid uuid,

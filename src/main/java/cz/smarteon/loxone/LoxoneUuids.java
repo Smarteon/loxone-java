@@ -4,6 +4,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
+/**
+ * Represents a list of {@link LoxoneUuid}.
+ */
 public class LoxoneUuids extends ArrayList<LoxoneUuid> {
 
     /**

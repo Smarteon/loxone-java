@@ -1,13 +1,10 @@
 package cz.smarteon.loxone.user;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import cz.smarteon.loxone.message.LoxoneValue;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -17,9 +14,9 @@ import java.io.IOException;
  */
 @Getter
 @JsonDeserialize(using = EmptyValue.EmptyValueDeserializer.class)
-public class EmptyValue implements LoxoneValue {
+public final class EmptyValue implements LoxoneValue {
 
-    private static EmptyValue INSTANCE;
+    private static EmptyValue instance;
     private final String empty;
 
     private EmptyValue() {
@@ -27,12 +24,15 @@ public class EmptyValue implements LoxoneValue {
     }
 
     public static EmptyValue getInstance() {
-        if(INSTANCE == null) {
-            INSTANCE = new EmptyValue();
+        if (instance == null) {
+            instance = new EmptyValue();
         }
-        return INSTANCE;
+        return instance;
     }
 
+    /**
+     * Used to properly deserialize {@link EmptyValue}.
+     */
     public static class EmptyValueDeserializer extends JsonDeserializer<EmptyValue> {
         @Override
         public EmptyValue deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {

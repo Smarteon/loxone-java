@@ -20,18 +20,21 @@ public class EncryptedCommand<V extends LoxoneValue> extends LoxoneMessageComman
     private final Function<String, String> encryptor;
 
     /**
-     * Creates new instance
+     * Creates new instance.
      * @param command loxone command (before encryption)Token
      * @param valueType type of command response
      * @param encryptor function to be used for encryption
      */
-    protected EncryptedCommand(final String command, final Class<V> valueType, final Function<String, String> encryptor) {
+    protected EncryptedCommand(
+            final String command,
+            final Class<V> valueType,
+            final Function<String, String> encryptor) {
         super(command, Type.JSON, valueType, false, true, MiniserverType.KNOWN);
         this.encryptor = requireNonNull(encryptor, "encryptor can't be null");
     }
 
     /**
-     * Encrypted command with prefix identifying it's encrypted
+     * Encrypted command with prefix identifying it's encrypted.
      * @return encrypted command
      */
     @Override
@@ -48,7 +51,7 @@ public class EncryptedCommand<V extends LoxoneValue> extends LoxoneMessageComman
     }
 
     /**
-     * Creates "authwithtoken" command
+     * Creates "authwithtoken" command.
      * @param tokenHash hashed token
      * @param user loxone user
      * @param encryptor encryption function
@@ -63,7 +66,7 @@ public class EncryptedCommand<V extends LoxoneValue> extends LoxoneMessageComman
     }
 
     /**
-     * Creates "gettoken" command
+     * Creates "gettoken" command.
      * @param tokenHash hashed token
      * @param user loxone user
      * @param permissionType token permission type to acquire
@@ -87,7 +90,7 @@ public class EncryptedCommand<V extends LoxoneValue> extends LoxoneMessageComman
     }
 
     /**
-     * Creates "refreshtoken" command
+     * Creates "refreshtoken" command.
      * @param tokenHash hashed token
      * @param user loxone user
      * @param encryptor encryption function
@@ -96,8 +99,8 @@ public class EncryptedCommand<V extends LoxoneValue> extends LoxoneMessageComman
     public static EncryptedCommand<Token> refreshToken(final String tokenHash, final String user,
                                                         final Function<String, String> encryptor) {
         final String cmd = "jdev/sys/refreshtoken/"
-                + requireNonNull(tokenHash, "tokenHash can't be null") + "/"
-                + requireNonNull(user, "user can't be null");
+                + requireNonNull(tokenHash, "tokenHash can't be null when refreshing token") + "/"
+                + requireNonNull(user, "user can't be null when refreshing token");
         return new EncryptedCommand<>(cmd, Token.class, encryptor);
     }
 

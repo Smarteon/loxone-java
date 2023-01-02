@@ -14,12 +14,16 @@ import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * HTTP protocol implementation to communicate with Loxone miniserver.
+ */
 public class LoxoneHttp {
 
-    private static final Logger log = LoggerFactory.getLogger(LoxoneHttp.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LoxoneHttp.class);
     private static final int MAX_REDIRECTS = 5;
 
     // temporarily relaxed visibility to allow deprecated LoxoneAuth constructor
+    @SuppressWarnings("checkstyle:VisibilityModifier")
     final LoxoneEndpoint endpoint;
     private int connectionTimeout = 5000;
 
@@ -27,16 +31,6 @@ public class LoxoneHttp {
 
     public LoxoneHttp(@NotNull final LoxoneEndpoint endpoint) {
         this.endpoint = requireNonNull(endpoint, "endpoint can't be null");
-    }
-
-    public <T> T get(Command<T> command) {
-        return get(command, Collections.emptyMap());
-    }
-
-    public <T> T get(Command<T> command, LoxoneAuth loxoneAuth) {
-        return get(
-                command,
-                loxoneAuth != null ? loxoneAuth.authHeaders() : Collections.<String, String>emptyMap());
     }
 
     public void setConnectionTimeout(int connectionTimeout) {
@@ -51,14 +45,25 @@ public class LoxoneHttp {
         return requestContext.get().lastUrl;
     }
 
+    public <T> T get(Command<T> command) {
+        return get(command, Collections.emptyMap());
+    }
+
+    public <T> T get(Command<T> command, LoxoneAuth loxoneAuth) {
+        return get(
+                command,
+                loxoneAuth != null ? loxoneAuth.authHeaders() : Collections.emptyMap());
+    }
+
     <T> T get(Command<T> command, Map<String, String> properties) {
         final URL url = urlFromCommand(command.getCommand());
         requestContext.set(new RequestContext(url));
         return get(url, command.getType(), properties, command.getResponseType());
     }
 
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:ReturnCount"})
     <T> T get(URL url, Command.Type type, Map<String, String> properties, Class<T> responseType) {
-        log.debug("Trigger command url=" + url);
+        LOG.debug("Trigger command url=" + url);
         HttpURLConnection connection = null;
         try {
             connection = (HttpURLConnection) url.openConnection();
@@ -83,7 +88,7 @@ public class LoxoneHttp {
                     || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
                     || responseCode == HttpURLConnection.HTTP_SEE_OTHER 
                     || responseCode == 307) {
-                if (requestContext.get().redirects > MAX_REDIRECTS){
+                if (requestContext.get().redirects > MAX_REDIRECTS) {
                     throw new IllegalStateException("Too many redirects!");
                 }
                 final URL location = new URL(connection.getHeaderField("Location"));
@@ -93,7 +98,7 @@ public class LoxoneHttp {
                 throw new LoxoneException("Loxone command responded by status " + responseCode);
             }
         } catch (IOException e) {
-            log.error("Can't trigger command on url=" + url, e);
+            LOG.error("Can't trigger command on url=" + url, e);
             throw new LoxoneException("Error while triggering loxone command", e);
         } finally {
             if (connection != null) {
@@ -111,8 +116,8 @@ public class LoxoneHttp {
     }
 
     private static class RequestContext {
-        int redirects = 0;
-        URL lastUrl;
+        private int redirects;
+        private URL lastUrl;
 
         RequestContext(final URL lastUrl) {
             this.lastUrl = lastUrl;

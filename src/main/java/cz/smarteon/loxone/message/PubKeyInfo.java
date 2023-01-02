@@ -17,6 +17,9 @@ import java.security.spec.X509EncodedKeySpec;
 
 import static cz.smarteon.loxone.Codec.base64ToBytes;
 
+/**
+ * Represents loxone api public key.
+ */
 @JsonDeserialize(using = PubKeyInfo.Deserializer.class)
 public class PubKeyInfo implements LoxoneValue {
 
@@ -42,9 +45,12 @@ public class PubKeyInfo implements LoxoneValue {
 
     @JsonValue
     private String jsonValue() {
-        return "-----BEGIN CERTIFICATE-----" + Codec.bytesToBase64(pubKey)+ "-----END CERTIFICATE-----";
+        return "-----BEGIN CERTIFICATE-----" + Codec.bytesToBase64(pubKey) + "-----END CERTIFICATE-----";
     }
 
+    /**
+     * Used to properly deserialize {@link PubKeyInfo}.
+     */
     public static class Deserializer extends JsonDeserializer<PubKeyInfo> {
 
         private static final String PUBLIC_KEY_PARSER_PATTERN = "-+BEGIN CERTIFICATE-+([^-]+)-+END CERTIFICATE-+";

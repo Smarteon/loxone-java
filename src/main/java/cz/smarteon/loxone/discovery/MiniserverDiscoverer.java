@@ -35,6 +35,7 @@ import java.util.function.Consumer;
  *     <li>The response is expected on UDP port 7071</li>
  * </ol>
  */
+@SuppressWarnings("checkstyle:nowhitespaceafter")
 public class MiniserverDiscoverer {
 
     private static final byte[] DISCOVERY_PACKET_PAYLOAD = new byte[] { 0x00 };
@@ -92,7 +93,7 @@ public class MiniserverDiscoverer {
         DiscoveryListener discoveryListener = null;
 
         try {
-            discoveryListener = new DiscoveryListener( discovery -> {
+            discoveryListener = new DiscoveryListener(discovery -> {
                 discoveries.add(discovery);
                 latch.countDown();
             });
@@ -129,10 +130,10 @@ public class MiniserverDiscoverer {
     }
 
     private void sendDiscoveryPacket() throws SocketException {
-        DatagramSocket socket = new DatagramSocket();
+        final DatagramSocket socket = new DatagramSocket();
         socket.setBroadcast(true);
         try {
-            DatagramPacket packet = new DatagramPacket(
+            final DatagramPacket packet = new DatagramPacket(
                     DISCOVERY_PACKET_PAYLOAD,
                     DISCOVERY_PACKET_PAYLOAD.length,
                     broadcastAddress,

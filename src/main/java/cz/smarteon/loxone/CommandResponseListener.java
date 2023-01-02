@@ -7,6 +7,10 @@ import org.jetbrains.annotations.NotNull;
  * @param <T> type of response message
  */
 public interface CommandResponseListener<T> {
+
+    /**
+     * The state of a message.
+     */
     enum State {
         /**
          * Message is read but can be processed by other listeners.
@@ -41,13 +45,13 @@ public interface CommandResponseListener<T> {
 
 
     /**
-     * Process response message of given command and returns {@link State}
+     * Process response message of given command and returns {@link State}.
      * @param command command
      * @param message message
      * @return state signaling the processing output
      */
     @NotNull
-    State onCommand(@NotNull final Command<? extends T> command, @NotNull final T message);
+    State onCommand(@NotNull Command<? extends T> command, @NotNull T message);
 
     /**
      * Checks whether this listener accepts response of given type.
@@ -55,5 +59,5 @@ public interface CommandResponseListener<T> {
      * @param clazz type to check
      * @return true if this listener accepts response of given type, false otherwise
      */
-    boolean accepts(@NotNull final Class<?> clazz);
+    boolean accepts(@NotNull Class<?> clazz);
 }

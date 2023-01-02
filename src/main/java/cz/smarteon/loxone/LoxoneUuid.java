@@ -9,6 +9,9 @@ import java.util.Objects;
 
 import static cz.smarteon.loxone.Codec.*;
 
+/**
+ * Represents a uuid specific for Loxone.
+ */
 @EqualsAndHashCode
 public final class LoxoneUuid {
 

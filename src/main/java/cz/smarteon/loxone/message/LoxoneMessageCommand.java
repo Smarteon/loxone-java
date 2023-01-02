@@ -174,61 +174,9 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
             jsonHttpCommand("jdev/bus/parityerrors", LongValue.class, MiniserverType.KNOWN);
 
     /**
-     * Get the crypto key for given user.
-     * @param user loxone user
-     * @return command requesting user's crypto key
+     * List of known commands.
      */
-    public static LoxoneMessageCommand<Hashing> getKey(final String user) {
-        return jsonWsCommand("jdev/sys/getkey2/" + requireNonNull(user), Hashing.class, MiniserverType.KNOWN);
-    }
-
-    /**
-     * Get the visu hashing  for given user.
-     * @param user loxone user
-     * @return command requesting user's visu hashing
-     */
-    public static LoxoneMessageCommand<Hashing> getVisuHash(final String user) {
-        return jsonWsCommand("jdev/sys/getvisusalt/" + requireNonNull(user), Hashing.class, MiniserverType.KNOWN);
-    }
-
-    /**
-     * Get 1-wire details by given extension serial number.
-     * @param extensionSerial serial number of 1-wire extension
-     * @return command requesting 1-wire details
-     */
-    public static LoxoneMessageCommand<OneWireDetails> oneWireDetails(final @NotNull String extensionSerial) {
-        return jsonCommand("jdev/sys/ExtStatistics/" + requireNonNull(extensionSerial, "extensionSerial can't be null"),
-                OneWireDetails.class, MiniserverType.KNOWN);
-    }
-
-    private final Class<V> valueType;
-
-    @SuppressWarnings("unchecked")
-    protected LoxoneMessageCommand(final String command, final Type type, final Class<V> valueType, final boolean httpSupported,
-                                   final boolean wsSupported, final MiniserverType[] supportedMiniservers) {
-        super(command, type, (Class<LoxoneMessage<V>>) (Class<?>) LoxoneMessage.class, httpSupported, wsSupported, supportedMiniservers);
-        this.valueType = valueType;
-    }
-
-    private static <V extends LoxoneValue> LoxoneMessageCommand<V> jsonCommand(
-            final String command, final Class<V> valueType, final MiniserverType[] supportedMiniservers) {
-        return new LoxoneMessageCommand<>(command, Type.JSON, valueType, true, true, supportedMiniservers);
-    }
-
-    private static <V extends LoxoneValue> LoxoneMessageCommand<V> jsonHttpCommand(
-            final String command, final Class<V> valueType, final MiniserverType[] supportedMiniservers) {
-        return new LoxoneMessageCommand<>(command, Type.JSON, valueType, true, false, supportedMiniservers);
-    }
-
-    private static <V extends LoxoneValue> LoxoneMessageCommand<V> jsonWsCommand(
-            final String command, final Class<V> valueType, final MiniserverType[] supportedMiniservers) {
-        return new LoxoneMessageCommand<>(command, Type.JSON, valueType, false, true, supportedMiniservers);
-    }
-
-    /**
-     * List of known commands
-     */
-    public static List<LoxoneMessageCommand<?>> COMMANDS = Arrays.asList(
+    public static final List<LoxoneMessageCommand<?>> COMMANDS = Arrays.asList(
             DEV_BUS_FRAMEERRORS,
             DEV_BUS_OVERRUNS,
             DEV_BUS_PACKETSRECEIVED,
@@ -257,8 +205,65 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
             LOX_APP_VERSION
     );
 
+    private final Class<V> valueType;
+
+    @SuppressWarnings("unchecked")
+    protected LoxoneMessageCommand(final String command,
+                                   final Type type,
+                                   final Class<V> valueType,
+                                   final boolean httpSupported,
+                                   final boolean wsSupported,
+                                   final MiniserverType[] supportedMiniservers) {
+        super(command, type, (Class<LoxoneMessage<V>>) (Class<?>) LoxoneMessage.class,
+                httpSupported, wsSupported, supportedMiniservers);
+        this.valueType = valueType;
+    }
+
     /**
-     * Type of the {@link LoxoneMessage} value
+     * Get the crypto key for given user.
+     * @param user loxone user
+     * @return command requesting user's crypto key
+     */
+    public static LoxoneMessageCommand<Hashing> getKey(final String user) {
+        return jsonWsCommand("jdev/sys/getkey2/" + requireNonNull(user), Hashing.class, MiniserverType.KNOWN);
+    }
+
+    /**
+     * Get the visu hashing  for given user.
+     * @param user loxone user
+     * @return command requesting user's visu hashing
+     */
+    public static LoxoneMessageCommand<Hashing> getVisuHash(final String user) {
+        return jsonWsCommand("jdev/sys/getvisusalt/" + requireNonNull(user), Hashing.class, MiniserverType.KNOWN);
+    }
+
+    /**
+     * Get 1-wire details by given extension serial number.
+     * @param extensionSerial serial number of 1-wire extension
+     * @return command requesting 1-wire details
+     */
+    public static LoxoneMessageCommand<OneWireDetails> oneWireDetails(final @NotNull String extensionSerial) {
+        return jsonCommand("jdev/sys/ExtStatistics/" + requireNonNull(extensionSerial, "extensionSerial can't be null"),
+                OneWireDetails.class, MiniserverType.KNOWN);
+    }
+
+    private static <V extends LoxoneValue> LoxoneMessageCommand<V> jsonCommand(
+            final String command, final Class<V> valueType, final MiniserverType[] supportedMiniservers) {
+        return new LoxoneMessageCommand<>(command, Type.JSON, valueType, true, true, supportedMiniservers);
+    }
+
+    private static <V extends LoxoneValue> LoxoneMessageCommand<V> jsonHttpCommand(
+            final String command, final Class<V> valueType, final MiniserverType[] supportedMiniservers) {
+        return new LoxoneMessageCommand<>(command, Type.JSON, valueType, true, false, supportedMiniservers);
+    }
+
+    private static <V extends LoxoneValue> LoxoneMessageCommand<V> jsonWsCommand(
+            final String command, final Class<V> valueType, final MiniserverType[] supportedMiniservers) {
+        return new LoxoneMessageCommand<>(command, Type.JSON, valueType, false, true, supportedMiniservers);
+    }
+
+    /**
+     * Type of the {@link LoxoneMessage} value.
      * @return value type
      */
     public Class<V> getValueType() {
@@ -266,7 +271,7 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
     }
 
     /**
-     * Ensures the given beeing not null and of this command {@link LoxoneMessageCommand#valueType}
+     * Ensures the given beeing not null and of this command {@link LoxoneMessageCommand#valueType}.
      * @param value value to check
      * @return checked and cast value
      */

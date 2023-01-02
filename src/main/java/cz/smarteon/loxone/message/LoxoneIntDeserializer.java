@@ -8,6 +8,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 
+/**
+ * Used to correctly deserialize LoxoneInt.
+ */
+@SuppressWarnings("checkstyle:returncount")
 public class LoxoneIntDeserializer extends JsonDeserializer<Integer> {
     @Override
     public Integer deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {

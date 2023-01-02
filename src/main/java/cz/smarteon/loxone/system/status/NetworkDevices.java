@@ -5,6 +5,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+/**
+ * Represents a list of all network devices.
+ */
 public class NetworkDevices {
 
     @XmlElement(name = "GenericNetworkDevice")

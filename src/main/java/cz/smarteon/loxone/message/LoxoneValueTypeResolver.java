@@ -18,6 +18,7 @@ class LoxoneValueTypeResolver implements TypeIdResolver {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:returncount")
     public JavaType typeFromId(DatabindContext context, String id) {
         if (id.contains("dev/sys/getkey")
                 || id.contains("dev/sys/getvisusalt")) {

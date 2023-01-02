@@ -15,8 +15,8 @@ public class ControlCommand<V extends LoxoneValue> extends LoxoneMessageCommand<
 
     ControlCommand(final String controlUuid, final String operation, final Class<V> valueType,
                    final MiniserverType[] supportedMiniservers) {
-        super(requireNonNull(controlUuid, "controlUuid can't be null") +
-                "/" + requireNonNull(operation, "operation can't be null"),
+        super(requireNonNull(controlUuid, "controlUuid can't be null")
+                        + "/" + requireNonNull(operation, "operation can't be null"),
                 Type.JSON, valueType, true, true, supportedMiniservers);
     }
 

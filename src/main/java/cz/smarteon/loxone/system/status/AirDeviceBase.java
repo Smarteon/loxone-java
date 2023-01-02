@@ -24,8 +24,9 @@ class AirDeviceBase extends UpdatableDevice {
     @XmlAttribute(name = "DummyDev") protected Boolean dummy;
     @XmlElement(name = "OneWireDevice") protected List<OneWireDevice> oneWireDevices;
 
-    AirDeviceBase() {}
+    AirDeviceBase() { }
 
+    @SuppressWarnings("checkstyle:parameternumber")
     AirDeviceBase(final String type,
               final String code,
               final String name,

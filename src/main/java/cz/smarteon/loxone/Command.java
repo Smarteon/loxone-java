@@ -12,13 +12,13 @@ import java.util.Objects;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Represents miniserver command
+ * Represents miniserver command.
  * @param <T>  type of command response
  */
 public class Command<T> {
 
     /**
-     * Miniserver Application
+     * Miniserver Application.
      */
     public static final Command<LoxoneApp> LOX_APP = new Command<>("data/LoxAPP3.json", Type.JSON,
             LoxoneApp.class, true, true, MiniserverType.KNOWN);
@@ -80,7 +80,7 @@ public class Command<T> {
     }
 
     /**
-     * Session key exchange command
+     * Session key exchange command.
      * @param sessionKey key to exchange
      * @return new key exchange command
      */
@@ -89,7 +89,7 @@ public class Command<T> {
     }
 
     /**
-     * Kill token command
+     * Kill token command.
      * @param tokenHash hashed token
      * @param user token uses
      * @return void websocket command
@@ -125,7 +125,7 @@ public class Command<T> {
     }
 
     /**
-     * Command type
+     * Command type.
      * @return type
      */
     public Type getType() {
@@ -133,7 +133,7 @@ public class Command<T> {
     }
 
     /**
-     * Command response type
+     * Command response type.
      * @return response type
      */
     public Class<T> getResponseType() {
@@ -141,7 +141,7 @@ public class Command<T> {
     }
 
     /**
-     * Whether the command can be used through HTTP API
+     * Whether the command can be used through HTTP API.
      * @return true when command supported by HTTP API, false otherwise
      */
     public boolean isHttpSupported() {
@@ -149,7 +149,7 @@ public class Command<T> {
     }
 
     /**
-     * Whether the command can be used through Web Socket API
+     * Whether the command can be used through Web Socket API.
      * @return true when command supported by Web Socket API, false otherwise
      */
     public boolean isWsSupported() {
@@ -186,7 +186,7 @@ public class Command<T> {
         if (response != null && responseType.isAssignableFrom(response.getClass())) {
             return (T) response;
         } else {
-            throw new LoxoneException("Expected type of response "+ responseType);
+            throw new LoxoneException("Expected type of response " + responseType);
         }
     }
 
@@ -199,22 +199,25 @@ public class Command<T> {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Command<?> command1 = (Command<?>) o;
-        return httpSupported == command1.httpSupported &&
-                wsSupported == command1.wsSupported &&
-                Objects.equals(command, command1.command) &&
-                type == command1.type &&
-                Objects.equals(responseType, command1.responseType) &&
-                Objects.equals(shouldContain, command1.shouldContain) &&
-                Arrays.equals(supportedMiniservers, command1.supportedMiniservers);
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Command<?> command1 = (Command<?>) o;
+        return httpSupported == command1.httpSupported
+                && wsSupported == command1.wsSupported
+                && Objects.equals(command, command1.command)
+                && type == command1.type
+                && Objects.equals(responseType, command1.responseType)
+                && Objects.equals(shouldContain, command1.shouldContain)
+                && Arrays.equals(supportedMiniservers, command1.supportedMiniservers);
     }
 
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(new Object[] {
-                command, type, responseType, httpSupported, wsSupported, shouldContain, supportedMiniservers
-        });
+                        command, type, responseType, httpSupported, wsSupported, shouldContain, supportedMiniservers });
     }
 }

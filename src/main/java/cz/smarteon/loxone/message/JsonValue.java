@@ -49,9 +49,15 @@ public class JsonValue implements LoxoneValue {
         }
     }
 
+    /**
+     * Used to correctly serialize {@link JsonValue}.
+     */
     public static class Serializer extends JsonSerializer<JsonValue> {
         @Override
-        public void serialize(final JsonValue value, final JsonGenerator gen, final SerializerProvider serializers) throws IOException {
+        public void serialize(
+                final JsonValue value,
+                final JsonGenerator gen,
+                final SerializerProvider serializers) throws IOException {
             gen.writeRawValue(value.jsonNode.toString());
         }
     }

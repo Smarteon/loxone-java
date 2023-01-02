@@ -35,8 +35,9 @@ public class Extension implements Updatable {
     @XmlElement(name = "DaliDevice") protected List<DaliDevice> daliDevices;
     @XmlElement(name = "OneWireDevice") protected List<OneWireDevice> oneWireDevices;
 
-    Extension() {}
+    Extension() { }
 
+    @SuppressWarnings("checkstyle:parameternumber")
     Extension(final String type, final String code, final String name, final String serialNumber, final String version,
               final String hwVersion, final Boolean online, final Boolean dummy, final Boolean occupied,
               final Boolean interfered, final Boolean intDev, final Boolean updating, final Integer updateProgress) {
@@ -65,7 +66,7 @@ public class Extension implements Updatable {
     }
 
     /**
-     * Extension code
+     * Extension code.
      * @return code
      */
     @Nullable
@@ -74,7 +75,7 @@ public class Extension implements Updatable {
     }
 
     /**
-     * Extension configured name
+     * Extension configured name.
      * @return name
      */
     @Nullable
@@ -83,7 +84,7 @@ public class Extension implements Updatable {
     }
 
     /**
-     * Extension serial number (set by factory)
+     * Extension serial number (set by factory).
      * @return serial number
      */
     @Nullable
@@ -92,7 +93,7 @@ public class Extension implements Updatable {
     }
 
     /**
-     * Extension version
+     * Extension version.
      * @return version
      */
     @Nullable
@@ -101,7 +102,7 @@ public class Extension implements Updatable {
     }
 
     /**
-     * Extension hwVersion
+     * Extension hwVersion.
      * @return hwVersion
      */
     @Nullable
@@ -142,7 +143,7 @@ public class Extension implements Updatable {
     }
 
     /**
-     * Internal device
+     * Internal device.
      * @return true if internal, false otherwise
      */
     public boolean isIntDev() {

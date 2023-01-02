@@ -6,10 +6,11 @@ import cz.smarteon.loxone.LoxoneUuids;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
 import static java.util.Optional.ofNullable;
 
+/**
+ * Represents smoke alarm block.
+ */
 public class TechnicalAlarmControl extends Control {
 
     public static final String NAME = "SmokeAlarm";
@@ -95,7 +96,8 @@ public class TechnicalAlarmControl extends Control {
     @LoxoneNotDocumented
     @Nullable
     public LoxoneUuid stateAreAlarmSignalsOff() {
-        return ofNullable(getStates()).map(states -> states.get("areAlarmSignalsOff")).map(LoxoneUuids::only).orElse(null);
+        return ofNullable(getStates())
+                .map(states -> states.get("areAlarmSignalsOff")).map(LoxoneUuids::only).orElse(null);
     }
 
 }

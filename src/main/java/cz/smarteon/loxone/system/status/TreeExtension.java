@@ -4,14 +4,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+/**
+ * Represents a tree extension.
+ */
 public class TreeExtension extends Extension {
 
     private TreeBranch leftBranch;
     private TreeBranch rightBranch;
 
     TreeExtension(final Extension e) {
-        super(e.type, e.code, e.name, e.serialNumber, e.version, e.hwVersion, e.online, e.dummy, e.occupied, e.interfered,
-                e.intDev, e.updating, e.updateProgress);
+        super(e.type, e.code, e.name, e.serialNumber, e.version, e.hwVersion, e.online, e.dummy, e.occupied,
+                e.interfered, e.intDev, e.updating, e.updateProgress);
         setBranches(e.treeBranches);
     }
 

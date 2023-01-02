@@ -6,7 +6,7 @@ package cz.smarteon.loxone.system.status;
 public class BasicExtension extends Extension {
 
     BasicExtension(final Extension e) {
-        super(e.type, e.code, e.name, e.serialNumber, e.version, e.hwVersion, e.online, e.dummy, e.occupied, e.interfered,
-                e.intDev, e.updating, e.updateProgress);
+        super(e.type, e.code, e.name, e.serialNumber, e.version, e.hwVersion, e.online, e.dummy, e.occupied,
+                e.interfered, e.intDev, e.updating, e.updateProgress);
     }
 }

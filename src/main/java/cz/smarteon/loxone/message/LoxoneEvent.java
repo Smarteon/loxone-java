@@ -13,7 +13,7 @@ public abstract class LoxoneEvent {
     protected final LoxoneUuid uuid;
 
     /**
-     * New instance
+     * New instance.
      * @param uuid event uuid
      */
     protected LoxoneEvent(final @NotNull LoxoneUuid uuid) {
@@ -21,7 +21,7 @@ public abstract class LoxoneEvent {
     }
 
     /**
-     * Get event uuid
+     * Get event uuid.
      * @return event uuid
      */
     @NotNull

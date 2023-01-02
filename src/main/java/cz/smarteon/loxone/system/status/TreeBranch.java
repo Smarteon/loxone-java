@@ -11,6 +11,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Represents a miniserver's tree branch.
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TreeBranch implements DevicesProvider<TreeDevice> {
 
@@ -19,7 +22,7 @@ public class TreeBranch implements DevicesProvider<TreeDevice> {
     @XmlAttribute(name = "Errors") private Integer errors;
     @XmlElement(name = "TreeDevice") @XmlJavaTypeAdapter(TreeDeviceAdapter.class) private List<TreeDevice> devices;
 
-    TreeBranch() {}
+    TreeBranch() { }
 
     @Nullable
     public String getBranch() {

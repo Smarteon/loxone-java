@@ -19,15 +19,17 @@ import java.io.IOException;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Represents UserGroup
+ * Represents UserGroup.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 public class UserGroup {
 
+    private static final String UUID_ERROR_MESSAGE = "uuid can't be null";
+
     /**
-     * Enum class containing constants for usergroup type
+     * Enum class containing constants for usergroup type.
      */
     @RequiredArgsConstructor
     public enum UserGroupType {
@@ -46,8 +48,9 @@ public class UserGroup {
         public static UserGroupType fromValue(final int value) {
             UserGroupType result = UNKNOWN;
             for (UserGroupType type : values()) {
-                if (type.value == value)
+                if (type.value == value) {
                     result = type;
+                }
             }
 
             return result;
@@ -55,7 +58,7 @@ public class UserGroup {
     }
 
     /**
-     * Enum class containing constants for usergroup rights
+     * Enum class containing constants for usergroup rights.
      */
     @RequiredArgsConstructor
     public enum UserGroupRights {
@@ -78,8 +81,9 @@ public class UserGroup {
         public static UserGroupRights fromValue(final long value) {
             UserGroupRights result = UNKNOWN;
             for (UserGroupRights rights : values()) {
-                if (rights.value == value)
+                if (rights.value == value) {
                     result = rights;
+                }
             }
 
             return result;
@@ -87,47 +91,47 @@ public class UserGroup {
     }
 
     /**
-     * UUID of this usergroup, should be unique
+     * UUID of this usergroup, should be unique.
      */
     private final @NotNull LoxoneUuid uuid;
 
     /**
-     * Name of this usergroup, should be unique
+     * Name of this usergroup, should be unique.
      */
     private final @Nullable String name;
 
     /**
-     * Description of this usergroup
+     * Description of this usergroup.
      */
     @Setter
     private @Nullable String description;
 
     /**
-     * Type of this usergroup
+     * Type of this usergroup.
      * <pre>
      * 0 = Normal
      * 1 = Admin (deprecated)
      * 2 = All
      * 3 = None
-     * 4 = AllAccess - Admin
+     * 4 = AllAccess - Admin</pre>
      */
     @Setter
     private UserGroupType type;
 
     /**
-     * Rights of this usergroup
+     * Rights of this usergroup.
      */
     @Setter
     private UserGroupRights userRights;
 
     public UserGroup(@NotNull LoxoneUuid uuid) {
-        this.uuid = requireNonNull(uuid, "uuid can't be null");
+        this.uuid = requireNonNull(uuid, UUID_ERROR_MESSAGE);
         this.name = null;
         this.description = null;
     }
 
     public UserGroup(@NotNull LoxoneUuid uuid, @NotNull String name) {
-        this.uuid = requireNonNull(uuid, "uuid can't be null");
+        this.uuid = requireNonNull(uuid, UUID_ERROR_MESSAGE);
         this.name = requireNonNull(name, "name can't be null");
         this.description = null;
     }
@@ -139,13 +143,16 @@ public class UserGroup {
             @JsonProperty(value = "description") @Nullable String description,
             @JsonProperty(value = "type") @Nullable UserGroupType type,
             @JsonProperty(value = "userRights") @Nullable UserGroupRights userRights) {
-        this.uuid = requireNonNull(uuid, "uuid can't be null");
+        this.uuid = requireNonNull(uuid, UUID_ERROR_MESSAGE);
         this.name = name;
         this.description = description;
         this.type = type;
         this.userRights = userRights;
     }
 
+    /**
+     * Used to correctly serialize {@link UserGroup}.
+     */
     public static class UserGroupSerializer extends StdSerializer<UserGroup> {
 
         public UserGroupSerializer() {

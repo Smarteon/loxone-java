@@ -2,6 +2,9 @@ package cz.smarteon.loxone.app;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
+/**
+ * The unit of temperature.
+ */
 public enum TemperatureUnit {
 
     CELSIUS(0),
@@ -16,8 +19,9 @@ public enum TemperatureUnit {
     @JsonCreator
     public static TemperatureUnit fromValue(final int value) {
         for (TemperatureUnit temperatureUnit : values()) {
-            if (temperatureUnit.value == value)
+            if (temperatureUnit.value == value) {
                 return temperatureUnit;
+            }
         }
 
         throw new IllegalArgumentException("Invalid temperature unit specification, value=" + value);

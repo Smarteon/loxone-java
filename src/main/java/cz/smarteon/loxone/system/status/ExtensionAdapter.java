@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 final class ExtensionAdapter extends XmlAdapter<Extension, Extension> {
 
     @Override
+    @SuppressWarnings({"checkstyle:returncount", "checkstyle:cyclomaticcomplexity"})
     public Extension unmarshal(final Extension v) {
         final String type = v.getType();
         if (type == null) {

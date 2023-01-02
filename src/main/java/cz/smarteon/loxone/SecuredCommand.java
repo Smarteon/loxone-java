@@ -18,7 +18,7 @@ class SecuredCommand<V extends LoxoneValue> extends LoxoneMessageCommand<V> {
     }
 
     /**
-     * Secured command with prefix identifying it's secured
+     * Secured command with prefix identifying it's secured.
      * @return secured command
      */
     @Override

@@ -15,17 +15,19 @@ import static java.util.Objects.requireNonNull;
  */
 public final class LoxoneEndpoint {
 
-    private final String host;
-    private final Integer port;
-    private final String path;
-    private final boolean useSsl;
     private static final String SLASH = "/";
 
     private static final String WS_TEMPLATE = "%s://%s:%d/ws/rfc6455";
     private static final String WS_TEMPLATE_PATH = "%s://%s/ws/rfc6455";
 
+    private final String host;
+    private final Integer port;
+    private final String path;
+    private final boolean useSsl;
+
     /**
-     * Create new instance of given address (only the address without protocol or port part is expected) and default port
+     * Create new instance of given address (only the address without protocol or port part is expected)
+     * and default port.
      * @param address loxone address
      */
     public LoxoneEndpoint(@NotNull final String address) {
@@ -38,7 +40,7 @@ public final class LoxoneEndpoint {
     }
 
     /**
-     * Create new instance of given host (only the host without protocol or port part is expected) and port
+     * Create new instance of given host (only the host without protocol or port part is expected) and port.
      * @param host loxone address host
      * @param port loxone address port
      */
@@ -69,7 +71,11 @@ public final class LoxoneEndpoint {
      * @param useSsl whether to use SSL
      * @param path loxone address path
      */
-    public LoxoneEndpoint(@NotNull final String host, @Nullable final Integer port, final boolean useSsl, @NotNull final String path) {
+    public LoxoneEndpoint(
+            @NotNull final String host,
+            @Nullable final Integer port,
+            final boolean useSsl, @NotNull
+            final String path) {
         this.host = requireNonNull(host, "host can't be null");
         this.port = port;
         this.useSsl = useSsl;
@@ -82,7 +88,7 @@ public final class LoxoneEndpoint {
      */
     @NotNull
     URI webSocketUri() {
-        if(hasPath()){
+        if (hasPath()) {
             return URI.create(String.format(WS_TEMPLATE_PATH, useSsl ? "wss" : "ws", host));
         } else {
             return URI.create(String.format(WS_TEMPLATE, useSsl ? "wss" : "ws", host, port));
@@ -98,7 +104,7 @@ public final class LoxoneEndpoint {
     @NotNull
     URL httpUrl(@NotNull final String path) throws MalformedURLException {
         final String pathPart = requireNonNull(path, "path can't be null");
-        if(hasPath()){
+        if (hasPath()) {
             return new URL("https", host, this.path + sanitizePath(pathPart));
         } else {
             return new URL(useSsl ? "https" : "http", host, port, sanitizePath(pathPart));
@@ -107,10 +113,17 @@ public final class LoxoneEndpoint {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LoxoneEndpoint that = (LoxoneEndpoint) o;
-        return useSsl == that.useSsl && host.equals(that.host) && Objects.equals(port, that.port) && path.equals(that.path);
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final LoxoneEndpoint that = (LoxoneEndpoint) o;
+        return useSsl == that.useSsl
+                && host.equals(that.host)
+                && Objects.equals(port, that.port)
+                && path.equals(that.path);
     }
 
     @Override
@@ -120,7 +133,7 @@ public final class LoxoneEndpoint {
 
     @Override
     public String toString() {
-        if(hasPath()){
+        if (hasPath()) {
             return host + SLASH + path + " " + "(secured)";
         } else {
             return host + ":" + port + " " + (useSsl ? "(secured)" : "(unsecured)");
@@ -136,7 +149,9 @@ public final class LoxoneEndpoint {
     }
 
     private static String checkAndParseHost(final String address) {
-        if(address.contains("://")) throw new IllegalArgumentException("Address cannot contain protocol");
+        if (address.contains("://")) {
+            throw new IllegalArgumentException("Address cannot contain protocol");
+        }
         return address.contains(SLASH) ? address.substring(0, address.indexOf(SLASH)) : address;
     }
 

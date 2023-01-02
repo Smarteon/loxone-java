@@ -38,7 +38,7 @@ public class LoxoneMessage<V extends LoxoneValue> {
     }
 
     /**
-     * Control identifier, the message is about / from
+     * Control identifier, the message is about / from.
      * @return identifier of the control
      */
     @NotNull @JsonIgnore
@@ -47,7 +47,7 @@ public class LoxoneMessage<V extends LoxoneValue> {
     }
 
     /**
-     * Return code
+     * Return code.
      * @return return code
      */
     @JsonIgnore
@@ -84,11 +84,11 @@ public class LoxoneMessage<V extends LoxoneValue> {
 
     @Override
     public String toString() {
-        return "LoxoneMessage{" +
-                "control='" + getControl() + '\'' +
-                ", code=" + getCode() +
-                ", value=" + getValue() +
-                '}';
+        return "LoxoneMessage{"
+                + "control='" + getControl() + '\''
+                + ", code=" + getCode()
+                + ", value=" + getValue()
+                + '}';
     }
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY,

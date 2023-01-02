@@ -5,6 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Represents a multi extension air extension.
+ */
 public class MultiExtensionAir extends AirDevice implements DevicesProvider<OneWireDevice> {
 
     MultiExtensionAir(final AirDeviceBase ad) {
@@ -18,7 +21,7 @@ public class MultiExtensionAir extends AirDevice implements DevicesProvider<OneW
     }
 
     /**
-     * Serial number transformed to the form for getting one wire details
+     * Serial number transformed to the form for getting one wire details.
      * @return serial number for one wire details command.
      * @see cz.smarteon.loxone.message.LoxoneMessageCommand#oneWireDetails(String)
      */

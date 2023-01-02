@@ -4,7 +4,7 @@ import cz.smarteon.loxone.message.LoxoneMessage;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Specific {@link CommandResponseListener} for {@link LoxoneMessage}
+ * Specific {@link CommandResponseListener} for {@link LoxoneMessage}.
  */
 public interface LoxoneMessageCommandResponseListener extends CommandResponseListener<LoxoneMessage<?>> {
 

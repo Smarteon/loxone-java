@@ -11,14 +11,14 @@ import org.jetbrains.annotations.NotNull;
 public interface LoxoneEventListener {
 
     /**
-     * Receives {@link ValueEvent}
+     * Receives {@link ValueEvent}.
      * @param event value event received (should not be null)
      */
-    default void onEvent(final @NotNull ValueEvent event) {}
+    default void onEvent(final @NotNull ValueEvent event) { }
 
     /**
-     * Receives {@link TextEvent}
+     * Receives {@link TextEvent}.
      * @param event text event received (should not be null)
      */
-    default void onEvent(final @NotNull TextEvent event) {}
+    default void onEvent(final @NotNull TextEvent event) { }
 }

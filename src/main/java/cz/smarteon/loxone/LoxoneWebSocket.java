@@ -5,6 +5,7 @@ import cz.smarteon.loxone.message.LoxoneMessage;
 import cz.smarteon.loxone.message.MessageHeader;
 import cz.smarteon.loxone.message.TextEvent;
 import cz.smarteon.loxone.message.ValueEvent;
+import lombok.Getter;
 import org.java_websocket.client.WebSocketClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
@@ -41,11 +42,18 @@ import static cz.smarteon.loxone.message.LoxoneMessage.CODE_OK;
 import static cz.smarteon.loxone.message.LoxoneMessage.CODE_UNAUTHORIZED;
 import static java.util.Objects.requireNonNull;
 
+/**
+ * Websocket protocol implementation to communicate with Loxone miniserver.
+ */
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class LoxoneWebSocket {
 
-    private static final Logger log = LoggerFactory.getLogger(LoxoneWebSocket.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LoxoneWebSocket.class);
 
     private static final String C_SYS_ENC = "dev/sys/enc";
+
+    @Getter
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     private final BiFunction<LoxoneWebSocket, URI, WebSocketClient> webSocketClientProvider;
     private WebSocketClient webSocketClient;
@@ -65,8 +73,7 @@ public class LoxoneWebSocket {
     private int visuTimeoutSeconds = 3;
     private int retries = 5;
 
-    private boolean autoRestart = false;
-    final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private boolean autoRestart;
     private ScheduledFuture<?> autoRestartFuture;
 
     public LoxoneWebSocket(final @NotNull LoxoneEndpoint endpoint, final @NotNull LoxoneAuth loxoneAuth) {
@@ -75,11 +82,12 @@ public class LoxoneWebSocket {
 
     // This class is tightly coupled with LoxoneWebsocketClient, however for tests we need to provide different instance
     @TestOnly
-    LoxoneWebSocket(final @NotNull  LoxoneEndpoint endpoint, final @NotNull LoxoneAuth loxoneAuth,
+    LoxoneWebSocket(final @NotNull LoxoneEndpoint endpoint, final @NotNull LoxoneAuth loxoneAuth,
                     final @NotNull BiFunction<LoxoneWebSocket, URI, WebSocketClient> webSocketClientProvider) {
         this.endpoint = requireNonNull(endpoint, "loxone endpoint shouldn't be null");
         this.loxoneAuth = requireNonNull(loxoneAuth, "loxoneAuth shouldn't be null");
-        this.webSocketClientProvider = requireNonNull(webSocketClientProvider, "webSocketClientProvider shouldn't be null");
+        this.webSocketClientProvider = requireNonNull(webSocketClientProvider,
+                "webSocketClientProvider shouldn't be null");
 
         this.webSocketListeners = new HashSet<>();
         this.commandResponseListeners = new LinkedList<>();
@@ -208,7 +216,7 @@ public class LoxoneWebSocket {
             loxoneAuth.init();
         }
         if (webSocketClient == null || !webSocketClient.isOpen()) {
-            log.trace("(Re)opening websocket connection");
+            LOG.trace("(Re)opening websocket connection");
             if (connectRwLock.writeLock().tryLock()) {
                 try {
                     // in most cases the latch is set in AuthListener, but in this case, startAuthentication
@@ -221,7 +229,7 @@ public class LoxoneWebSocket {
                 }
             }
         } else if (!loxoneAuth.isUsable()) {
-            log.info("Authentication is not usable => starting the authentication");
+            LOG.info("Authentication is not usable => starting the authentication");
             loxoneAuth.startAuthentication();
         }
     }
@@ -229,7 +237,7 @@ public class LoxoneWebSocket {
     private void waitForAuth(final CountDownLatch latch, final int timeout, final boolean close) {
         try {
             if (latch.await(timeout, TimeUnit.SECONDS)) {
-                log.trace("Waiting for authentication has been successful");
+                LOG.trace("Waiting for authentication has been successful");
             } else {
                 if (close) {
                     closeWebSocket();
@@ -237,7 +245,7 @@ public class LoxoneWebSocket {
                 throw new LoxoneConnectionException("Unable to authenticate within timeout");
             }
         } catch (InterruptedException e) {
-            log.error("Interrupted while waiting for authentication sequence completion", e);
+            LOG.error("Interrupted while waiting for authentication sequence completion", e);
         }
     }
 
@@ -254,11 +262,11 @@ public class LoxoneWebSocket {
             }
         } catch (LoxoneConnectionException e) {
             if (retries > 0) {
-                log.info("Connection or authentication failed, retrying...");
+                LOG.info("Connection or authentication failed, retrying...");
                 waitForRetry();
                 sendWithRetry(command, retries - 1);
             } else {
-                log.info("Connection or authentication failed too many times, give up");
+                LOG.info("Connection or authentication failed too many times, give up");
                 throw new LoxoneException("Unable to authenticate within timeout with retry", e);
             }
         }
@@ -282,19 +290,20 @@ public class LoxoneWebSocket {
             }
         } catch (LoxoneConnectionException e) {
             if (retries > 0) {
-                log.info("Connection or authentication failed, retrying...");
+                LOG.info("Connection or authentication failed, retrying...");
                 waitForRetry();
                 sendSecureWithRetry(command, retries - 1);
             } else {
-                log.info("Connection or authentication failed too many times, give up");
+                LOG.info("Connection or authentication failed too many times, give up");
                 throw new LoxoneException("Unable to authenticate within timeout with retry", e);
             }
         } catch (IllegalStateException e) {
-            log.info("Unable to send secured command - authentication not set properly, give up");
+            LOG.info("Unable to send secured command - authentication not set properly, give up");
             throw new LoxoneException("Unable to send secured command", e);
         }
     }
 
+    @SuppressWarnings("checkstyle:emptycatchblock")
     private void waitForRetry() {
         try {
             Thread.sleep(10);
@@ -303,13 +312,14 @@ public class LoxoneWebSocket {
     }
 
 
-    // TODO Contains potential race condition when response to the sent command is received faster than command is added to queue
+    // TODO Contains potential race condition when response to the
+    //  sent command is received faster than command is added to queue
     // however, the probability it happens with real miniserver is very low
     void sendInternal(final Command<?> command) {
-        log.debug("Sending websocket message: " + command.getCommand());
+        LOG.debug("Sending websocket message: " + command.getCommand());
         webSocketClient.send(command.getCommand());
         // KEEP_ALIVE command has no response at all
-        if (! KEEP_ALIVE.getCommand().equals(command.getCommand())) {
+        if (!KEEP_ALIVE.getCommand().equals(command.getCommand())) {
             commands.add(command);
         }
     }
@@ -321,13 +331,13 @@ public class LoxoneWebSocket {
     void processMessage(final String message) {
         try {
             final Command<?> command = commands.remove();
-            if (! Void.class.equals(command.getResponseType())) {
+            if (!Void.class.equals(command.getResponseType())) {
                 final Object parsedMessage = Codec.readMessage(message, command.getResponseType());
                 if (parsedMessage instanceof LoxoneMessage) {
                     final LoxoneMessage<?> loxoneMessage = (LoxoneMessage<?>) parsedMessage;
                     final boolean isSuccess = checkLoxoneMessage(command, loxoneMessage);
                     if (!isSuccess) {
-                        log.debug(loxoneMessage.toString());
+                        LOG.debug(loxoneMessage.toString());
                     }
                     processCommand(command, loxoneMessage, !isSuccess);
                 } else {
@@ -335,9 +345,9 @@ public class LoxoneWebSocket {
                 }
             }
         } catch (NoSuchElementException e) {
-            log.error("No command expected!", e);
+            LOG.error("No command expected!", e);
         } catch (IOException e) {
-            log.error("Can't parse response: " + e.getMessage());
+            LOG.error("Can't parse response: " + e.getMessage());
         }
 
     }
@@ -346,7 +356,7 @@ public class LoxoneWebSocket {
         switch (msgHeader.getKind()) {
             case EVENT_VALUE:
                 final Collection<ValueEvent> valueEvents = Codec.readValueEvents(bytes);
-                log.trace("Incoming " + valueEvents);
+                LOG.trace("Incoming " + valueEvents);
                 for (ValueEvent event : valueEvents) {
                     for (LoxoneEventListener eventListener : eventListeners) {
                         eventListener.onEvent(event);
@@ -355,7 +365,7 @@ public class LoxoneWebSocket {
                 break;
             case EVENT_TEXT:
                 final Collection<TextEvent> textEvents = Codec.readTextEvents(bytes);
-                log.trace(("Incoming " + textEvents));
+                LOG.trace(("Incoming " + textEvents));
                 for (TextEvent event : textEvents) {
                     for (LoxoneEventListener eventListener : eventListeners) {
                         eventListener.onEvent(event);
@@ -363,7 +373,7 @@ public class LoxoneWebSocket {
                 }
                 break;
             default:
-                log.trace("Incoming binary message " + Codec.bytesToHex(bytes.order(ByteOrder.LITTLE_ENDIAN).array()));
+                LOG.trace("Incoming binary message " + Codec.bytesToHex(bytes.order(ByteOrder.LITTLE_ENDIAN).array()));
         }
     }
 
@@ -380,7 +390,7 @@ public class LoxoneWebSocket {
     }
 
     void connectionClosed(int code, boolean remote) {
-        webSocketListeners.forEach( webSocketListener ->  {
+        webSocketListeners.forEach(webSocketListener -> {
             if (remote) {
                 webSocketListener.webSocketRemoteClosed(code);
             } else {
@@ -392,8 +402,9 @@ public class LoxoneWebSocket {
     void autoRestart() {
         if (autoRestart) {
             final int rateSeconds = (retries + 1) * authTimeoutSeconds + 1;
-            log.info("Scheduling automatic web socket restart in " + rateSeconds + " seconds");
-            autoRestartFuture = scheduler.scheduleAtFixedRate(this::ensureConnection, rateSeconds, rateSeconds, TimeUnit.SECONDS);
+            LOG.info("Scheduling automatic web socket restart in " + rateSeconds + " seconds");
+            autoRestartFuture = scheduler
+                    .scheduleAtFixedRate(this::ensureConnection, rateSeconds, rateSeconds, TimeUnit.SECONDS);
         }
     }
 
@@ -412,34 +423,35 @@ public class LoxoneWebSocket {
         loxoneAuth.wsClosed();
     }
 
+    @SuppressWarnings("checkstyle:ReturnCount")
     private boolean checkLoxoneMessage(final Command<?> command, final LoxoneMessage<?> loxoneMessage) {
         switch (loxoneMessage.getCode()) {
             case CODE_OK:
-                log.debug("Message successfully processed.");
+                LOG.debug("Message successfully processed.");
                 if (command.is(loxoneMessage.getControl())) {
                     return true;
                 } else {
-                    log.error("Expected message with control containing " + command.getShouldContain()
-                            +  " but " + loxoneMessage.getControl() + " received");
+                    LOG.error("Expected message with control containing " + command.getShouldContain()
+                            + " but " + loxoneMessage.getControl() + " received");
                     return false;
                 }
             case CODE_AUTH_TOO_LONG:
-                log.warn("Not authenticated after connection. Authentication took too long.");
+                LOG.warn("Not authenticated after connection. Authentication took too long.");
                 return false;
             case CODE_NOT_AUTHENTICATED:
-                log.warn("Not authenticated. You must send auth request at first.");
+                LOG.warn("Not authenticated. You must send auth request at first.");
                 return false;
             case CODE_AUTH_FAIL:
-                log.warn("Not authenticated. Bad credentials.");
+                LOG.warn("Not authenticated. Bad credentials.");
                 return false;
             case CODE_UNAUTHORIZED:
-                log.warn("Not authenticated for secured action.");
+                LOG.warn("Not authenticated for secured action.");
                 return false;
             case CODE_NOT_FOUND:
-                log.info("Can't find deviceId.");
+                LOG.info("Can't find deviceId.");
                 return false;
             default:
-                log.warn("Unknown response code: " + loxoneMessage.getCode() + " for message");
+                LOG.warn("Unknown response code: " + loxoneMessage.getCode() + " for message");
                 return false;
         }
     }
@@ -461,11 +473,11 @@ public class LoxoneWebSocket {
         }
 
         if (commandState == CommandResponseListener.State.IGNORED) {
-            log.warn("No command listener registered, ignoring command=" + command);
+            LOG.warn("No command listener registered, ignoring command=" + command);
         }
 
         if (command != null && command.getCommand().startsWith(C_SYS_ENC)) {
-            log.warn("Encrypted message receive is not supported");
+            LOG.warn("Encrypted message receive is not supported");
         }
     }
 
@@ -480,7 +492,7 @@ public class LoxoneWebSocket {
 
         @Override
         public void authCompleted() {
-            log.info("Authentication completed");
+            LOG.info("Authentication completed");
             if (authSeqLatch != null) {
                 authSeqLatch.countDown();
             } else {
@@ -495,7 +507,7 @@ public class LoxoneWebSocket {
 
         @Override
         public void visuAuthCompleted() {
-            log.info("Visualization authentication completed");
+            LOG.info("Visualization authentication completed");
             if (visuLatch != null) {
                 visuLatch.countDown();
             } else {

@@ -36,11 +36,13 @@ import static java.util.Objects.requireNonNull;
  * Allows to configure the connection to receive update events using {@link #setEventsEnabled(boolean)}. Use
  * {@link LoxoneWebSocket#registerListener(LoxoneEventListener)} to listen for those events.
  * <p>
- * Provides set of methods to send loxone commands based on {@link Control}. Use {@link LoxoneWebSocket#registerListener(CommandResponseListener)} to listen for command responses.
+ * Provides set of methods to send loxone commands based on {@link Control}.
+ * Use {@link LoxoneWebSocket#registerListener(CommandResponseListener)} to listen for command responses.
  */
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class Loxone {
 
-    private static final Logger log = LoggerFactory.getLogger(Loxone.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Loxone.class);
 
     private final LoxoneHttp loxoneHttp;
     private final LoxoneWebSocket loxoneWebSocket;
@@ -52,7 +54,7 @@ public class Loxone {
 
     private CountDownLatch appLatch;
     private LoxoneApp loxoneApp;
-    private boolean eventsEnabled = false;
+    private boolean eventsEnabled;
 
     /**
      * Creates new instance of given endpoint, user and password.
@@ -116,7 +118,8 @@ public class Loxone {
      * The method is blocking - waiting for {@link LoxoneApp} first fetch for timeout derived from underlying
      * {@link LoxoneWebSocket}. It means that after successful completion of this method {@link #app()} should return
      * fetched {@link LoxoneApp}.
-     * @throws LoxoneException in case something went wrong - the app request couldn't be send or the fetch took too long.
+     * @throws LoxoneException in case something went wrong - the app request couldn't be send or the fetch took
+     * too long.
      */
     public void start() {
         appLatch = new CountDownLatch(1);
@@ -124,17 +127,17 @@ public class Loxone {
         try {
             final int timeout = loxoneWebSocket.getAuthTimeoutSeconds() * loxoneWebSocket.getRetries() + 1;
             if (appLatch.await(timeout, TimeUnit.SECONDS)) {
-                log.info("Loxone application fetched");
+                LOG.info("Loxone application fetched");
                 if (eventsEnabled) {
-                    log.info("Signing to receive events");
+                    LOG.info("Signing to receive events");
                     loxoneWebSocket.sendCommand(Command.ENABLE_STATUS_UPDATE);
                 }
             } else {
-                log.error("Loxone application wasn't fetched within timeout");
+                LOG.error("Loxone application wasn't fetched within timeout");
                 throw new LoxoneException("Loxone application wasn't fetched within timeout");
             }
         } catch (InterruptedException e) {
-            log.error("Interrupted while waiting for loxone application fetch", e);
+            LOG.error("Interrupted while waiting for loxone application fetch", e);
             throw new LoxoneException("Interrupted while waiting for loxone application fetch", e);
         }
 
@@ -221,7 +224,8 @@ public class Loxone {
     }
 
     /**
-     * Send 'pulse' on given control. Use {@link CommandResponseListener} added to {@link #webSocket()} to process the response.
+     * Send 'pulse' on given control. Use {@link CommandResponseListener} added to {@link #webSocket()}
+     * to process the response.
      * @param control control to send 'pulse' on, can't be null
      */
     public void sendControlPulse(final @NotNull Control control) {
@@ -229,7 +233,8 @@ public class Loxone {
     }
 
     /**
-     * Send 'on' on given control. Use {@link CommandResponseListener} added to {@link #webSocket()} to process the response.
+     * Send 'on' on given control. Use {@link CommandResponseListener} added to {@link #webSocket()}
+     * to process the response.
      * @param control control to send 'on' on, can't be null
      */
     public void sendControlOn(final @NotNull Control control) {
@@ -237,7 +242,8 @@ public class Loxone {
     }
 
     /**
-     * Send 'off' on given control. Use {@link CommandResponseListener} added to {@link #webSocket()} to process the response.
+     * Send 'off' on given control. Use {@link CommandResponseListener} added to {@link #webSocket()}
+     * to process the response.
      * @param control control to send 'off' on, can't be null
      */
     public void sendControlOff(final @NotNull Control control) {
@@ -272,7 +278,7 @@ public class Loxone {
     }
 
     /**
-     * Sends command built by {@link UserCommand} using http
+     * Sends command built by {@link UserCommand} using http.
      * @param userCommand user command
      */
     public <V extends LoxoneValue> LoxoneMessage<V> sendUserCommandHttp(final @NotNull UserCommand<V> userCommand) {
@@ -280,7 +286,7 @@ public class Loxone {
     }
 
     /**
-     * Sends command built by {@link UserCommand} using websocket
+     * Sends command built by {@link UserCommand} using websocket.
      * @param userCommand user command
      */
     public void sendUserCommand(final @NotNull UserCommand<?> userCommand) {
@@ -331,7 +337,10 @@ public class Loxone {
     private class LoxAppResponseListener implements CommandResponseListener<LoxoneApp> {
 
         @Override
-        public @NotNull State onCommand(final @NotNull Command<? extends LoxoneApp> command, final @NotNull LoxoneApp message) {
+        public @NotNull State onCommand(
+                final @NotNull Command<? extends LoxoneApp> command,
+                final @NotNull LoxoneApp message
+        ) {
             loxoneApp = command.ensureResponse(message);
             if (appLatch != null) {
                 appLatch.countDown();

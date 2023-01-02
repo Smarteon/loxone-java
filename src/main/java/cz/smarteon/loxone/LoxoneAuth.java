@@ -36,21 +36,24 @@ import static java.util.Objects.requireNonNull;
  * Encapsulates algorithms necessary to perform loxone authentication with loxone server version 10.
  * First the {@link #init()} should be called, then the other methods work correctly.
  *
- * @see <a href="https://www.loxone.com/enen/wp-content/uploads/sites/3/2016/10/1000_Communicating-with-the-Miniserver.pdf">Loxone communication</a>
+ * @see <a href=
+ * "https://www.loxone.com/enen/wp-content/uploads/sites/3/2016/10/1000_Communicating-with-the-Miniserver.pdf"
+ * >Loxone communication</a>
  */
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
 
     /**
-     * UUID of this client sent as part of token request
+     * UUID of this client sent as part of token request.
      */
     public static final String CLIENT_UUID = "5231fc55-a384-41b4-b0ae10b7f774add1";
 
     /**
-     * Default value of client info sent as part of token request
+     * Default value of client info sent as part of token request.
      */
     public static final String DEFAULT_CLIENT_INFO = "loxoneJava";
 
-    private static final Logger log = LoggerFactory.getLogger(LoxoneAuth.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LoxoneAuth.class);
 
     private static final int MAX_SALT_USAGE = 20;
 
@@ -68,13 +71,13 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
     private SecureRandom sha1PRNG;
     private byte[] sharedKeyIv;
     private String sharedSalt;
-    private int saltUsageCount = 0;
+    private int saltUsageCount;
 
     // Communication stuff
     private Hashing visuHashing;
     private Hashing hashing;
     private Token token;
-    private TokenStateEvaluator tokenStateEvaluator = new TokenStateEvaluator() {};
+    private TokenStateEvaluator tokenStateEvaluator = new TokenStateEvaluator() { };
     private TokenRepository tokenRepository = new InMemoryTokenRepository();
 
     private String clientInfo = DEFAULT_CLIENT_INFO;
@@ -84,12 +87,12 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
 
     private CommandSender commandSender;
 
-    private boolean autoRefreshToken = false;
+    private boolean autoRefreshToken;
     private ScheduledExecutorService autoRefreshScheduler;
     private ScheduledFuture<?> autoRefreshFuture;
 
     /**
-     * Creates new instance
+     * Creates new instance.
      * @param loxoneHttp loxone http interface used to perform some necessary http calls to loxone
      * @param profile loxone profile
      */
@@ -138,7 +141,7 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
     }
 
     /**
-     * Allows to modify client info sent as part of token request, defaults to {@link #DEFAULT_CLIENT_INFO}
+     * Allows to modify client info sent as part of token request, defaults to {@link #DEFAULT_CLIENT_INFO}.
      * @param clientInfo client info
      */
     public void setClientInfo(String clientInfo) {
@@ -170,7 +173,7 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
     }
 
     /**
-     * Whether is configured to refresh token automatically
+     * Whether is configured to refresh token automatically.
      * @return true if is configured to automatically refresh token, false (default) otherwise
      */
     public boolean isAutoRefreshToken() {
@@ -179,8 +182,8 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
 
     /**
      * Allow or disallow to automatically refresh token. Disabled by default. If set to true the token refresh will
-     * be scheduled after next token receive. If se to false, when previously true, only next token refresh are prevented,
-     * not the currently scheduled one.
+     * be scheduled after next token receive. If se to false, when previously true, only next token refresh are
+     * prevented, not the currently scheduled one.
      * @param autoRefreshToken whether to automatically refresh token
      */
     public void setAutoRefreshToken(final boolean autoRefreshToken) {
@@ -188,7 +191,8 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
     }
 
     /**
-     * Allows to specify scheduler used to auto refresh tokens. If not set the new single thread scheduler is created internally.
+     * Allows to specify scheduler used to auto refresh tokens. If not set the new single thread scheduler
+     * is created internally.
      * @see #setAutoRefreshToken(boolean)
      * @param autoRefreshScheduler scheduler use to refresh tokens
      */
@@ -212,7 +216,7 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
      * Initialize the loxone authentication. Fetches the API info (address and version) and prepare the cryptography.
      */
     public void init() {
-        log.trace("LoxoneAuth init start");
+        LOG.trace("LoxoneAuth init start");
         fetchApiInfo();
         fetchPublicKey();
 
@@ -223,7 +227,7 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
         }
         sharedKeyIv = LoxoneCrypto.createSharedKeyIv(sha1PRNG);
 
-        log.trace("LoxoneAuth init finish");
+        LOG.trace("LoxoneAuth init finish");
     }
 
     /**
@@ -237,11 +241,13 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
      * @return headers necessary for authentication of HTTP connection
      */
     public Map<String, String> authHeaders() {
-        return singletonMap("Authorization", "Basic " + bytesToBase64(concatToBytes(profile.getUsername(), profile.getPassword())));
+        return singletonMap("Authorization", "Basic "
+                + bytesToBase64(concatToBytes(profile.getUsername(), profile.getPassword())));
     }
 
     /**
-     * Returns RSA encrypted generated shared key prepared for key exchange. May throw an exception if not initialized properly.
+     * Returns RSA encrypted generated shared key prepared for key exchange.
+     * May throw an exception if not initialized properly.
      * @return RSA encrypted sharedKey
      */
     private String getSessionKey() {
@@ -250,14 +256,13 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
     }
 
     /**
-     * Computes visualization hash, which can be used in secured command, implies that visualization hashing has been obtained
-     * recently using getvisusalt command
+     * Computes visualization hash, which can be used in secured command, implies that visualization hashing has
+     * been obtained recently using getvisusalt command.
      * @return visualization hash
-     *
      */
     public String getVisuHash() {
         return onVisuPassSet("compute visu hash",
-                () ->  LoxoneCrypto.loxoneHashing(profile.getVisuPassword(), null, visuHashing, "secured command") );
+                () -> LoxoneCrypto.loxoneHashing(profile.getVisuPassword(), null, visuHashing, "secured command"));
     }
 
     /**
@@ -288,30 +293,37 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
     }
 
     /**
-     * Processes all authentication related incoming commands
+     * Processes all authentication related incoming commands.
      * @param command command to process
      * @param message message to process
      * @return state
      */
-    @Override @NotNull
-    public State onCommand(@NotNull final Command<? extends LoxoneMessage<?>> command, @NotNull final LoxoneMessage<?> message) {
+    @Override
+    @NotNull
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:ReturnCount", "checkstyle:NestedIfDepth"})
+    public State onCommand(
+            @NotNull final Command<? extends LoxoneMessage<?>> command,
+            @NotNull final LoxoneMessage<?> message) {
         if (message.isSuccess()) {
             if (getKeyCommand.equals(command)) {
                 hashing = getKeyCommand.ensureValue(message.getValue());
                 final TokenState tokenState = tokenStateEvaluator.evaluate(token);
                 if (tokenState.isExpired()) {
                     lastTokenCommand = EncryptedCommand.getToken(
-                            LoxoneCrypto.loxoneHashing(profile.getPassword(), profile.getUsername(), hashing, "gettoken"),
+                            LoxoneCrypto
+                                    .loxoneHashing(profile.getPassword(), profile.getUsername(), hashing, "gettoken"),
                             profile.getUsername(), tokenPermissionType, CLIENT_UUID, clientInfo, this::encryptCommand
                     );
                 } else if (tokenState.needsRefresh()) {
                     lastTokenCommand = EncryptedCommand.refreshToken(
-                            LoxoneCrypto.loxoneHashing(requireNonNull(token.getToken()), hashing, "refreshtoken"),
+                            LoxoneCrypto
+                                    .loxoneHashing(requireNonNull(token.getToken()), hashing, "refreshtoken"),
                             profile.getUsername(), this::encryptCommand
                     );
                 } else {
                     lastTokenCommand = EncryptedCommand.authWithToken(
-                            LoxoneCrypto.loxoneHashing(requireNonNull(token.getToken()), hashing, "authwithtoken"),
+                            LoxoneCrypto
+                                    .loxoneHashing(requireNonNull(token.getToken()), hashing, "authwithtoken"),
                             profile.getUsername(), this::encryptCommand
                     );
                 }
@@ -324,20 +336,22 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
             } else if (lastTokenCommand != null && lastTokenCommand.equals(command)) {
                 final Token newToken = lastTokenCommand.ensureValue(message.getValue());
                 token = token == null ? newToken : token.merge(newToken);
-                log.info("Got loxone token, valid until: " + token.getValidUntilDateTime() + ", seconds to expire: " + token.getSecondsToExpire());
+                LOG.info("Got loxone token, valid until: " + token.getValidUntilDateTime() + ", seconds to expire: "
+                        + token.getSecondsToExpire());
                 tokenRepository.putToken(profile, token);
 
                 if (autoRefreshToken) {
                     final long secondsToRefresh = tokenStateEvaluator.evaluate(token).secondsToRefresh();
                     if (secondsToRefresh > 0) {
                         if (autoRefreshScheduler != null) {
-                            log.info("Scheduling token auto refresh in " + secondsToRefresh + " seconds");
-                            autoRefreshFuture = autoRefreshScheduler.schedule(this::startAuthentication, secondsToRefresh, TimeUnit.SECONDS);
+                            LOG.info("Scheduling token auto refresh in " + secondsToRefresh + " seconds");
+                            autoRefreshFuture = autoRefreshScheduler
+                                    .schedule(this::startAuthentication, secondsToRefresh, TimeUnit.SECONDS);
                         } else {
-                            log.warn("autoRefreshScheduler not set, can't schedule token refresh");
+                            LOG.warn("autoRefreshScheduler not set, can't schedule token refresh");
                         }
                     } else {
-                        log.warn("Can't schedule token auto refresh, token expires too early or is already expired");
+                        LOG.warn("Can't schedule token auto refresh, token expires too early or is already expired");
                     }
                 }
 
@@ -346,7 +360,7 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
                 return State.CONSUMED;
             }
         } else if (message.isAuthFailed()) {
-            log.info("Authentication failed discarding current token");
+            LOG.info("Authentication failed discarding current token");
             token = null;
             tokenRepository.removeToken(profile);
             return State.CONSUMED;
@@ -396,7 +410,8 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
     }
 
     /**
-     * Encrypts the given command, returning encrypted command ready to be sent to loxone, may throw exception if not properly initialized.
+     * Encrypts the given command, returning encrypted command ready to be sent to loxone,may throw exception
+     * if not properly initialized.
      * @param command command to be encrypted
      * @return new command which carries the given command encrypted
      */
@@ -406,9 +421,9 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
         }
         String saltPart = "salt/" + sharedSalt;
         if (isNewSaltNeeded()) {
-            log.trace("changing the salt");
+            LOG.trace("changing the salt");
             saltPart = "nextSalt/" + sharedSalt + "/";
-            sharedSalt = LoxoneCrypto.generateSalt(sha1PRNG);;
+            sharedSalt = LoxoneCrypto.generateSalt(sha1PRNG);
             saltPart += sharedSalt;
         }
 
@@ -422,24 +437,24 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
     }
 
     private void fetchApiInfo() {
-        log.trace("Fetching ApiInfo start");
+        LOG.trace("Fetching ApiInfo start");
         try {
             final LoxoneMessage<ApiInfo> msg = loxoneHttp.get(LoxoneMessageCommand.DEV_CFG_API);
             msg.getValue();
             apiInfo = msg.getValue();
         } finally {
-            log.trace("Fetching ApiInfo finish");
+            LOG.trace("Fetching ApiInfo finish");
         }
     }
 
     private void fetchPublicKey() {
-        log.trace("Fetching PublicKey start");
+        LOG.trace("Fetching PublicKey start");
         try {
             final LoxoneMessage<PubKeyInfo> msg = loxoneHttp.get(LoxoneMessageCommand.DEV_SYS_GETPUBLICKEY);
             msg.getValue();
             publicKey = msg.getValue().asPublicKey();
         } finally {
-            log.trace("Fetching PublicKey finish");
+            LOG.trace("Fetching PublicKey finish");
         }
     }
 
@@ -454,6 +469,7 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
      *
      * return true/false should/shouldn't create new salt.
      * */
+    @SuppressWarnings("checkstyle:EmptyBlock")
     private boolean isNewSaltNeeded() {
         if (saltUsageCount <= 0) {
             //TODO update sharedSalt every hour

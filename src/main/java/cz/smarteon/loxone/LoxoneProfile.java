@@ -11,13 +11,14 @@ import static java.util.Objects.requireNonNull;
  * Represents loxone profile - endpoint and credentials.
  */
 public final class LoxoneProfile {
+
     private final LoxoneEndpoint endpoint;
     private final String username;
     private final String password;
     private final String visuPassword;
 
     /**
-     * Creates new instance of given endpoint, username and password
+     * Creates new instance of given endpoint, username and password.
      * @param endpoint endpoint of the miniserver
      * @param username miniserver username
      * @param password miniserver password
@@ -31,7 +32,7 @@ public final class LoxoneProfile {
     }
 
     /**
-     * Creates new instance of given endpoint, username, password and visualization password
+     * Creates new instance of given endpoint, username, password and visualization password.
      * @param endpoint endpoint of the miniserver
      * @param username miniserver username
      * @param password miniserver password
@@ -83,10 +84,17 @@ public final class LoxoneProfile {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LoxoneProfile that = (LoxoneProfile) o;
-        return endpoint.equals(that.endpoint) && username.equals(that.username) && password.equals(that.password) && Objects.equals(visuPassword, that.visuPassword);
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final LoxoneProfile that = (LoxoneProfile) o;
+        return endpoint.equals(that.endpoint)
+                && username.equals(that.username)
+                && password.equals(that.password)
+                && Objects.equals(visuPassword, that.visuPassword);
     }
 
     @Override

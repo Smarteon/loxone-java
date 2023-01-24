@@ -15,6 +15,7 @@ import cz.smarteon.loxone.message.TextEvent;
 import cz.smarteon.loxone.message.ValueEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -47,6 +48,18 @@ public class LoxoneState implements LoxoneAppListener, LoxoneEventListener {
         loxone.setEventsEnabled(true);
         loxone.registerLoxoneAppListener(this);
 
+    }
+
+    @TestOnly
+    public LoxoneState(Loxone loxone) {
+        this.loxone = loxone;
+        this.loxone.setEventsEnabled(true);
+        this.loxone.registerLoxoneAppListener(this);
+    }
+
+    @TestOnly
+    Map<LoxoneUuid, ControlState<?>> getControlStates() {
+        return controlStates;
     }
 
     public Loxone loxone() {

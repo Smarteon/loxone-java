@@ -1,0 +1,68 @@
+{
+  "lastModified": "2017-11-22 18:41:01",
+  "msInfo": {
+    "serialNr": "504F9410B84A",
+    "msName": "ShowRoom",
+    "projectName": "ShowRoom",
+    "localUrl": "192.168.88.246",
+    "remoteUrl": "dns.loxonecloud.com/504F9410B84A",
+    "tempUnit": 0,
+    "currency": "€",
+    "squareMeasure": "m²",
+    "location": "Brno",
+    "languageCode": "CSY",
+    "heatPeriodStart": "10-01",
+    "heatPeriodEnd": "04-30",
+    "coolPeriodStart": "05-01",
+    "coolPeriodEnd": "09-30",
+    "catTitle": "Kategorie",
+    "roomTitle": "Místnost",
+    "miniserverType": 1,
+    "deviceMonitor": "0f869a64-0200-0aec-ffffd4c75dbaf53c",
+    "sortByRating": false,
+    "currentUser": {
+      "name": "showroom",
+      "uuid": "0f86a25d-026f-1c1e-ffffd4c75dbaf53c",
+      "isAdmin": true,
+      "changePassword": true,
+      "userRights": 2047
+    }
+  },
+  "rooms": {
+    "0f869a64-028d-0cc2-ffffd4c75dbaf53c": {
+      "uuid": "0f869a64-028d-0cc2-ffffd4c75dbaf53c",
+      "name": "Centrál",
+      "image": "00000000-0000-0031-2100000000000000.svg",
+      "defaultRating": 0,
+      "isFavorite": false,
+      "type": 4
+    }
+  },
+  "cats": {
+    "0f869a64-0221-0b28-ffffd4c75dbaf53c": {
+      "uuid": "0f869a64-0221-0b28-ffffd4c75dbaf53c",
+      "name": "Alarm",
+      "image": "00000000-0000-000f-2000000000000000.svg",
+      "defaultRating": 1,
+      "isFavorite": true,
+      "type": "undefined",
+      "color": "#83B817"
+    }
+  },
+  "controls": {
+    "0f86a2fe-0378-3e15-ffff373f9870b52a": {
+      "name": "Switch",
+      "type": "Switch",
+      "uuidAction": "0f86a2fe-0378-3e15-ffff373f9870b52a",
+      "room": "0f869a64-025f-0c20-ffffd4c75dbaf53c",
+      "cat": "0f869a64-0200-0af0-ffffd4c75dbaf53c",
+      "defaultRating": 0,
+      "isFavorite": false,
+      "isSecured": false,
+      "defaultIcon": null,
+      "states": {
+        "active": "110cb849-0125-20f9-ffffac0ced78bcf2"
+      }
+    }
+  }
+}

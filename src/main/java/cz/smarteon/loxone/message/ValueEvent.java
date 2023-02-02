@@ -10,6 +10,9 @@ public class ValueEvent extends LoxoneEvent {
 
     public static final int PAYLOAD_LENGTH = 24;
 
+    /**
+     * Carried numeric value.
+     */
     private final double value;
 
     /**

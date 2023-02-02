@@ -9,7 +9,15 @@ import static java.util.Objects.requireNonNull;
  * Loxone event carrying text value.
  */
 public class TextEvent extends LoxoneEvent {
+
+    /**
+     * Icon uuid.
+     */
     private final LoxoneUuid iconUuid;
+
+    /**
+     * Carried text value.
+     */
     private final String text;
 
     /**

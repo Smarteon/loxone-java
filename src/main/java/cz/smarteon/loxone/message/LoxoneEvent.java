@@ -10,6 +10,10 @@ import static java.util.Objects.requireNonNull;
  */
 public abstract class LoxoneEvent {
 
+    /**
+     * Event uuid.
+     */
+    @NotNull
     protected final LoxoneUuid uuid;
 
     /**
@@ -29,3 +33,4 @@ public abstract class LoxoneEvent {
         return uuid;
     }
 }
+

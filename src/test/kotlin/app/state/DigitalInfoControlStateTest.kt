@@ -42,8 +42,14 @@ class DigitalInfoControlStateTest {
         }
         val digitalInfoControlState = DigitalInfoControlState(loxone, digitalInfoControl);
 
-        expectThat(digitalInfoControlState.state).equals(null)
-        digitalInfoControlState.accept(TextEvent(LoxoneUuid("0f869a64-028d-0cc2-ffffd4c75dbaf53e"), LoxoneUuid("0f869a64-028d-0cc2-ffffd4c75dbaf53d"), "value"))
-        expectThat(digitalInfoControlState.state).equals(null)
+        expectThat(digitalInfoControlState.state).isNull()
+        digitalInfoControlState.accept(
+            TextEvent(
+                LoxoneUuid("0f869a64-028d-0cc2-ffffd4c75dbaf53e"),
+                LoxoneUuid("0f869a64-028d-0cc2-ffffd4c75dbaf53d"),
+                "value"
+            )
+        )
+        expectThat(digitalInfoControlState.state).isNull()
     }
 }

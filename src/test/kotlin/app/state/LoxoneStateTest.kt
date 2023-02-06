@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.api.expectThrows
+import strikt.assertions.all
 import strikt.assertions.hasSize
 import strikt.assertions.isEqualTo
 import strikt.assertions.isNotEqualTo
@@ -28,7 +29,9 @@ class LoxoneStateTest {
     fun setup() {
         loxone = mockk(relaxed = true) {
             val captureObject = slot<LoxoneEventListener>()
-            every { webSocket().registerListener(capture(captureObject)) } answers { eventListener = captureObject.captured }
+            every { webSocket().registerListener(capture(captureObject)) } answers {
+                eventListener = captureObject.captured
+            }
         }
         app = readResource("app/LoxAppSwitch.json")
         state = LoxoneState(loxone)
@@ -36,8 +39,8 @@ class LoxoneStateTest {
 
     @Test
     fun `controlStates should be compatible`() {
-        state.supportedControlsStateMap.forEach {
-            expectThat(it.value.getDeclaredConstructor(loxone.javaClass, it.key)).isNotNull()
+        expectThat(state.supportedControlsStateMap.entries).all {
+            get { value.getDeclaredConstructor(loxone.javaClass, key) }.isNotNull()
         }
     }
 

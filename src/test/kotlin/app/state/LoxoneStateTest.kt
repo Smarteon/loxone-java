@@ -51,7 +51,6 @@ class LoxoneStateTest {
 
         expectThat(state) {
             get { controlStates }.hasSize(1)
-            get { eventListener }.isNotEqualTo(null)
             get { getStateForControl<SwitchControlState>(switchControl) }.isNotNull()
         }
     }

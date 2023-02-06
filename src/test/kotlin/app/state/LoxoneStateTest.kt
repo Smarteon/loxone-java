@@ -11,19 +11,21 @@ import io.mockk.mockk
 import io.mockk.slot
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import strikt.api.expect
 import strikt.api.expectThat
 import strikt.api.expectThrows
 import strikt.assertions.all
 import strikt.assertions.hasSize
-import strikt.assertions.isEqualTo
-import strikt.assertions.isNotEqualTo
+import strikt.assertions.isFalse
 import strikt.assertions.isNotNull
+import strikt.assertions.isNull
+import strikt.assertions.isTrue
 
 class LoxoneStateTest {
     private lateinit var eventListener: LoxoneEventListener
     private lateinit var loxone: Loxone
     private lateinit var app: LoxoneApp
-    private lateinit var state: LoxoneState
+    private lateinit var loxoneState: LoxoneState
 
     @BeforeEach
     fun setup() {
@@ -34,12 +36,12 @@ class LoxoneStateTest {
             }
         }
         app = readResource("app/LoxAppSwitch.json")
-        state = LoxoneState(loxone)
+        loxoneState = LoxoneState(loxone)
     }
 
     @Test
     fun `controlStates should be compatible`() {
-        expectThat(state.supportedControlsStateMap.entries).all {
+        expectThat(loxoneState.supportedControlsStateMap.entries).all {
             get { value.getDeclaredConstructor(loxone.javaClass, key) }.isNotNull()
         }
     }
@@ -47,26 +49,31 @@ class LoxoneStateTest {
     @Test
     fun `should initialize`() {
         val switchControl = app.getControl(SwitchControl::class.java)
-        state.onLoxoneApp(app)
+        loxoneState.onLoxoneApp(app)
 
-        expectThat(state) {
-            get { controlStates }.hasSize(1)
-            get { getStateForControl<SwitchControlState>(switchControl) }.isNotNull()
+        expect {
+            that(loxoneState.controlStates).hasSize(1)
+            that(switchControl).isNotNull().and {
+                get { loxoneState.getStateForControl<SwitchControlState>(this) }.isNotNull()
+            }
         }
     }
 
     @Test
     fun `should process value event`() {
         val switchControl = app.getControl(SwitchControl::class.java)
-        state.onLoxoneApp(app)
-        val switchControlState = state.getStateForControl<SwitchControlState>(switchControl)
+        loxoneState.onLoxoneApp(app)
 
-        expectThat(switchControlState!!.state).isEqualTo(null)
-
-        state.onEvent(ValueEvent(switchControl!!.stateActive(), 1.0))
-        expectThat(switchControlState!!.state).isEqualTo(true)
-        state.onEvent(ValueEvent(switchControl!!.stateActive(), 0.0))
-        expectThat(switchControlState!!.state).isEqualTo(false)
+        expectThat(switchControl).isNotNull().and {
+            val activeStateUuid = subject.stateActive()
+            get { loxoneState.getStateForControl<SwitchControlState>(this) }.isNotNull().and {
+                get { state }.isNull()
+                loxoneState.onEvent(ValueEvent(activeStateUuid, 1.0))
+                get { state }.isTrue()
+                loxoneState.onEvent(ValueEvent(activeStateUuid, 0.0))
+                get { state }.isFalse()
+            }
+        }
     }
 
     @Test

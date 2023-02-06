@@ -75,7 +75,7 @@ public class LoxoneState implements LoxoneAppListener, LoxoneEventListener {
 
     @SuppressWarnings("unchecked")
     @Nullable
-    public <T> T getStateForControl(Control control) {
+    public <T> T getStateForControl(@NotNull Control control) {
         return (T) controlStates.get(control.getUuid());
     }
 

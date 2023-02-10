@@ -55,6 +55,7 @@ public class Loxone {
     private CountDownLatch appLatch;
     private LoxoneApp loxoneApp;
     private boolean eventsEnabled;
+    private boolean started;
 
     /**
      * Creates new instance of given endpoint, user and password.
@@ -143,6 +144,8 @@ public class Loxone {
 
         // let's listen to next websocket open event ie when websocket was restarted
         webSocket().registerWebSocketListener(webSocketListener);
+
+        started = true;
     }
 
     /**
@@ -311,6 +314,7 @@ public class Loxone {
      * @throws LoxoneException in case the proper close failed
      */
     public void stop(final boolean killToken) {
+        started = false;
         if (killToken) {
             loxoneAuth.killToken();
         }
@@ -332,6 +336,14 @@ public class Loxone {
      */
     public void setEventsEnabled(final boolean eventsEnabled) {
         this.eventsEnabled = eventsEnabled;
+    }
+
+    /**
+     * Whether the loxone object is started or not.
+     * @return true is started, otherwise false.
+     */
+    public boolean isStarted() {
+        return started;
     }
 
     private class LoxAppResponseListener implements CommandResponseListener<LoxoneApp> {

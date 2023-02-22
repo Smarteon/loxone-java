@@ -194,7 +194,7 @@ public class Command<T> {
      * Command content type.
      */
     public enum Type {
-        JSON, XML
+        JSON, XML, FILE
     }
 
     @Override

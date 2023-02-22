@@ -31,4 +31,10 @@ public class Room {
     @JsonProperty(value = "name", required = true)
     @NotNull
     String name;
+
+    /**
+     * Room image - filename of the image.
+     */
+    @JsonProperty(value = "image")
+    String image;
 }

@@ -113,6 +113,12 @@ public class Loxone {
         loxoneAppListeners.add(requireNonNull(listener, "listener can't be null"));
     }
 
+    public void registerCommandListener(@NotNull final CommandRequestResponseListener<?> listener) {
+        requireNonNull(listener, "listener can't be null");
+        listener.registerWebSocket(loxoneWebSocket);
+        loxoneWebSocket.registerListener(listener);
+    }
+
     /**
      * Start the service -  initiates the connection, authenticates, request the {@link LoxoneApp} and ask for event
      * updates (in case {@link #setEventsEnabled(boolean)} set to true).

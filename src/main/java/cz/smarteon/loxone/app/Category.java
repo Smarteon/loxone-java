@@ -31,4 +31,10 @@ public class Category {
     @JsonProperty(value = "name", required = true)
     @NotNull
     String name;
+
+    /**
+     * Category image - filename of the image.
+     */
+    @JsonProperty(value = "image")
+    String image;
 }

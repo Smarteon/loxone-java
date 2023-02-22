@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -349,7 +350,23 @@ public class LoxoneWebSocket {
         } catch (IOException e) {
             LOG.error("Can't parse response: " + e.getMessage());
         }
+    }
 
+    void processFile(final String file) {
+        try {
+            final Command<?> command = commands.remove();
+            if (!Void.class.equals(command.getResponseType())) {
+                try {
+                    ByteBuffer byteBuffer = ByteBuffer.wrap(file.getBytes("UTF-8"));
+                    processCommand(command, command.ensureResponse(byteBuffer), false);
+                } catch (UnsupportedEncodingException e) {
+                    throw new IllegalStateException("UTF-8 encoding should be present everywhere", e);
+                }
+
+            }
+        } catch (NoSuchElementException e) {
+            LOG.error("No command expected!", e);
+        }
     }
 
     void processEvents(final MessageHeader msgHeader, final ByteBuffer bytes) {

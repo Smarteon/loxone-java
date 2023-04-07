@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static cz.smarteon.loxone.Codec.bytesToHex;
@@ -40,6 +41,8 @@ class LoxoneWebsocketClient extends WebSocketClient {
     private final Runnable keepAliveTask;
     private CountDownLatch keepAliveLatch;
     private ScheduledFuture keepAliveFuture;
+
+    private AtomicBoolean onClosedCalled = new AtomicBoolean(false);
 
     /**
      * Creates new instance.
@@ -122,14 +125,16 @@ class LoxoneWebsocketClient extends WebSocketClient {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        LOG.info("Closed by " + (remote ? "remote" : "local") + " end because of " + code + ": " + reason);
-        ws.wsClosed();
-        if (keepAliveFuture != null) {
-            keepAliveFuture.cancel(true);
-        }
-        ws.connectionClosed(code, remote);
-        if (remote) {
-            ws.autoRestart();
+        if (!onClosedCalled.getAndSet(true)) {
+            LOG.info("Closed by " + (remote ? "remote" : "local") + " end because of " + code + ": " + reason);
+            ws.wsClosed();
+            if (keepAliveFuture != null) {
+                keepAliveFuture.cancel(true);
+            }
+            ws.connectionClosed(code, remote);
+            if (remote) {
+                ws.autoRestart();
+            }
         }
     }
 

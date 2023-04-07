@@ -2,7 +2,7 @@ package cz.smarteon.loxone;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 
 /**
  * Utilities supporting Loxone miniserver specific time handling.
@@ -30,7 +30,6 @@ public abstract class LoxoneTime {
      * @return local date and time of given loxone seconds
      */
     public static LocalDateTime getLocalDateTime(long loxSeconds) {
-        return LocalDateTime.ofEpochSecond(getUnixEpochSeconds(loxSeconds), 0,
-                ZoneOffset.systemDefault().getRules().getOffset(Instant.now()));
+        return LocalDateTime.ofInstant(Instant.ofEpochSecond(getUnixEpochSeconds(loxSeconds)), ZoneId.systemDefault());
     }
 }

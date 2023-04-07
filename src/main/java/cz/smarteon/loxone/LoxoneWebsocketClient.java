@@ -3,6 +3,7 @@ package cz.smarteon.loxone;
 import cz.smarteon.loxone.message.MessageHeader;
 import cz.smarteon.loxone.message.MessageKind;
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,7 +133,7 @@ class LoxoneWebsocketClient extends WebSocketClient {
                 keepAliveFuture.cancel(true);
             }
             ws.connectionClosed(code, remote);
-            if (remote) {
+            if (remote && code != CloseFrame.NEVER_CONNECTED) {
                 ws.autoRestart();
             }
         }

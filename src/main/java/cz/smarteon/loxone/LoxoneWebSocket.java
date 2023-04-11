@@ -215,15 +215,20 @@ public class LoxoneWebSocket {
         if (!loxoneAuth.isInitialized()) {
             loxoneAuth.init();
         }
-        if (webSocketClient == null || !webSocketClient.isOpen()) {
-            LOG.trace("(Re)opening websocket connection");
+        if (shouldOpenNewWebsocketClient()) {
             if (connectRwLock.writeLock().tryLock()) {
                 try {
-                    // in most cases the latch is set in AuthListener, but in this case, startAuthentication
-                    // (and AuthListener) is called on websocket open, which is too late to set the latch
-                    authSeqLatch = new CountDownLatch(1);
-                    webSocketClient = webSocketClientProvider.apply(this, endpoint.webSocketUri());
-                    webSocketClient.connect();
+                    // second check is needed, since the first one was not guarded by lock,
+                    // however the first check is still useful to prevent locking in most cases
+                    if (shouldOpenNewWebsocketClient()) {
+                        LOG.trace("(Re)opening websocket connection");
+
+                        // in most cases the latch is set in AuthListener, but in this case, startAuthentication
+                        // (and AuthListener) is called on websocket open, which is too late to set the latch
+                        authSeqLatch = new CountDownLatch(1);
+                        webSocketClient = webSocketClientProvider.apply(this, endpoint.webSocketUri());
+                        webSocketClient.connect();
+                    }
                 } finally {
                     connectRwLock.writeLock().unlock();
                 }
@@ -232,6 +237,10 @@ public class LoxoneWebSocket {
             LOG.info("Authentication is not usable => starting the authentication");
             loxoneAuth.startAuthentication();
         }
+    }
+
+    private boolean shouldOpenNewWebsocketClient() {
+        return webSocketClient == null || !webSocketClient.isOpen();
     }
 
     private void waitForAuth(final CountDownLatch latch, final int timeout, final boolean close) {

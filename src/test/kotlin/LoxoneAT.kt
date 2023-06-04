@@ -1,6 +1,7 @@
 package cz.smarteon.loxone
 
 import cz.smarteon.loxone.app.SwitchControl
+import cz.smarteon.loxone.message.ControlCommand
 import cz.smarteon.loxone.message.JsonValue
 import cz.smarteon.loxone.message.LoxoneMessage
 import io.mockk.every
@@ -101,6 +102,20 @@ class LoxoneAT {
 
     @Test
     @Order(4)
+    fun `should pulse on switch sync`() {
+        val response = device?.let { device ->
+            loxone.webSocket().commandRequest(ControlCommand.genericControlCommand(device.uuid.toString(), "Pulse"))
+        }
+
+        expectThat(response){
+           isA<LoxoneMessage<*>>()
+            .get { value }.isA<JsonValue>()
+            .get { jsonNode.textValue() }.isEqualTo("1")
+        }
+    }
+
+    @Test
+    @Order(5)
     fun `should pulse on secured switch`() {
         val latch = commands.expectCommand(".*${secDevice?.uuid}/Pulse")
         secDevice?.let {secDevice -> loxone.sendControlPulse(secDevice) }
@@ -119,7 +134,7 @@ class LoxoneAT {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     fun `should refresh token`() {
         val evaluator = mockk<TokenStateEvaluator> {
             every { evaluate(any()) } answers { mockk {

@@ -29,3 +29,5 @@ build
 # IDEA things
 .idea
 *.iml
+config.bat
+node_modules

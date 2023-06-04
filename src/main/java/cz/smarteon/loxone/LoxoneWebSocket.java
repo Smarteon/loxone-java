@@ -69,6 +69,8 @@ public class LoxoneWebSocket {
     private CountDownLatch authSeqLatch;
     private CountDownLatch visuLatch;
 
+    private SyncCommandGuard<?> syncCommandGuard;
+
     private int authTimeoutSeconds = 3;
     private int visuTimeoutSeconds = 3;
     private int retries = 5;
@@ -115,7 +117,7 @@ public class LoxoneWebSocket {
         eventListeners.add(listener);
     }
 
-    public void sendCommand(@NotNull final Command<?> command) {
+    public synchronized void sendCommand(@NotNull final Command<?> command) {
         requireNonNull(command, "command can't be null");
         if (command.isWsSupported()) {
             sendWithRetry(command, retries);
@@ -124,8 +126,25 @@ public class LoxoneWebSocket {
         }
     }
 
-    public void sendSecureCommand(@NotNull final ControlCommand<?> command) {
+    public synchronized void sendSecureCommand(@NotNull final ControlCommand<?> command) {
         sendSecureWithRetry(command, retries);
+    }
+
+    @SuppressWarnings("unchecked")
+    public synchronized <T> T commandRequest(@NotNull final Command<T> command) {
+        requireNonNull(command, "command can't be null");
+        if (command.isWsSupported()) {
+            try {
+                syncCommandGuard = new SyncCommandGuard<>(command);
+                sendWithRetry(command, retries);
+
+                return (T) syncCommandGuard.waitForResponse(retries * authTimeoutSeconds);
+            } finally {
+                syncCommandGuard = null;
+            }
+        } else {
+            throw new IllegalArgumentException("Only websocket commands are supported");
+        }
     }
 
     public void close() {
@@ -328,7 +347,7 @@ public class LoxoneWebSocket {
         LOG.debug("Sending websocket message: " + command.getCommand());
         webSocketClient.send(command.getCommand());
         // KEEP_ALIVE command has no response at all
-        if (!KEEP_ALIVE.getCommand().equals(command.getCommand())) {
+        if (!KEEP_ALIVE.getCommand().equals(command.getCommand()) && syncCommandGuard == null) {
             commands.add(command);
         }
     }
@@ -339,7 +358,12 @@ public class LoxoneWebSocket {
      */
     void processMessage(final String message) {
         try {
-            final Command<?> command = commands.remove();
+            Command<?> command;
+            if (syncCommandGuard != null) {
+                command = syncCommandGuard.getCommand();
+            } else {
+                command= commands.remove();
+            }
             if (!Void.class.equals(command.getResponseType())) {
                 final Object parsedMessage = Codec.readMessage(message, command.getResponseType());
                 if (parsedMessage instanceof LoxoneMessage) {
@@ -467,26 +491,29 @@ public class LoxoneWebSocket {
 
     @SuppressWarnings("unchecked")
     private void processCommand(final Command<?> command, final Object message, final boolean isError) {
-        CommandResponseListener.State commandState = CommandResponseListener.State.IGNORED;
-        final Iterator<CommandResponseListener<?>> listeners = commandResponseListeners.iterator();
-        while (listeners.hasNext() && commandState != CommandResponseListener.State.CONSUMED) {
-            @SuppressWarnings("rawtypes")
-            final CommandResponseListener next = listeners.next();
-            if (isError && next instanceof LoxoneMessageCommandResponseListener) {
-                if (((LoxoneMessageCommandResponseListener) next).acceptsErrorResponses()) {
+        if (syncCommandGuard != null) {
+            syncCommandGuard.receive(message);
+        } else {
+            CommandResponseListener.State commandState = CommandResponseListener.State.IGNORED;
+            final Iterator<CommandResponseListener<?>> listeners = commandResponseListeners.iterator();
+            while (listeners.hasNext() && commandState != CommandResponseListener.State.CONSUMED) {
+                @SuppressWarnings("rawtypes") final CommandResponseListener next = listeners.next();
+                if (isError && next instanceof LoxoneMessageCommandResponseListener) {
+                    if (((LoxoneMessageCommandResponseListener) next).acceptsErrorResponses()) {
+                        commandState = commandState.fold(next.onCommand(command, message));
+                    }
+                } else if (next.accepts(message.getClass())) {
                     commandState = commandState.fold(next.onCommand(command, message));
                 }
-            } else if (next.accepts(message.getClass())) {
-                commandState = commandState.fold(next.onCommand(command, message));
             }
-        }
 
-        if (commandState == CommandResponseListener.State.IGNORED) {
-            LOG.warn("No command listener registered, ignoring command=" + command);
-        }
+            if (commandState == CommandResponseListener.State.IGNORED) {
+                LOG.warn("No command listener registered, ignoring command=" + command);
+            }
 
-        if (command != null && command.getCommand().startsWith(C_SYS_ENC)) {
-            LOG.warn("Encrypted message receive is not supported");
+            if (command != null && command.getCommand().startsWith(C_SYS_ENC)) {
+                LOG.warn("Encrypted message receive is not supported");
+            }
         }
     }
 

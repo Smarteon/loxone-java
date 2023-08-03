@@ -1,0 +1,77 @@
+[
+  {
+    "uuid":"16d36904-0135-387f-ffff6b31da1b15a2",
+    "name":"Perioda topení",
+    "operatingMode":10,
+    "calMode":4,
+    "startMonth":10,
+    "startDay":1,
+    "endMonth":4,
+    "endDay":30
+  },
+  {
+    "uuid":"16d36904-013c-3883-ffff6b31da1b15a2",
+    "name":"Perioda chlazení",
+    "operatingMode":11,
+    "calMode":4,
+    "startMonth":5,
+    "startDay":1,
+    "endMonth":9,
+    "endDay":30
+  },
+  {
+    "uuid":"1b6f47bd-0390-9b1e-ffff504f94a03d3e",
+    "name":"Every year test",
+    "operatingMode":1,
+    "calMode":0,
+    "startMonth":4,
+    "startDay":1
+  },
+  {
+    "uuid":"1b6f47dd-0243-9b2c-ffff504f94a03d3e",
+    "name":"Eastern offset test",
+    "operatingMode":1,
+    "calMode":1,
+    "easterOffset":11
+  },
+  {
+    "uuid":"1b6f47f0-03b0-9b3d-ffff504f94a03d3e",
+    "name":"Single day test",
+    "operatingMode":1,
+    "calMode":2,
+    "startYear":2024,
+    "startMonth":8,
+    "startDay":3
+  },
+  {
+    "uuid":"1b6f480b-0393-9b59-ffff504f94a03d3e",
+    "name":"Period test",
+    "operatingMode":1,
+    "calMode":3,
+    "startYear":2024,
+    "startMonth":8,
+    "startDay":3,
+    "endYear":2024,
+    "endMonth":8,
+    "endDay":4
+  },
+  {
+    "uuid":"1b6f49be-025c-9ba0-ffff504f94a03d3e",
+    "name":"Period every year test",
+    "operatingMode":1,
+    "calMode":4,
+    "startMonth":7,
+    "startDay":1,
+    "endMonth":7,
+    "endDay":6
+  },
+  {
+    "uuid":"1b6f49d6-030f-9bc2-ffff504f94a03d3e",
+    "name":"Day of week test",
+    "operatingMode":1,
+    "calMode":5,
+    "startMonth":7,
+    "weekDay":2,
+    "weekDayInMonth":1
+  }
+]

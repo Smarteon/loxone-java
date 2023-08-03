@@ -1,0 +1,10 @@
+{
+  "uuid":"1b6f49be-025c-9ba0-ffff504f94a03d3e",
+  "name":"Period every year test",
+  "operatingMode":1,
+  "calMode":4,
+  "startMonth":7,
+  "startDay":1,
+  "endMonth":7,
+  "endDay":6
+}

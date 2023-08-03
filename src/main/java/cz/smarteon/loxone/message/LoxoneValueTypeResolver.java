@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.DatabindContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
+import cz.smarteon.loxone.calendar.CalEntryListValue;
 import cz.smarteon.loxone.user.UserCommand;
 
 import static cz.smarteon.loxone.message.LoxoneMessageCommand.COMMANDS;
@@ -29,6 +30,8 @@ class LoxoneValueTypeResolver implements TypeIdResolver {
             return context.constructSpecializedType(baseType, OneWireDetails.class);
         } else if (id.contains("dev/sps") && (id.contains("user") || id.contains("getgrouplist"))) {
             return context.constructSpecializedType(baseType, UserCommand.getUserCommandValueType(id));
+        } else if (id.contains("dev/sps/calendargetentries")) {
+            return context.constructSpecializedType(baseType, CalEntryListValue.class);
         } else {
             return COMMANDS.stream()
                     .filter(command -> command.is(id))

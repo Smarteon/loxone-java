@@ -1,0 +1,11 @@
+{
+  "name":"Period test",
+  "operatingMode":1,
+  "calMode":3,
+  "startYear":2024,
+  "startMonth":8,
+  "startDay":3,
+  "endYear":2024,
+  "endMonth":8,
+  "endDay":4
+}

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.InjectableValues
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.deser.BeanDeserializerFactory
 import com.fasterxml.jackson.databind.deser.DefaultDeserializationContext
+import cz.smarteon.loxone.calendar.CalEntryListValue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
@@ -33,6 +34,7 @@ class LoxoneValueTypeResolverTest {
         Token1("jdev/sys/gettoken/hash/user/2/clientUuid/clientInfo", Token::class.java),
         Token2("jdev/sys/refreshtoken/hash/user", Token::class.java),
         Token3("authwithtoken/hash/user", Token::class.java),
+        Calendar("dev/sps/calendargetentries", CalEntryListValue::class.java)
     }
 
     @ParameterizedTest

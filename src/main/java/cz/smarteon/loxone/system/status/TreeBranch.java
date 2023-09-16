@@ -22,6 +22,10 @@ public class TreeBranch implements DevicesProvider<TreeDevice> {
     @XmlAttribute(name = "Errors") private Integer errors;
     @XmlElement(name = "TreeDevice") @XmlJavaTypeAdapter(TreeDeviceAdapter.class) private List<TreeDevice> devices;
 
+    // only for builtin tree
+    @XmlAttribute(name = "Serial") String serialNumber;
+    @XmlAttribute(name = "Version") String version;
+
     TreeBranch() { }
 
     @Nullable

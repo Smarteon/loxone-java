@@ -140,6 +140,8 @@ class MiniserverStatusTest {
             get { extensions }.hasSize(3)
             get { getExtensions(TreeExtension::class.java) }.hasSize(2).and {
                 get { firstOrNull { it.type == "BuiltIn Tree" } }.isNotNull().and {
+                    get { serialNumber }.isEqualTo("13000001")
+                    get { version }.isEqualTo("13.1.9.19")
                     get { rightBranch?.devices }.isNotNull().hasSize(1)
                 }
             }

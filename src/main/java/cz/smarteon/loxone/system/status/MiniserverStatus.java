@@ -246,7 +246,7 @@ public class MiniserverStatus {
         private Link link;
 
         @XmlElement(name = "TreeBranch")
-        private List<TreeBranch> treeBranches;
+        private TreeBranch treeBranch;
 
         Content() { }
 
@@ -258,8 +258,8 @@ public class MiniserverStatus {
             if (link != null && link.extensions != null) {
                 result.addAll(link.extensions);
             }
-            if (treeBranches != null) {
-                result.add(new TreeExtension(treeBranches));
+            if (treeBranch != null) {
+                result.add(new TreeExtension(treeBranch));
             }
             return result;
         }

@@ -137,12 +137,15 @@ class MiniserverStatusTest {
         val ms = readResourceXml<MiniserverStatus>("system/status/status_13_1_Gen2.xml")
 
         expectThat(ms) {
-            get { extensions }.hasSize(3)
+            get { extensions }.hasSize(5)
             get { getExtensions(TreeExtension::class.java) }.hasSize(2).and {
                 get { firstOrNull { it.type == "BuiltIn Tree" } }.isNotNull().and {
+                    get { serialNumber }.isEqualTo("13000001")
+                    get { version }.isEqualTo("13.1.9.19")
                     get { rightBranch?.devices }.isNotNull().hasSize(1)
                 }
             }
+            get { getExtensions(BasicExtension::class.java).filter { it.type == "KNX Extension" } }.hasSize(2)
         }
     }
 }

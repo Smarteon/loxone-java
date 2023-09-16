@@ -2,6 +2,7 @@ package cz.smarteon.loxone.system.status;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,9 +19,10 @@ public class TreeExtension extends Extension {
         setBranches(e.treeBranches);
     }
 
-    TreeExtension(final List<TreeBranch> branches) {
-        super("BuiltIn Tree", null, "BuiltIn Tree", null, null, null, true, false, null, null, null, null, null);
-        setBranches(branches);
+    TreeExtension(final TreeBranch branch) {
+        super("BuiltIn Tree", null, "BuiltIn Tree", branch.serialNumber, branch.version, null, true, false,
+                null, null, null, null, null);
+        setBranches(Collections.singletonList(branch));
     }
 
     private void setBranches(final List<TreeBranch> branches) {

@@ -16,6 +16,8 @@
                     <TreeDevice Code="-2147155787" Name="TL110.1 u vchodu" Place="110 Living room" Inst="" Serial="B02E0D29" Version="12.4.6.8" Online="true" LastReceived="2022-12-07 07:20:38" TimeDiff="1" DummyDev="false"/>
                 </TreeBranch>
             </Extension>
+            <Extension Type="KNX Extension" Code="197" Name="KNX_2" Serial="15d81c94" Version="10.5.2.17" Online="true" IntDev="false" DummyDev="false"/>
+            <Extension Type="KNX Extension" Code="197" Name="KNX_3" Serial="15d81fa8" Version="10.5.2.17" Online="true" IntDev="false" DummyDev="false"/>
         </Link>
     </Miniserver>
     <NetworkDevices Name="Audio" Type="NetworkDevices" Branch="14" Icon="225">

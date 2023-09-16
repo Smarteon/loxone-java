@@ -22,6 +22,7 @@ final class ExtensionAdapter extends XmlAdapter<Extension, Extension> {
             case "AO Extension":
             case "AI Extension":
             case "RS232 Extension":
+            case "KNX Extension":
                 return new BasicExtension(v);
             case "Dali Extension":
                 return new DaliExtension(v);

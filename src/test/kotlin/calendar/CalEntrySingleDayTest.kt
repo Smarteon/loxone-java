@@ -22,6 +22,7 @@ class CalEntrySingleDayTest {
                 get { startMonth }.isEqualTo(8)
                 get { startDay }.isEqualTo(3)
                 get { createEntryCommand().command }.isEqualTo("jdev/sps/calendarcreateentry/Single day test/1/2/2024/8/3")
+                get { updateEntryCommand(this.uuid).command }.isEqualTo("jdev/sps/calendarupdateentry/1b6f47f0-03b0-9b3d-ffff504f94a03d3e/Single day test/1/2/2024/8/3")
             }
     }
 

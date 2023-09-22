@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.smarteon.loxone.LoxoneUuid;
-import cz.smarteon.loxone.user.EmptyValue;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -91,7 +90,8 @@ public class CalEntryPeriod extends CalEntryBase {
         this.endDay = endDay;
     }
 
-    public CalendarCommand<EmptyValue> createEntryCommand(){
-        return new CalendarCommand<>(CREATE_ENTRY + name + "/" + operatingMode + "/" + CAL_MODE + "/" + startYear + "/" + startMonth + "/" + startDay + "/" + endYear + "/" + endMonth + "/" + endDay, EmptyValue.class);
+    @Override
+    public String toString() {
+        return name + "/" + operatingMode + "/" + CAL_MODE + "/" + startYear + "/" + startMonth + "/" + startDay + "/" + endYear + "/" + endMonth + "/" + endDay;
     }
 }

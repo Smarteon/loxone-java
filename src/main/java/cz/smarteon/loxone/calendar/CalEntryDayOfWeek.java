@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.smarteon.loxone.LoxoneUuid;
-import cz.smarteon.loxone.user.EmptyValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -85,7 +84,8 @@ public class CalEntryDayOfWeek extends CalEntryBase{
         this.weekDayInMonth = weekDayInMonth.value;
     }
 
-    public CalendarCommand<EmptyValue> createEntryCommand(){
-        return new CalendarCommand<>(CREATE_ENTRY + name + "/" + operatingMode + "/" + CAL_MODE + "/" + weekDayInMonth + "/" + weekDay + "/" + startMonth, EmptyValue.class);
+    @Override
+    public String toString() {
+        return name + "/" + operatingMode + "/" + CAL_MODE + "/" + weekDayInMonth + "/" + weekDay + "/" + startMonth;
     }
 }

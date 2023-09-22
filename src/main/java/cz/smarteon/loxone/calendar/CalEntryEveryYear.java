@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.smarteon.loxone.LoxoneUuid;
-import cz.smarteon.loxone.user.EmptyValue;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -55,7 +54,8 @@ public class CalEntryEveryYear extends CalEntryBase {
         this.startDay = startDay;
     }
 
-    public CalendarCommand<EmptyValue> createEntryCommand(){
-        return new CalendarCommand<>(CREATE_ENTRY + name + "/" + operatingMode + "/" + CAL_MODE + "/" + startMonth + "/" + startDay, EmptyValue.class);
+    @Override
+    public String toString() {
+        return name + "/" + operatingMode + "/" + CAL_MODE + "/" + startMonth + "/" + startDay;
     }
 }

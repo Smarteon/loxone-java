@@ -25,6 +25,7 @@ class CalEntryPeriodTest {
                 get { endMonth }.isEqualTo(8)
                 get { endDay }.isEqualTo(4)
                 get { createEntryCommand().command }.isEqualTo("jdev/sps/calendarcreateentry/Period test/1/3/2024/8/3/2024/8/4")
+                get { updateEntryCommand(this.uuid).command }.isEqualTo("jdev/sps/calendarupdateentry/1b6f480b-0393-9b59-ffff504f94a03d3e/Period test/1/3/2024/8/3/2024/8/4")
             }
     }
 

@@ -21,6 +21,7 @@ class CalEntryEveryYearTest {
                 get { startMonth }.isEqualTo(4)
                 get { startDay }.isEqualTo(1)
                 get { createEntryCommand().command }.isEqualTo("jdev/sps/calendarcreateentry/Every year test/1/0/4/1")
+                get { updateEntryCommand(this.uuid).command }.isEqualTo("jdev/sps/calendarupdateentry/1b6f47bd-0390-9b1e-ffff504f94a03d3e/Every year test/1/0/4/1")
             }
     }
 

@@ -11,7 +11,7 @@ public class CalendarCommand<V extends LoxoneValue> extends LoxoneMessageCommand
 
     private static final String GET_ENTRIES = "calendargetentries/";
 
-    private static final String COMMAND_PREFIX = "jdev/sps/";
+    protected static final String COMMAND_PREFIX = "jdev/sps/";
 
     protected CalendarCommand(String operation, Class<V> valueType) {
         super(requireNonNull(operation, "operation can't be null"),

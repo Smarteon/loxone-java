@@ -20,6 +20,7 @@ class CalEntryEasterOffsetTest {
                 get { calMode }.isEqualTo(1)
                 get { easterOffset }.isEqualTo(11)
                 get { createEntryCommand().command }.isEqualTo("jdev/sps/calendarcreateentry/Eastern offset test/1/1/11")
+                get { updateEntryCommand(this.uuid).command }.isEqualTo("jdev/sps/calendarupdateentry/1b6f47dd-0243-9b2c-ffff504f94a03d3e/Eastern offset test/1/1/11")
             }
     }
 

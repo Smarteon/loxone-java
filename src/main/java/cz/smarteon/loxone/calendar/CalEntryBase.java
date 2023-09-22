@@ -32,6 +32,7 @@ public abstract class CalEntryBase {
 
     protected static final String CREATE_ENTRY = "calendarcreateentry/";
     protected static final String DELETE_ENTRY = "calendardeleteentry/";
+    protected static final String UPDATE_ENTRY = "calendarupdateentry/";
 
     /**
      * UUID of this calendar entry, should be unique.
@@ -95,5 +96,18 @@ public abstract class CalEntryBase {
      *
      * @return create calendar entry command
      */
-    abstract public CalendarCommand<EmptyValue> createEntryCommand();
+    public CalendarCommand<EmptyValue> createEntryCommand() {
+        return new CalendarCommand<>(CREATE_ENTRY + this, EmptyValue.class);
+    }
+
+    /**
+     * Creates update calendar entry command.
+     * Command updates an existing calendar entry with the given parameters.
+     *
+     * @return update calendar entry command
+     * @param uuid - uuid of an existing entry to be updated
+     */
+    public CalendarCommand<EmptyValue> updateEntryCommand(LoxoneUuid uuid) {
+        return new CalendarCommand<>(UPDATE_ENTRY + uuid + "/" + this, EmptyValue.class);
+    }
 }

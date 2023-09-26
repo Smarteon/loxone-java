@@ -157,6 +157,11 @@ public abstract class Codec {
         return JsonMapperHolder.MAPPER.readValue(message, clazz);
     }
 
+    public static <T> List<T> readList(final String encodedList, final Class<T> elementClass) throws IOException {
+        return JsonMapperHolder.MAPPER.readValue(
+                encodedList, JsonMapperHolder.MAPPER.getTypeFactory().constructCollectionType(List.class, elementClass));
+    }
+
     public static <T> T readXml(final InputStream xml, final Class<T> clazz) throws IOException {
         try {
             final JAXBContext ctx = JAXBContext.newInstance(clazz);

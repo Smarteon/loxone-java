@@ -9,7 +9,6 @@ import cz.smarteon.loxone.message.LoxoneValue;
 import lombok.Getter;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,7 +22,7 @@ public class UserListValue implements LoxoneValue {
 
     @JsonCreator
     protected UserListValue(String users) throws IOException {
-        this.users = Arrays.asList(Codec.readMessage(users, UserListElement[].class));
+        this.users = Codec.readList(users, UserListElement.class);
     }
 
     /**

@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,6 +22,6 @@ public class UserGroupListValue implements LoxoneValue {
 
     @JsonCreator
     public UserGroupListValue(String userGroups) throws IOException {
-        this.userGroups = Arrays.asList(Codec.readMessage(userGroups, UserGroup[].class));
+        this.userGroups = Codec.readList(userGroups, UserGroup.class);
     }
 }

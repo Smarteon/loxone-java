@@ -12,7 +12,7 @@ class CalEntryListValueTest {
     @Test
     fun `should deserialize`() {
         expectThat(readResource<CalEntryListValue>("calendar/testEntries.json")) {
-           get { this[3] }.isA<CalEntryEasterOffset>().and {
+           get { this.events[3] }.isA<CalEntryEasterOffset>().and {
                get { uuid }.isLoxoneUuid("1b6f47dd-0243-9b2c-ffff504f94a03d3e")
                get { name }.isEqualTo("Eastern offset test")
                get { operatingMode }.isEqualTo(1)
@@ -20,7 +20,7 @@ class CalEntryListValueTest {
                get { easterOffset }.isEqualTo(11)
                get { createEntryCommand().command }.isEqualTo("jdev/sps/calendarcreateentry/Eastern offset test/1/1/11")
            }
-           get { this[4] }.isA<CalEntrySingleDay>().and {
+           get { this.events[4] }.isA<CalEntrySingleDay>().and {
                get { uuid }.isLoxoneUuid("1b6f47f0-03b0-9b3d-ffff504f94a03d3e")
                get { name }.isEqualTo("Single day test")
                get { operatingMode }.isEqualTo(1)

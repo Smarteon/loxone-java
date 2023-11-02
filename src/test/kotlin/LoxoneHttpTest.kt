@@ -72,4 +72,29 @@ class LoxoneHttpTest {
             get { loxoneHttp.lastUrl }.isEqualTo(URL(finalLocation))
         }
     }
+
+    @Test
+    fun `should encode whitespace`() {
+        onRequest()
+            .havingMethodEqualTo("GET")
+            .havingPathEqualTo("/test%20whitespace")
+            .respond()
+            .withStatus(200)
+            .withBody("\"testString\"")
+
+        expectThat(
+            loxoneHttp.get(
+                Command(
+                    "/test whitespace",
+                    Command.Type.JSON,
+                    String::class.java,
+                    true,
+                    false,
+                    MiniserverType.KNOWN
+                )
+            )
+        ) {
+            isEqualTo("testString")
+        }
+    }
 }

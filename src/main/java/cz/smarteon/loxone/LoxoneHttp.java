@@ -21,6 +21,8 @@ public class LoxoneHttp {
 
     private static final Logger LOG = LoggerFactory.getLogger(LoxoneHttp.class);
     private static final int MAX_REDIRECTS = 5;
+    private static final String URL_WHITESPACE = " ";
+    private static final String ENCODED_URL_WHITESPACE = "%20";
 
     // temporarily relaxed visibility to allow deprecated LoxoneAuth constructor
     @SuppressWarnings("checkstyle:VisibilityModifier")
@@ -109,7 +111,7 @@ public class LoxoneHttp {
 
     private URL urlFromCommand(String command) {
         try {
-            return endpoint.httpUrl(command);
+            return endpoint.httpUrl(command.replace(URL_WHITESPACE, ENCODED_URL_WHITESPACE));
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("Command " + command + " produces malformed URL");
         }

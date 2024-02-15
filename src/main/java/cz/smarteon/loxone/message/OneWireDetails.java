@@ -161,7 +161,7 @@ public final class OneWireDetails implements LoxoneValue {
     public static class Deserializer extends JsonDeserializer<OneWireDetails> {
 
         private static final Pattern ONE_WIRE_DETAIL_PATTERN = Pattern.compile(
-                "^1-Wire\\s+Serial\\s+([0-9A-F.]+):\\s+(\\d+)\\s+Packet Requests,"
+                "^(?:1-Wire\\s+)?Serial\\s+([0-9A-F.]+):\\s+(\\d+)\\s+Packet Requests,"
                         + "\\s+(\\d+)\\s+CRC Errors,\\s+(\\d+)\\s+85 Degree Problems$");
         @Override
         public OneWireDetails deserialize(

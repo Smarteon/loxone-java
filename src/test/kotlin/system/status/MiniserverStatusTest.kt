@@ -91,7 +91,7 @@ class MiniserverStatusTest {
 
         expectThat(airBaseExtensions[0].devices[2] as MultiExtensionAir) {
             get { devices }.hasSize(3)
-            get { serialForOneWireDetails }.isEqualTo("fe894bc6")
+            get { serialForOneWireDetails }.isEqualTo("504F94FFFE894BC6")
         }
 
         val treeExtensions = ms.getExtensions(TreeExtension::class.java)

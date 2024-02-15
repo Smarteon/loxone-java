@@ -247,6 +247,16 @@ public class LoxoneMessageCommand<V extends LoxoneValue> extends Command<LoxoneM
                 OneWireDetails.class, MiniserverType.KNOWN);
     }
 
+    /**
+     * Get 1-wire details of MultiExtensionAir by given extension serial number.
+     * @param extensionSerial serial number of MultiExtensionAir extension
+     * @return command requesting 1-wire details
+     */
+    public static LoxoneMessageCommand<OneWireDetails> multiExtensionAirOneWireDetails(final @NotNull String extensionSerial) {
+        return jsonCommand("jdev/sys/wsdevice/" + requireNonNull(extensionSerial, "extensionSerial can't be null") + "/Statistics",
+                OneWireDetails.class, MiniserverType.KNOWN);
+    }
+
     private static <V extends LoxoneValue> LoxoneMessageCommand<V> jsonCommand(
             final String command, final Class<V> valueType, final MiniserverType[] supportedMiniservers) {
         return new LoxoneMessageCommand<>(command, Type.JSON, valueType, true, true, supportedMiniservers);

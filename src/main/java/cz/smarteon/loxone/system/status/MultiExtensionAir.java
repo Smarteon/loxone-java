@@ -23,12 +23,13 @@ public class MultiExtensionAir extends AirDevice implements DevicesProvider<OneW
     /**
      * Serial number transformed to the form for getting one wire details.
      * @return serial number for one wire details command.
-     * @see cz.smarteon.loxone.message.LoxoneMessageCommand#oneWireDetails(String)
+     * @see cz.smarteon.loxone.message.LoxoneMessageCommand#multiExtensionAirOneWireDetails(String)
      */
     @NotNull
     public String getSerialForOneWireDetails() {
-        if (getSerialNumber() != null) {
-            return getSerialNumber().replaceAll(":", "").substring(8).toLowerCase();
+        final String serial = getSerialForCommands();
+        if (serial != null) {
+            return serial;
         } else {
             throw new IllegalStateException("MultiExtensionAir must have set serial number");
         }

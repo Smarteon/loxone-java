@@ -37,4 +37,18 @@ public abstract class Device {
     public String getSerialNumber() {
         return serialNumber;
     }
+
+    /**
+     * Serial number transformed for use with 'wsdevice' commands.
+     * @return serial number for 'wsdevice' commands.
+     * @see cz.smarteon.loxone.message.LoxoneMessageCommand#oneWireDetails(String)
+     */
+    @Nullable
+    public String getSerialForCommands() {
+        if (getSerialNumber() != null) {
+            return getSerialNumber().replaceAll(":", "");
+        } else {
+            return null;
+        }
+    }
 }

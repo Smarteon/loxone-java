@@ -21,6 +21,12 @@ class OneWireDetailsTest {
                 get { crcErrors }.isEqualTo(0)
                 get { _85DegreeErrors }.isEqualTo(0)
             }
+            get { asMap()["28.62.A9.AC.0A.00.00.A2"] }.isNotNull().and {
+                get { serial }.isEqualTo("28.62.A9.AC.0A.00.00.A2")
+                get { packetRequests }.isEqualTo(13)
+                get { crcErrors }.isEqualTo(1230000)
+                get { _85DegreeErrors }.isEqualTo(5)
+            }
         }
     }
 

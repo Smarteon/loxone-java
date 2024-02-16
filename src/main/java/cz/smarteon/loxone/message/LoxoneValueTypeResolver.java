@@ -7,10 +7,13 @@ import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
 import cz.smarteon.loxone.calendar.CalEntryListValue;
 import cz.smarteon.loxone.user.UserCommand;
 
+import java.util.regex.Pattern;
+
 import static cz.smarteon.loxone.message.LoxoneMessageCommand.COMMANDS;
 
 class LoxoneValueTypeResolver implements TypeIdResolver {
 
+    private static final Pattern devStatisticsPattern = Pattern.compile("dev/sys/wsdevice/[^/]+/Statistics");
     private JavaType baseType;
 
     @Override
@@ -26,7 +29,7 @@ class LoxoneValueTypeResolver implements TypeIdResolver {
             return context.constructSpecializedType(baseType, Hashing.class);
         } else if (id.contains("token")) {
             return context.constructSpecializedType(baseType, Token.class);
-        } else if (id.contains("dev/sys/ExtStatistics")) {
+        } else if (id.contains("dev/sys/ExtStatistics") || devStatisticsPattern.matcher(id).matches()) {
             return context.constructSpecializedType(baseType, OneWireDetails.class);
         } else if (id.contains("dev/sps") && (id.contains("user") || id.contains("getgrouplist"))) {
             return context.constructSpecializedType(baseType, UserCommand.getUserCommandValueType(id));

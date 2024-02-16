@@ -31,6 +31,7 @@ class LoxoneValueTypeResolverTest {
         Hashing1("jdev/sys/getkey2/someUser", Hashing::class.java),
         Hashing2("jdev/sys/getvisusalt/someUser", Hashing::class.java),
         OneWireDetails1("jdev/sys/ExtStatistics/extSerialNum", OneWireDetails::class.java),
+        OneWireDetails2("dev/sys/wsdevice/504F94FFFE8A7097/Statistics", OneWireDetails::class.java),
         Token1("jdev/sys/gettoken/hash/user/2/clientUuid/clientInfo", Token::class.java),
         Token2("jdev/sys/refreshtoken/hash/user", Token::class.java),
         Token3("authwithtoken/hash/user", Token::class.java),

@@ -86,7 +86,7 @@ public class UserCommand<V extends LoxoneValue> extends LoxoneMessageCommand<V> 
      * @throws NullPointerException user has to have UUID
      */
     @NotNull
-    public static UserCommand<UserValue> getUserDetails(final @NotNull User user) {
+    public static UserCommand<UserValue> getUserDetails(final @NotNull UserBase user) {
         requireNonNull(user, "User cannot be null when getting user details");
         requireNonNull(user.getUuid(), "User UUID cannot be null when getting user details");
         return genericUserCommand(GET_USER_DETAILS + user.getUuid(), UserValue.class);

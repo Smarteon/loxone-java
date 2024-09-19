@@ -23,6 +23,7 @@ class UserTest {
             get { userState }.isEqualTo(UserBase.UserState.ENABLED_UNTIL)
             get { userGroups?.map { it.uuid.toString() } }.isNotNull().containsExactly("12eebb90-00a1-3076-ffff88c561c84c44","12eebb90-00a1-307c-ffff88c561c84c44")
             get { nfcTags?.map { it.id } }.isNotNull().containsExactly("12 34 56 78 90 98 76 54")
+            get { userid }.isEqualTo("1234 24 12 83")
 
             TimeZone.setDefault(TimeZone.getTimeZone("Europe/Prague"))
             get { validFromDateTime.toString() }.isEqualTo("2009-01-01T01:02:10")

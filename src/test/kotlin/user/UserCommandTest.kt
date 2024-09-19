@@ -21,7 +21,8 @@ class UserCommandTest {
             that(UserCommand.addOrEditUser(user).command).isEqualTo("jdev/sps/addoredituser/" +
                     "{\"uuid\":\"12eebb90-00a1-3073-ffff88c561c84c44\",\"name\":\"admin\",\"validUntil\":1200,\"validF" +
                     "rom\":130,\"userState\":2,\"usergroups\":[\"12eebb90-00a1-3076-ffff88c561c84c44\"" +
-                    ",\"12eebb90-00a1-307c-ffff88c561c84c44\"],\"nfcTags\":[\"12 34 56 78 90 98 76 54\"],\"admin\":true}")
+                    ",\"12eebb90-00a1-307c-ffff88c561c84c44\"],\"nfcTags\":[\"12 34 56 78 90 98 76 54\"]" +
+                    ",\"userid\":\"1234 24 12 83\",\"admin\":true}")
             that(UserCommand.getUsers().command).isEqualTo("jdev/sps/getuserlist2/")
             that(UserCommand.getUserDetails(user).command).isEqualTo("jdev/sps/getuser/$USER_U")
             that(UserCommand.getUserGroups().command).isEqualTo("jdev/sps/getgrouplist/")

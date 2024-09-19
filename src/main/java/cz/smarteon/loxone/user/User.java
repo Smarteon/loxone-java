@@ -39,6 +39,12 @@ public class User extends UserBase {
     private int validUntil;
 
     /**
+     * User set user ID, called NFC Code Touch ID in lox app.
+     */
+    @Setter
+    private String userid;
+
+    /**
      * Groups this user is part of.
      */
     @JsonProperty(value = "usergroups")
@@ -89,12 +95,14 @@ public class User extends UserBase {
             @JsonProperty(value = "validFrom") int validFrom,
             @JsonProperty(value = "userState") @Nullable UserState userState,
             @JsonProperty(value = "usergroups") @Nullable List<UserGroup> userGroups,
-            @JsonProperty(value = "nfcTags") @Nullable List<NfcTag> nfcTags) {
+            @JsonProperty(value = "nfcTags") @Nullable List<NfcTag> nfcTags,
+            @JsonProperty(value = "userid") @Nullable String userid) {
         super(uuid, name, userState, isAdmin);
         this.validUntil = validUntil;
         this.validFrom = validFrom;
         this.userGroups = userGroups;
         this.nfcTags = nfcTags;
+        this.userid = userid;
     }
 
     /**

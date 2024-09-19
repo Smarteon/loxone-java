@@ -28,6 +28,7 @@ public class UserListValue implements LoxoneValue {
     /**
      * Helper class to properly serialize/deserialize {@link UserListValue}.
      */
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class UserListElement extends UserBase {
         @JsonCreator
         protected UserListElement(@JsonProperty("name") String name,

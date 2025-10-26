@@ -60,24 +60,28 @@ For local testing of the release and publish process:
 
 ```bash
 # WARNING: Setting environment variables in shell exposes them in:
-# - Shell history (use `set +o history` to disable)
+# - Shell history (use `set +o history` BEFORE entering commands)
 # - Process lists (visible to other users via ps/top)
 # - Parent shell environment
 #
-# For security, consider:
-# 1. Use a .env file that's in .gitignore
-# 2. Clear shell history after: history -c
-# 3. Use a secure terminal session
-# 4. Unset variables after use: unset OSS_USER OSS_PASS SIGNING_KEY SIGNING_PASS
+# Recommended secure approach:
+# 1. Start a new shell session with history disabled: bash --noprofile --norc -c "set +o history; bash"
+# 2. Or disable history before entering commands: set +o history
+# 3. Use a .env file that's in .gitignore
+# 4. Clear shell history after: history -c && history -w
+# 5. Unset variables after use: unset OSS_USER OSS_PASS SIGNING_KEY SIGNING_PASS
 
 # Sonatype credentials
 export OSS_USER="your-jira-username"
 export OSS_PASS="your-jira-password"
 
-# GPG signing - safer alternative: read from secure file
-# export SIGNING_KEY="$(cat /secure/path/signing-key.txt)"
-export SIGNING_KEY="$(gpg --export-secret-keys -a YOUR_KEY_ID | base64 -w0)"
+# GPP signing - RECOMMENDED: read from secure file instead of inline command
+# First, create the key file (see RELEASE_CHECKLIST.md for secure creation)
+export SIGNING_KEY="$(cat /secure/path/signing-key.txt)"
 export SIGNING_PASS="your-gpg-passphrase"
+
+# ALTERNATIVE (less secure - exposes key in process list during execution):
+# export SIGNING_KEY="$(gpg --export-secret-keys -a YOUR_KEY_ID | base64 -w0)"
 ```
 
 ### Alternative: Gradle Properties

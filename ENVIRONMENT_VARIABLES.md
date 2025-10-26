@@ -75,7 +75,7 @@ For local testing of the release and publish process:
 export OSS_USER="your-jira-username"
 export OSS_PASS="your-jira-password"
 
-# GPP signing - RECOMMENDED: read from secure file instead of inline command
+# GPG signing - RECOMMENDED: read from secure file instead of inline command
 # First, create the key file (see RELEASE_CHECKLIST.md for secure creation)
 export SIGNING_KEY="$(cat /secure/path/signing-key.txt)"
 export SIGNING_PASS="your-gpg-passphrase"

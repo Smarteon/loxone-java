@@ -1,11 +1,21 @@
 group = "cz.smarteon"
 
+scmVersion {
+    tag {
+        prefix.set("")
+        versionSeparator.set("")
+    }
+}
+
+project.version = scmVersion.version
+
 plugins {
     `java-library`
     signing
     `maven-publish`
     jacoco
-    id("net.researchgate.release") version "2.6.0"
+    id("pl.allegro.tech.build.axion-release") version "1.14.4"
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
     id("ru.vyarus.quality") version "4.8.0"
     kotlin("jvm") version "1.7.10"
 }
@@ -78,8 +88,8 @@ dependencies {
     testImplementation("org.awaitility:awaitility-kotlin:4.1.1")
 }
 
-val ossUser: String? by project
-val ossPass: String? by project
+val ossUser: String? = System.getenv("OSS_USER")
+val ossPass: String? = System.getenv("OSS_PASS")
 
 publishing {
     publications {
@@ -128,22 +138,30 @@ publishing {
             }
         }
     }
+}
 
-    repositories {
-        maven {
-            name = "oss"
-            url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-            authentication {
-                credentials {
-                    username = ossUser
-                    password = ossPass
-                }
+if (ossUser != null && ossPass != null) {
+    nexusPublishing {
+        repositories {
+            sonatype {
+                username.set(ossUser)
+                password.set(ossPass)
             }
         }
     }
 }
 
-if (hasProperty("signing.keyId")) {
+val signingKey: String? = System.getenv("SIGNING_KEY")
+val signingPassword: String? = System.getenv("SIGNING_PASS")
+if (signingKey != null && signingPassword != null) {
+    signing {
+        setRequired({
+            !project.version.toString().endsWith("-SNAPSHOT")
+        })
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign(publishing.publications["library"])
+    }
+} else if (hasProperty("signing.keyId")) {
     signing {
         setRequired({
             !project.version.toString().endsWith("-SNAPSHOT")
@@ -181,9 +199,5 @@ tasks {
 
     check {
         dependsOn(jacocoTestReport)
-    }
-
-    afterReleaseBuild {
-        dependsOn(getByName("publishLibraryPublicationToOssRepository"))
     }
 }

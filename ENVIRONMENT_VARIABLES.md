@@ -23,12 +23,19 @@ These must be configured in **Settings → Secrets and variables → Actions** i
 - **Type**: ASCII-armored GPG private key, base64 encoded
 - **How to obtain**: 
   ```bash
-  gpg --export-secret-keys -a YOUR_KEY_ID | base64 -w0
+  # WARNING: This exports your private key. Handle with extreme care!
+  # The output file should be immediately added to GitHub secrets and then securely deleted.
+  gpg --export-secret-keys -a YOUR_KEY_ID | base64 -w0 > signing-key.txt
+  
+  # After copying to GitHub secrets:
+  shred -u signing-key.txt  # Linux - securely delete
+  # rm -P signing-key.txt   # macOS - securely delete
   ```
 - **Requirements**: 
   - Must be a valid GPG/PGP key
   - Public key must be published to key servers
   - Must be base64 encoded for storage
+- **Security**: Never commit this to version control or expose in logs
 
 ### 4. SIGNING_PASS
 - **Purpose**: Passphrase for the GPG signing key
@@ -52,11 +59,23 @@ For local testing of the release and publish process:
 ### Environment Variables
 
 ```bash
+# WARNING: Setting environment variables in shell exposes them in:
+# - Shell history (use `set +o history` to disable)
+# - Process lists (visible to other users via ps/top)
+# - Parent shell environment
+#
+# For security, consider:
+# 1. Use a .env file that's in .gitignore
+# 2. Clear shell history after: history -c
+# 3. Use a secure terminal session
+# 4. Unset variables after use: unset OSS_USER OSS_PASS SIGNING_KEY SIGNING_PASS
+
 # Sonatype credentials
 export OSS_USER="your-jira-username"
 export OSS_PASS="your-jira-password"
 
-# GPG signing
+# GPG signing - safer alternative: read from secure file
+# export SIGNING_KEY="$(cat /secure/path/signing-key.txt)"
 export SIGNING_KEY="$(gpg --export-secret-keys -a YOUR_KEY_ID | base64 -w0)"
 export SIGNING_PASS="your-gpg-passphrase"
 ```

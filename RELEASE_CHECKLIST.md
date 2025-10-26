@@ -21,7 +21,14 @@ Use this checklist to ensure all requirements are met before using the automated
   ```
 - [ ] Exported private key to base64
   ```bash
+  # WARNING: This creates a file containing your private key.
+  # Store it securely and delete after adding to GitHub secrets.
+  # Never commit this file to version control.
   gpg --export-secret-keys -a KEY_ID | base64 -w0 > signing-key.txt
+  
+  # After copying to GitHub secrets, securely delete the file:
+  # shred -u signing-key.txt  # On Linux
+  # rm -P signing-key.txt      # On macOS
   ```
 - [ ] Published public key to key servers
   ```bash

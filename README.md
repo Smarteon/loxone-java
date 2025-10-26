@@ -92,6 +92,54 @@ MiniserverDiscovererTest > should discover() FAILED
 It is adviced to install the lombok plugin for your IDE of choice, this makes coding & debugging easier, you can find the 
 instructions for installing the plugin for various IDE's on the following location https://projectlombok.org/setup/
 
+### Releasing
+
+This project uses automated releases via GitHub Actions with the [axion-release](https://github.com/allegro/axion-release-plugin) plugin and publishes to [OSS Sonatype](https://oss.sonatype.org/).
+
+#### Release Process
+
+To create a new release:
+
+1. Navigate to **Actions** → **Loxone Java release** in the GitHub repository
+2. Click **Run workflow**
+3. Select the version increment type:
+   - `incrementPatch` - for bug fixes (e.g., 2.9.2 → 2.9.3)
+   - `incrementMinor` - for new features (e.g., 2.9.2 → 2.10.0)
+   - `incrementMajor` - for breaking changes (e.g., 2.9.2 → 3.0.0)
+4. Click **Run workflow**
+
+The workflow will:
+- Create and push a new version tag
+- Build the project
+- Sign the artifacts
+- Publish to OSS Sonatype
+- Automatically close and release the staging repository
+
+#### Required GitHub Secrets
+
+The following secrets must be configured in the repository settings:
+
+- `OSS_USER` - Sonatype OSS username (JIRA account)
+- `OSS_PASS` - Sonatype OSS password
+- `SIGNING_KEY` - GPG private key for signing artifacts (ASCII-armored, base64 encoded)
+- `SIGNING_PASS` - Passphrase for the GPG key
+- `SMARTEON_GIT_TOKEN` - GitHub Personal Access Token with `repo` scope for pushing tags
+
+#### Local Release Testing
+
+To test the release process locally:
+
+```bash
+# Check current version
+./gradlew currentVersion
+
+# Test release process (dry-run)
+./gradlew release -Prelease.dryRun
+
+# Test publishing to local Maven repository
+./gradlew publishToMavenLocal
+```
+
 ### Writing unit tests
 We prefer [Junit5 with Kotlin](https://www.baeldung.com/kotlin/junit-5-kotlin), [Strikt](https://strikt.io/) and [Mockk](https://mockk.io/) for writing unit testing. Please follow the guidelines and documentation on the internet. 
 Kotlin is easy to grab fro Java programmers and in many cases it allows more concise code. However Java + Junit5 unit 

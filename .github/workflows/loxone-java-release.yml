@@ -1,0 +1,58 @@
+---
+name: Loxone Java release
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionIncrement:
+        description: "What version number to increment"
+        required: true
+        type: choice
+        default: incrementPatch
+        options:
+          - incrementPatch
+          - incrementMinor
+          - incrementMajor
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: master
+          token: ${{ secrets.SMARTEON_GIT_TOKEN }}
+
+      - name: Setup JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+
+      - name: Set up git configuration
+        run: |
+          git config --global user.name 'Smarteon Git'
+          git config --global user.email 'accounts+git@smarteon.cz'
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Release and push tag
+        shell: bash
+        run: |
+          # Fetch a full copy of the repo, as required by release plugin:
+          git fetch --tags --unshallow
+          # Run release:
+          ./gradlew release -Prelease.versionIncrementer=${{ inputs.versionIncrement }}
+
+      - name: Publish to OSS Sonatype
+        shell: bash
+        env:
+          OSS_USER: ${{ secrets.OSS_USER }}
+          OSS_PASS: ${{ secrets.OSS_PASS }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASS: ${{ secrets.SIGNING_PASS }}
+        run: |
+          ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository

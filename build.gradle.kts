@@ -15,7 +15,7 @@ plugins {
     `maven-publish`
     jacoco
     id("pl.allegro.tech.build.axion-release") version "1.18.18"
-    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+    id("org.danilopianini.publish-on-central") version "8.0.7"
     id("ru.vyarus.quality") version "6.0.1"
     kotlin("jvm") version "1.7.10"
 }
@@ -141,12 +141,15 @@ publishing {
 }
 
 if (ossUser != null && ossPass != null) {
-    nexusPublishing {
+    publishOnCentral {
+        repoOwner.set("Smarteon")
+        projectDescription.set("Java implementation of the Loxone&trade; communication protocol (Web Socket)")
+        licenseName.set("3-Clause BSD License")
+        licenseUrl.set("https://opensource.org/licenses/BSD-3-Clause")
+
         repositories {
-            sonatype {
-                username.set(ossUser)
-                password.set(ossPass)
-            }
+            mavenCentral.user.set(ossUser)
+            mavenCentral.password.set(ossPass)
         }
     }
 }

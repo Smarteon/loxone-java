@@ -55,4 +55,4 @@ jobs:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASS: ${{ secrets.SIGNING_PASS }}
         run: |
-          ./gradlew publishAllPublicationsToProjectLocalRepository zipMavenCentralPortalPublication releaseMavenCentralPortalPublication
+          ./gradlew publishLibraryPublicationToProjectLocalRepository zipMavenCentralPortalPublication releaseMavenCentralPortalPublication

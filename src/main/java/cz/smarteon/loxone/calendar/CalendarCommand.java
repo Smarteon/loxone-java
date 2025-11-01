@@ -37,6 +37,7 @@ public class CalendarCommand<V extends LoxoneValue> extends LoxoneMessageCommand
      * Command deletes a calendar entry with the corresponding lox UUID.
      *
      * @param entryUuid - Lox UUID of a calendar entry
+     * @return delete calendar entry command
      */
     @NotNull
     public static CalendarCommand<EmptyValue> deleteEntry(LoxoneUuid entryUuid) {

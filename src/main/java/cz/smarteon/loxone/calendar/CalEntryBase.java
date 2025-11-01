@@ -60,7 +60,9 @@ public abstract class CalEntryBase {
      * 2 - One day
      * 3 - Period
      * 4 - Period every year
-     * 5 - A day in a week */
+     * 5 - A day in a week
+     * </pre>
+     */
     protected int calMode;
 
     @JsonCreator

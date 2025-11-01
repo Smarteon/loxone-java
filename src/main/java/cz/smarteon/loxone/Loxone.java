@@ -282,7 +282,9 @@ public class Loxone {
 
     /**
      * Sends command built by {@link UserCommand} using http.
+     * @param <V> type of the value returned by the command
      * @param userCommand user command
+     * @return response message
      */
     public <V extends LoxoneValue> LoxoneMessage<V> sendUserCommandHttp(final @NotNull UserCommand<V> userCommand) {
         return loxoneHttp.get(userCommand, loxoneAuth);

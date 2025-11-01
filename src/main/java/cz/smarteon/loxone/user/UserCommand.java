@@ -110,6 +110,7 @@ public class UserCommand<V extends LoxoneValue> extends LoxoneMessageCommand<V> 
      *
      * @param user User object
      * @return add or edit user command
+     * @throws IOException in case user can't be serialized
      */
     @NotNull
     public static UserCommand<UserValue> addOrEditUser(final @NotNull User user) throws IOException {

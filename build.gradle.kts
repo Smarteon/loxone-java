@@ -16,7 +16,7 @@ plugins {
     jacoco
     id("pl.allegro.tech.build.axion-release") version "1.18.18"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-    id("ru.vyarus.quality") version "4.8.0"
+    id("ru.vyarus.quality") version "6.0.1"
     kotlin("jvm") version "1.7.10"
 }
 

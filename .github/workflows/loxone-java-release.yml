@@ -20,7 +20,7 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: master
           token: ${{ secrets.SMARTEON_GIT_TOKEN }}
@@ -37,7 +37,7 @@ jobs:
           git config --global user.email 'accounts+git@smarteon.cz'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Release and push tag
         shell: bash

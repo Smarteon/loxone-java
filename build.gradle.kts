@@ -1,3 +1,5 @@
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 group = "cz.smarteon"
@@ -13,11 +15,9 @@ project.version = scmVersion.version
 
 plugins {
     `java-library`
-    signing
-    `maven-publish`
     jacoco
     id("pl.allegro.tech.build.axion-release") version "1.18.18"
-    id("org.danilopianini.publish-on-central") version "8.0.7"
+    id("com.vanniktech.maven.publish") version "0.34.0"
     id("ru.vyarus.quality") version "6.0.1"
     kotlin("jvm") version "2.2.20"
 }
@@ -28,8 +28,7 @@ java {
     }
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
-    withJavadocJar()
-    withSourcesJar()
+    // javadoc and sources configured in publishing plugin
 }
 
 repositories {
@@ -94,88 +93,59 @@ dependencies {
     testImplementation("org.awaitility:awaitility-kotlin:4.1.1")
 }
 
-val ossUser: String? = System.getenv("OSS_USER")
-val ossPass: String? = System.getenv("OSS_PASS")
+// see https://vanniktech.github.io/gradle-maven-publish-plugin/central/#secrets for how to set up credentials and signing
+mavenPublishing {
+    publishToMavenCentral(automaticRelease = true)
+    signAllPublications()
 
-publishing {
-    publications {
-        create<MavenPublication>("library") {
-            from(components["java"])
+    configure(
+        JavaLibrary(
+            javadocJar = JavadocJar.Javadoc(),
+            sourcesJar = true,
+        )
+    )
 
-            pom {
-                name.set(project.name)
-                url.set("https://github.com/Smarteon/loxone-java")
-                description.set("Java implementation of the Loxone&trade; communication protocol (Web Socket)")
-                organization {
-                    name.set("Smarteon Systems s.r.o")
-                    url.set("https://smarteon.cz")
-                }
-                licenses {
-                    license {
-                        name.set("3-Clause BSD License")
-                        url.set("https://opensource.org/licenses/BSD-3-Clause")
-                        distribution.set("repo")
-                    }
-                }
-                developers {
-                    developer {
-                        name.set("Jiří Mikulášek")
-                        email.set("jiri.mikulasek@smarteon.cz")
-                    }
-                    developer {
-                        name.set("Vojtěch Zavřel")
-                        email.set("vojtech.zavrel@smarteon.cz")
-                    }
-                    developer {
-                        name.set("Tomáš Knotek")
-                        email.set("tomas.knotek@smarteon.cz")
-                    }
-                }
-                contributors {
-                    contributor {
-                        name.set("Petr Žufan")
-                    }
-                }
-                scm {
-                    url.set("git@github.com:Smarteon/loxone-java.git")
-                    connection.set("scm:git:git@github.com:Smarteon/loxone-java.git")
-                    tag.set(project.version.toString())
-                }
+    coordinates(project.group.toString(), project.name, project.version.toString())
+
+    pom {
+        name = project.name
+        url = "https://github.com/Smarteon/loxone-java"
+        description = "Java implementation of the Loxone&trade; communication protocol (Web Socket)"
+        organization {
+            name = "Smarteon Systems s.r.o"
+            url = "https://smarteon.cz"
+        }
+        licenses {
+            license {
+                name = "3-Clause BSD License"
+                url = "https://opensource.org/licenses/BSD-3-Clause"
+                distribution = "repo"
             }
         }
-    }
-}
-
-if (ossUser != null && ossPass != null) {
-    publishOnCentral {
-        repoOwner.set("Smarteon")
-        projectDescription.set("Java implementation of the Loxone&trade; communication protocol (Web Socket)")
-        licenseName.set("3-Clause BSD License")
-        licenseUrl.set("https://opensource.org/licenses/BSD-3-Clause")
-
-        repositories {
-            mavenCentral.user.set(ossUser)
-            mavenCentral.password.set(ossPass)
+        developers {
+            developer {
+                name = "Jiří Mikulášek"
+                email = "jiri.mikulasek@smarteon.cz"
+            }
+            developer {
+                name = "Vojtěch Zavřel"
+                email = "vojtech.zavrel@smarteon.cz"
+            }
+            developer {
+                name = "Tomáš Knotek"
+                email = "tomas.knotek@smarteon.cz"
+            }
         }
-    }
-}
-
-val signingKey: String? = System.getenv("SIGNING_KEY")
-val signingPassword: String? = System.getenv("SIGNING_PASS")
-if (signingKey != null && signingPassword != null) {
-    signing {
-        setRequired({
-            !project.version.toString().endsWith("-SNAPSHOT")
-        })
-        useInMemoryPgpKeys(signingKey, signingPassword)
-        sign(publishing.publications["library"])
-    }
-} else if (hasProperty("signing.keyId")) {
-    signing {
-        setRequired({
-            !project.version.toString().endsWith("-SNAPSHOT")
-        })
-        sign(publishing.publications["library"])
+        contributors {
+            contributor {
+                name = "Petr Žufan"
+            }
+        }
+        scm {
+            url = "git@github.com:Smarteon/loxone-java.git"
+            connection = "scm:git:git@github.com:Smarteon/loxone-java.git"
+            tag = project.version.toString()
+        }
     }
 }
 

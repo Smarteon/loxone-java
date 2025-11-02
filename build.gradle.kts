@@ -19,7 +19,7 @@ plugins {
     id("pl.allegro.tech.build.axion-release") version "1.18.18"
     id("org.danilopianini.publish-on-central") version "8.0.7"
     id("ru.vyarus.quality") version "6.0.1"
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm") version "2.2.20"
 }
 
 java {

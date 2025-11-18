@@ -70,10 +70,33 @@ public class LoxoneHttp {
         try {
             connection = (HttpURLConnection) url.openConnection();
             connection.setConnectTimeout(connectionTimeout);
+            connection.setInstanceFollowRedirects(false);
+
             for (Map.Entry<String, String> property : properties.entrySet()) {
                 connection.setRequestProperty(property.getKey(), property.getValue());
             }
+
             final int responseCode = connection.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
+                    || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
+                    || responseCode == HttpURLConnection.HTTP_SEE_OTHER
+                    || responseCode == 307
+                    || responseCode == 308) {
+
+                if (requestContext.get().redirects > MAX_REDIRECTS) {
+                    throw new IllegalStateException("Too many redirects!");
+                }
+
+                final String locationHeader = connection.getHeaderField("Location");
+                if (locationHeader != null) {
+                    final URL location = new URL(locationHeader);
+                    requestContext.get().redirect(location);
+                    LOG.debug("Redirecting to: {}", location);
+                    return get(location, type, properties, responseType);
+                }
+            }
+
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 requestContext.get().lastUrl = connection.getURL();
                 try (InputStream is = connection.getInputStream()) {
@@ -86,16 +109,6 @@ public class LoxoneHttp {
                             throw new IllegalStateException("Unknown command type " + type);
                     }
                 }
-            } else if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
-                    || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
-                    || responseCode == HttpURLConnection.HTTP_SEE_OTHER 
-                    || responseCode == 307) {
-                if (requestContext.get().redirects > MAX_REDIRECTS) {
-                    throw new IllegalStateException("Too many redirects!");
-                }
-                final URL location = new URL(connection.getHeaderField("Location"));
-                requestContext.get().redirect(location);
-                return get(location, type, properties, responseType);
             } else {
                 throw new LoxoneException("Loxone command responded by status " + responseCode);
             }

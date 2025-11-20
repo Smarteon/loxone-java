@@ -8,6 +8,7 @@ import strikt.api.expectCatching
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 import strikt.assertions.isFailure
+import kotlin.toString
 
 class LoxoneEndpointTest {
 
@@ -73,4 +74,31 @@ class LoxoneEndpointTest {
     fun `should verify equals`() {
         EqualsVerifier.forClass(LoxoneEndpoint::class.java).withNonnullFields("host", "path").verify()
     }
+
+    enum class TestDnsEndpoint(
+        val endpoint: LoxoneEndpoint,
+        val expectedHttp: String,
+        val expectedWs: String
+    ) {
+        DnsSimple(
+            LoxoneEndpoint("dns.loxonecloud.com/5039IR9JFSF"),
+            "https://dns.loxonecloud.com/5039IR9JFSF/jdev",
+            "wss://dns.loxonecloud.com/ws/rfc6455"
+        ),
+        DnsWithPath(
+            LoxoneEndpoint("dns.loxonecloud.com/5039IR9JFSF/extra/path"),
+            "https://dns.loxonecloud.com/5039IR9JFSF/extra/path/jdev",
+            "wss://dns.loxonecloud.com/ws/rfc6455"
+        )
+    }
+
+    @ParameterizedTest
+    @EnumSource(TestDnsEndpoint::class)
+    fun `should create DNS endpoint with path`(testParameters: TestDnsEndpoint) {
+        expectThat(testParameters.endpoint) {
+            get { httpUrl("jdev").toString() }.isEqualTo(testParameters.expectedHttp)
+            get { webSocketUri().toString() }.isEqualTo(testParameters.expectedWs)
+        }
+    }
+
 }

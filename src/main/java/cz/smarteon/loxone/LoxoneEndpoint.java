@@ -41,11 +41,16 @@ public final class LoxoneEndpoint {
 
     /**
      * Create new instance of given host (only the host without protocol or port part is expected) and port.
-     * @param host loxone address host
+     * @param address loxone address (can include path like "dns.loxonecloud.com/783JDJ38DJ83JD")
      * @param port loxone address port
      */
-    public LoxoneEndpoint(@NotNull final String host, final int port) {
-        this(host, port, false);
+    public LoxoneEndpoint(@NotNull final String address, final int port) {
+        this(
+                checkAndParseHost(requireNonNull(address, "address can't be null")),
+                address.contains(SLASH) ? null : port,
+                address.contains(SLASH),
+                address.contains(SLASH) ? address.substring(address.indexOf(SLASH)) : ""
+        );
     }
 
     /**
@@ -53,12 +58,17 @@ public final class LoxoneEndpoint {
      * and sets whether to use SSL.
      * BEWARE: Loxone miniserver (in version 10) doesn't support SSL natively. So the {@code useSsl} make sense only
      * when accessing miniserver through some reverse HTTPS proxy.
-     * @param host loxone address host
+     * @param address loxone address (can include path like "dns.loxonecloud.com/3D8UDJ83")
      * @param port loxone address port
      * @param useSsl whether to use SSL
      */
-    public LoxoneEndpoint(@NotNull final String host, final int port, final boolean useSsl) {
-        this(host, port, useSsl, "");
+    public LoxoneEndpoint(@NotNull final String address, final int port, final boolean useSsl) {
+        this(
+                checkAndParseHost(requireNonNull(address, "address can't be null")),
+                address.contains(SLASH) ? null : port,
+                address.contains(SLASH) || useSsl,
+                address.contains(SLASH) ? address.substring(address.indexOf(SLASH)) : ""
+        );
     }
 
     /**

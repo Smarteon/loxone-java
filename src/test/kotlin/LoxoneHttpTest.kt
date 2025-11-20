@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 import java.net.URL
+import kotlin.text.get
+import kotlin.toString
 
 class LoxoneHttpTest {
     private lateinit var loxoneHttp: LoxoneHttp
@@ -96,5 +98,39 @@ class LoxoneHttpTest {
         ) {
             isEqualTo("testString")
         }
+    }
+
+    @Test
+    fun `should follow redirect without auth for DNS endpoint`() {
+        val finalLocation = "http://localhost:${Jadler.port()}/final"
+
+        onRequest()
+            .havingMethodEqualTo("GET")
+            .havingPathEqualTo("/5039IR9JFSF/jdev/sps/io/test/value")
+            .respond()
+            .withStatus(302)
+            .withHeader("Location", finalLocation)
+
+        onRequest()
+            .havingMethodEqualTo("GET")
+            .havingPathEqualTo("/final")
+            .respond()
+            .withStatus(200)
+            .withBody("\"redirectSuccess\"")
+
+        expectThat(
+            loxoneHttp.get(
+                Command(
+                    "/5039IR9JFSF/jdev/sps/io/test/value",
+                    Command.Type.JSON,
+                    String::class.java,
+                    true,
+                    false,
+                    MiniserverType.KNOWN
+                )
+            )
+        ).isEqualTo("redirectSuccess")
+
+        expectThat(loxoneHttp.lastUrl.toString()).isEqualTo(finalLocation)
     }
 }

@@ -10,15 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * State class for keeping state of a <code>DigitalInfoControl</code>.
  */
-public class DigitalInfoControlState extends ControlState<DigitalInfoControl> {
-
-    /**
-     * Current value of the DigitalInfoControl.
-     */
-    @Getter
-    @Nullable
-    private Boolean state;
-
+public class DigitalInfoControlState extends ControlState<Boolean,DigitalInfoControl> {
 
     public DigitalInfoControlState(Loxone loxone, DigitalInfoControl control) {
         super(loxone, control);
@@ -30,17 +22,8 @@ public class DigitalInfoControlState extends ControlState<DigitalInfoControl> {
      */
     @Override
     void accept(@NotNull ValueEvent event) {
-        super.accept(event);
-        if (event.getUuid().equals(control.stateActive())) {
-            processActiveEvent(event);
+        if (event.getUuid().equals(getControl().stateActive())) {
+            setState(event.getValue() == 1);
         }
-    }
-
-    /**
-     * Process the ValueEvent as an active state event message and update the state of the control accordingly.
-     * @param event value event received
-     */
-    private void processActiveEvent(ValueEvent event) {
-        state = event.getValue() == 1;
     }
 }

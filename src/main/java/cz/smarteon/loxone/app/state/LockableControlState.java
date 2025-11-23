@@ -6,6 +6,7 @@ import cz.smarteon.loxone.app.Control;
 import cz.smarteon.loxone.app.state.events.LockedEvent;
 import cz.smarteon.loxone.message.TextEvent;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,20 +15,23 @@ import java.io.IOException;
 
 /**
  * Base class for the controlStates in loxone application that supports locking.
- * @param <T> The type of control this class keeps trakc of the state.
+ * <p>
+ * This class keeps track of the state of the control based on the events of the miniserver.
+ * </p>
+ * @param <T> The type of control this class keeps track of.
  */
 @Slf4j
-public abstract class LockableControlState<T extends Control> extends ControlState<T> {
+public abstract class LockableControlState<S, T extends Control> extends ControlState<S, T> {
 
     /**
-     * Current state of the lock of the control.
+     * Current state of the lock.
      */
     @Getter
     @Nullable
     private Locked locked;
 
     /**
-     * Extra free format reason in case of lock of the control.
+     * Extra free format reason in case of lock.
      */
     @Getter
     @Nullable
@@ -43,7 +47,7 @@ public abstract class LockableControlState<T extends Control> extends ControlSta
      */
     @Override
     void accept(@NotNull TextEvent event) {
-        if (event.getUuid().equals(control.stateLocked())) {
+        if (event.getUuid().equals(getControl().stateLocked())) {
             processLockedEvent(event);
         }
     }
@@ -54,14 +58,20 @@ public abstract class LockableControlState<T extends Control> extends ControlSta
      */
     private void processLockedEvent(TextEvent event) {
         try {
+            final boolean isCurrentState;
             if (event.getText().isEmpty()) {
+                isCurrentState = Locked.NO.equals(locked) && lockedReason == null;
                 this.locked = Locked.NO;
                 this.lockedReason = null;
-                return;
+            } else {
+                final LockedEvent lockedEvent = Codec.readMessage(event.getText(), LockedEvent.class);
+                isCurrentState = lockedEvent.getLocked().equals(locked) && lockedEvent.getReason().equals(lockedReason);
+                this.locked = lockedEvent.getLocked();
+                this.lockedReason = lockedEvent.getReason();
             }
-            final LockedEvent lockedEvent = Codec.readMessage(event.getText(), LockedEvent.class);
-            this.locked = lockedEvent.getLocked();
-            this.lockedReason = lockedEvent.getReason();
+            if (!isCurrentState) {
+                notifyStateChanged();
+            }
         } catch (IOException e) {
             log.info("Unable to parse locked event!", e);
         }

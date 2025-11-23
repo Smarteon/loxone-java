@@ -42,7 +42,7 @@ class LoxoneStateTest {
     @Test
     fun `controlStates should be compatible`() {
         expectThat(loxoneState.supportedControlsStateMap.entries).all {
-            get { value.getDeclaredConstructor(loxone.javaClass, key) }.isNotNull()
+            get { value.getDeclaredConstructor(Loxone::class.java, key) }.isNotNull()
         }
     }
 

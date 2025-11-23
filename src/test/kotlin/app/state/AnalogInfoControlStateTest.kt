@@ -38,12 +38,12 @@ class AnalogInfoControlStateTest {
         val analogInfoControlState = AnalogInfoControlState(loxone, analogInfoControl)
 
         expectThat(analogInfoControlState) {
-            get { value }.isNull()
+            get { state }.isNull()
             testParams.startingValue?.let {
                 analogInfoControlState.accept(ValueEvent(analogInfoControl.stateValue(), testParams.startingValue))
             }
             analogInfoControlState.accept(ValueEvent(LoxoneUuid(testParams.uuid), testParams.newValue))
-            get { value }.isEqualTo(testParams.expectedValue)
+            get { state }.isEqualTo(testParams.expectedValue)
         }
     }
 
@@ -55,13 +55,13 @@ class AnalogInfoControlStateTest {
         }
         val analogInfoControlState = AnalogInfoControlState(loxone, analogInfoControl);
 
-        expectThat(analogInfoControlState.value).isNull()
+        expectThat(analogInfoControlState.state).isNull()
         analogInfoControlState.accept(
             TextEvent(
                 LoxoneUuid("0f869a64-028d-0cc2-ffffd4c75dbaf53c"),
                 LoxoneUuid("0f869a64-028d-0cc2-ffffd4c75dbaf53d"), "value"
             )
         )
-        expectThat(analogInfoControlState.value).isNull()
+        expectThat(analogInfoControlState.state).isNull()
     }
 }

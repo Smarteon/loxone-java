@@ -12,14 +12,7 @@ import static cz.smarteon.loxone.message.ControlCommand.genericControlCommand;
 /**
  * State class for keeping and managing state of a <code>SwitchControl</code>.
  */
-public class SwitchControlState extends LockableControlState<SwitchControl> {
-
-    /**
-     * Current state of the SwitchControl.
-     */
-    @Getter
-    @Nullable
-    private Boolean state;
+public class SwitchControlState extends LockableControlState<Boolean, SwitchControl> {
 
     public SwitchControlState(Loxone loxone, SwitchControl control) {
         super(loxone, control);
@@ -29,7 +22,7 @@ public class SwitchControlState extends LockableControlState<SwitchControl> {
      * Toggles state of SwitchControl. When current state is <code>SwitchState.UNINITIALIZED</code> it switches to On.
      */
     public void toggleState() {
-        if (Boolean.TRUE.equals(state)) {
+        if (Boolean.TRUE.equals(getState())) {
             stateOff();
         } else {
             stateOn();
@@ -40,7 +33,10 @@ public class SwitchControlState extends LockableControlState<SwitchControl> {
      * Sets state of SwitchControl to On.
      */
     public void stateOn() {
-        loxone.sendControlCommand(control, switchControl -> genericControlCommand(switchControl.getUuid().toString(),
+        if (getLocked() != null && !Locked.NO.equals(getLocked())) {
+            throw new LoxoneLockedException("SwitchControl is locked, so no state change is possible");
+        }
+        getLoxone().sendControlCommand(getControl(), switchControl -> genericControlCommand(switchControl.getUuid().toString(),
                 "On"));
     }
 
@@ -48,7 +44,10 @@ public class SwitchControlState extends LockableControlState<SwitchControl> {
      * Sets state of SwitchControl to Off.
      */
     public void stateOff() {
-        loxone.sendControlCommand(control, switchControl -> genericControlCommand(switchControl.getUuid().toString(),
+        if (getLocked() != null && !Locked.NO.equals(getLocked())) {
+            throw new LoxoneLockedException("SwitchControl is locked, so no state change is possible");
+        }
+        getLoxone().sendControlCommand(getControl(), switchControl -> genericControlCommand(switchControl.getUuid().toString(),
                 "Off"));
     }
 
@@ -58,17 +57,8 @@ public class SwitchControlState extends LockableControlState<SwitchControl> {
      */
     @Override
     void accept(@NotNull ValueEvent event) {
-        super.accept(event);
-        if (event.getUuid().equals(control.stateActive())) {
-            processActiveEvent(event);
+        if (event.getUuid().equals(getControl().stateActive())) {
+            setState(event.getValue() == 1);
         }
-    }
-
-    /**
-     * Process the ValueEvent as an active state event message and update the state of the control accordingly.
-     * @param event value event received
-     */
-    private void processActiveEvent(ValueEvent event) {
-        state = event.getValue() == 1;
     }
 }

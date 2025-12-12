@@ -29,13 +29,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public class LoxoneState implements LoxoneAppListener, LoxoneEventListener {
 
-    private static final Map<Class<? extends Control>, Class<? extends ControlState<? extends Control>>> SUPPORTED_CONTROLS_STATE_MAP;
+    private static final Map<
+            Class<? extends Control>,
+            Class<? extends ControlState<?, ? extends Control>>> SUPPORTED_CONTROLS_STATE_MAP;
 
     private final Loxone loxone;
 
     private LoxoneApp loxoneApp;
 
-    private Map<LoxoneUuid, ControlState<?>> controlStates;
+    private Map<LoxoneUuid, ControlState<?, ?>> controlStates;
 
     static {
         SUPPORTED_CONTROLS_STATE_MAP = new HashMap<>();
@@ -59,12 +61,12 @@ public class LoxoneState implements LoxoneAppListener, LoxoneEventListener {
     }
 
     @TestOnly
-    Map<Class<? extends Control>, Class<? extends ControlState<? extends Control>>> getSupportedControlsStateMap() {
+    Map<Class<? extends Control>, Class<? extends ControlState<?, ? extends Control>>> getSupportedControlsStateMap() {
         return SUPPORTED_CONTROLS_STATE_MAP;
     }
 
     @TestOnly
-    Map<LoxoneUuid, ControlState<?>> getControlStates() {
+    Map<LoxoneUuid, ControlState<?, ?>> getControlStates() {
         return controlStates;
     }
 
@@ -103,7 +105,7 @@ public class LoxoneState implements LoxoneAppListener, LoxoneEventListener {
                     Map.Entry::getKey,
                     e -> {
                         try {
-                            return (ControlState<?>) SUPPORTED_CONTROLS_STATE_MAP.get(e.getValue().getClass())
+                            return (ControlState<?, ?>) SUPPORTED_CONTROLS_STATE_MAP.get(e.getValue().getClass())
                                     .getConstructors()[0].newInstance(loxone, e.getValue());
                         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                                  | InvocationTargetException ex) {

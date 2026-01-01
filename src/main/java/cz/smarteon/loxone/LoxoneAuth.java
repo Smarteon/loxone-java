@@ -16,10 +16,10 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.SecretKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -103,7 +103,7 @@ public class LoxoneAuth implements LoxoneMessageCommandResponseListener {
         this.getKeyCommand = getKey(profile.getUsername());
         this.getVisuHashCommand = LoxoneMessageCommand.getVisuHash(profile.getUsername());
 
-        this.authListeners = new LinkedList<>();
+        this.authListeners = new CopyOnWriteArrayList<>();
     }
 
     @Deprecated

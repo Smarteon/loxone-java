@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -48,7 +48,7 @@ public class Loxone {
     private final LoxoneWebSocket loxoneWebSocket;
     private final LoxoneAuth loxoneAuth;
 
-    private final List<LoxoneAppListener> loxoneAppListeners = new LinkedList<>();
+    private final List<LoxoneAppListener> loxoneAppListeners = new CopyOnWriteArrayList<>();
     private final LoxoneWebSocketListener webSocketListener = this::start;
     private final Map<LoxoneEndpoint, LoxoneHttp> clientMiniserversHttp = new HashMap<>();
 

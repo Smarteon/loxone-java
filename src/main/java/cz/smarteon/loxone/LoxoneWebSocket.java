@@ -17,14 +17,14 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -89,9 +89,9 @@ public class LoxoneWebSocket {
         this.webSocketClientProvider = requireNonNull(webSocketClientProvider,
                 "webSocketClientProvider shouldn't be null");
 
-        this.webSocketListeners = new HashSet<>();
-        this.commandResponseListeners = new LinkedList<>();
-        this.eventListeners = new LinkedList<>();
+        this.webSocketListeners = new CopyOnWriteArraySet<>();
+        this.commandResponseListeners = new CopyOnWriteArrayList<>();
+        this.eventListeners = new CopyOnWriteArrayList<>();
         this.commands = new ConcurrentLinkedQueue<>();
 
         // link loxoneAuth as command listener

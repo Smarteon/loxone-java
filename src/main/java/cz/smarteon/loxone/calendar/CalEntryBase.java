@@ -3,6 +3,7 @@ package cz.smarteon.loxone.calendar;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import cz.smarteon.loxone.LoxoneUuid;
@@ -65,8 +66,12 @@ public abstract class CalEntryBase {
      */
     protected int calMode;
 
-    @JsonCreator
-    protected CalEntryBase(@NotNull LoxoneUuid uuid, @NotNull String name, int operatingMode, @NotNull String calMode) {
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    protected CalEntryBase(
+            @JsonProperty("uuid") @NotNull LoxoneUuid uuid,
+            @JsonProperty("name") @NotNull String name,
+            @JsonProperty("operatingMode") int operatingMode,
+            @JsonProperty("calMode") @NotNull String calMode) {
         this.uuid = uuid;
         this.name = name;
         this.operatingMode = operatingMode;

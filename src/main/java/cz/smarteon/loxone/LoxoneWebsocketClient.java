@@ -133,7 +133,11 @@ class LoxoneWebsocketClient extends WebSocketClient {
                 keepAliveFuture.cancel(true);
             }
             ws.connectionClosed(code, remote);
-            if (remote && code != CloseFrame.NEVER_CONNECTED) {
+            // Reconnect not only on remote close, but also on an abnormal *local* close (code 1006),
+            // which is how Java-WebSocket reports a lost connection (e.g. the miniserver stops
+            // answering pings/pongs). A deliberate LoxoneWebSocket.close() produces a NORMAL (1000)
+            // local close, so it is intentionally excluded and won't trigger a restart.
+            if (code != CloseFrame.NEVER_CONNECTED && (remote || code == CloseFrame.ABNORMAL_CLOSE)) {
                 ws.autoRestart();
             }
         }

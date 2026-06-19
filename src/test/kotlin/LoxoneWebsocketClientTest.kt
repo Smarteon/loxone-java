@@ -1,10 +1,10 @@
 package cz.smarteon.loxone
 
 import io.mockk.mockk
+import io.mockk.verify
+import org.java_websocket.framing.CloseFrame
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.ValueSource
 import strikt.api.expectCatching
 import strikt.assertions.isSuccess
 import java.net.URI
@@ -27,13 +27,27 @@ class LoxoneWebsocketClientTest {
         }.isSuccess()
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = [true, false])
-    fun `should handle onClose`(remote: Boolean) {
-        client.onClose(1000, "some reason", remote)
+    @Test
+    fun `should auto-restart on remote close`() {
+        client.onClose(CloseFrame.NORMAL, "normally closed", true)
 
-        expectCatching { webSocket.wsClosed() }.isSuccess()
-        expectCatching { webSocket.connectionClosed(1000, remote) }.isSuccess()
-        if (remote) expectCatching { webSocket.autoRestart() }.isSuccess()
+        verify { webSocket.connectionClosed(CloseFrame.NORMAL, true) }
+        verify { webSocket.autoRestart() }
+    }
+
+    @Test
+    fun `should auto-restart on abnormal local close (lost connection or pong timeout)`() {
+        client.onClose(CloseFrame.ABNORMAL_CLOSE, "no pong in time", false)
+
+        verify { webSocket.connectionClosed(CloseFrame.ABNORMAL_CLOSE, false) }
+        verify { webSocket.autoRestart() }
+    }
+
+    @Test
+    fun `should not auto-restart on deliberate local close`() {
+        client.onClose(CloseFrame.NORMAL, "closed by client", false)
+
+        verify { webSocket.connectionClosed(CloseFrame.NORMAL, false) }
+        verify(exactly = 0) { webSocket.autoRestart() }
     }
 }

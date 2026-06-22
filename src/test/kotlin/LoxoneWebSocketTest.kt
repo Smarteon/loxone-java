@@ -86,6 +86,7 @@ class LoxoneWebSocketTest {
         sleep(2100)
 
         verify(exactly = 2) { authMock.isInitialized }
+        verify(exactly = 1) { authMock.startAuthentication() }
     }
 
     @Test

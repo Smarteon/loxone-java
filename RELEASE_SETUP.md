@@ -70,16 +70,17 @@ Add the following secrets in your GitHub repository settings (**Settings** → *
 | `OSS_PASS` | Sonatype JIRA password | Your JIRA account password |
 | `SIGNING_KEY` | GPG private key (base64) | Content of `signing-key.txt` from Step 2 |
 | `SIGNING_PASS` | GPG key passphrase | The passphrase you set when creating the GPG key |
-| `SMARTEON_GIT_TOKEN` | GitHub Personal Access Token | See below |
+| `SMARTEON_GIT_CLIENT_ID` | Client ID of the `smarteon-git-operator` GitHub App | See below |
+| `SMARTEON_GIT_PRIVATE_KEY` | Private key of the `smarteon-git-operator` GitHub App | See below |
 
-### Creating GitHub Personal Access Token
+### GitHub App for pushing release tags
 
-1. Go to GitHub **Settings** → **Developer settings** → **Personal access tokens** → **Tokens (classic)**
-2. Click **Generate new token (classic)**
-3. Select scopes:
-   - `repo` (Full control of private repositories)
-4. Click **Generate token**
-5. Copy the token and add it as `SMARTEON_GIT_TOKEN` secret
+The release workflow mints a short-lived token from the `smarteon-git-operator` GitHub App
+(`actions/create-github-app-token`, `contents: write`) to push the release tag. Both secrets are
+organization secrets of Smarteon, so nothing needs to be created per repository; only make sure:
+
+1. The `smarteon-git-operator` app is installed on this repository (organization **Settings** → **GitHub Apps**)
+2. The organization secrets `SMARTEON_GIT_CLIENT_ID` and `SMARTEON_GIT_PRIVATE_KEY` are available to this repository
 
 ## Step 4: Verify Setup
 

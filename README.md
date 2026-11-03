@@ -125,7 +125,7 @@ The following secrets must be configured in the repository settings:
 - `OSS_PASS` - Sonatype OSS password
 - `SIGNING_KEY` - GPG private key for signing artifacts (ASCII-armored, base64 encoded)
 - `SIGNING_PASS` - Passphrase for the GPG key
-- `SMARTEON_GIT_TOKEN` - GitHub Personal Access Token with `repo` scope for pushing tags
+- `SMARTEON_GIT_CLIENT_ID`, `SMARTEON_GIT_PRIVATE_KEY` - client ID and private key of the `smarteon-git-operator` GitHub App, used to mint a short-lived token for pushing tags (organization secrets)
 
 #### Local Release Testing
 

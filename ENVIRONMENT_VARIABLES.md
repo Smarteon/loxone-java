@@ -43,14 +43,11 @@ These must be configured in **Settings → Secrets and variables → Actions** i
 - **How to obtain**: The passphrase you set when creating your GPG key
 - **Security**: Store securely, never commit to repository
 
-### 5. SMARTEON_GIT_TOKEN
-- **Purpose**: GitHub Personal Access Token for pushing release tags
-- **Type**: GitHub PAT with `repo` scope
-- **How to obtain**: 
-  1. GitHub Settings → Developer settings → Personal access tokens
-  2. Generate new token (classic)
-  3. Select `repo` scope
-- **Permissions Required**: Full control of private repositories
+### 5. SMARTEON_GIT_CLIENT_ID, SMARTEON_GIT_PRIVATE_KEY
+- **Purpose**: Mint a short-lived GitHub App token for pushing release tags
+- **Type**: Client ID and private key of the `smarteon-git-operator` GitHub App
+- **How to obtain**: Organization secrets of Smarteon; the app must be installed on this repository
+- **Permissions Required**: `contents: write` (requested by the workflow)
 
 ## Local Development Environment Variables (Optional)
 
